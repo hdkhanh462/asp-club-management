@@ -13,7 +13,5 @@ namespace IctuTaekwondo.Shared.Responses.Finance
         public DateTime TransactionDate { get; set; }
         public string? Description { get; set; }
         public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public virtual UserResponse CreatedBy { get; set; }
     }
 }

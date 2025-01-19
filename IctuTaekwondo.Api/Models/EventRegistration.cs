@@ -10,13 +10,9 @@ namespace IctuTaekwondo.Api.Models
         [Key]
         public int Id { get; set; }
 
-        [DisplayName("Trạng thái")]
-        [MaxLength(15)]
-        public RegistrationStatus? Status { get; set; }
-
-        [DisplayName("Ngày đăng ký")]
+        [DisplayName("Ngày tạo")]
         [Column(TypeName = "timestamp without time zone")]
-        public DateTime? RegistrationDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         public int EventId { get; set; }
 

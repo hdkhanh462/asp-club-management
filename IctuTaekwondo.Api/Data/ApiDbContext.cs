@@ -47,9 +47,7 @@ namespace IctuTaekwondo.Api.Data
                 entity.HasKey(e => e.Id).HasName("EventRegistrations_PKey");
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                entity.Property(e => e.Status).HasDefaultValueSql("'Pending'::character varying");
-                entity.Property(e => e.RegistrationDate).HasDefaultValueSql("CURRENT_TIMESTAMP");
-                entity.Property(u => u.Status).HasConversion<string>();
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(d => d.Event)
                     .WithMany(p => p.EventRegistrations)
@@ -83,13 +81,7 @@ namespace IctuTaekwondo.Api.Data
 
                 entity.Property(e => e.Id).UseIdentityAlwaysColumn();
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
-                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(u => u.Type).HasConversion<string>();
-
-                entity.HasOne(d => d.CreatedBy)
-                    .WithMany(p => p.Finances)
-                    .OnDelete(DeleteBehavior.SetNull)
-                    .HasConstraintName("Finances_CreatedById_FKey");
             });
         }
     }

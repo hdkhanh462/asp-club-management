@@ -12,7 +12,6 @@ namespace IctuTaekwondo.Shared.Responses.Event
 {
     public class UserResgiteredEventResponse : UserResponse
     {
-        public RegistrationStatus? Status { get; set; }
-        public DateTime? RegistrationDate { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

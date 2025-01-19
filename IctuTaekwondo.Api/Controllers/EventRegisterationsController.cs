@@ -46,11 +46,6 @@ namespace IctuTaekwondo.Api.Controllers
             var registration = @event.EventRegistrations.FirstOrDefault(er => er.UserId == userId);
             if (registration != null)
             {
-                if (registration.Status == RegistrationStatus.Cancelled)
-                {
-                    return BadRequest(new { Message = "Bạn đăng ký nhưng không được duyệt tham gia sự kiện này." });
-                }
-
                 return BadRequest(new { Message = "Bạn đã đăng ký tham gia sự kiện này rồi." });
             }
 
@@ -90,99 +85,12 @@ namespace IctuTaekwondo.Api.Controllers
                 return BadRequest(new { Message = "Bạn chưa đăng ký tham gia sự kiện này." });
             }
 
-            if (registration.Status == RegistrationStatus.Approved)
-            {
-                return BadRequest(new { Message = "Bạn đã được duyệt tham gia sự kiện này rồi." });
-            }
-
-            if (registration.Status == RegistrationStatus.Cancelled)
-            {
-                return BadRequest(new { Message = "Bạn đã bị huỷ đăng ký tham gia sự kiện này rồi." });
-            }
-
             _context.EventRegistrations.Remove(registration);
 
             var result = await _context.SaveChangesAsync();
             if (result == 0) return BadRequest();
 
             return Ok(new { Message = "Huỷ đăng ký tham gia sự kiện thành công." });
-        }
-
-        // POST : api/events/5/approve?userId=abc123
-        // Duyệt đăng ký tham gia sự kiện
-        [HttpPost("{id}/approve")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<ActionResult<EventFullDetailResponse>> ApproveEvent(
-            int id,
-            [FromQuery] string userId)
-        {
-            var @event = await _context.Events
-                .Include(e => e.EventRegistrations)
-                .ThenInclude(er => er.User)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (@event == null) return NotFound();
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return BadRequest(new { Message = "Người dùng không tồn tại." });
-
-            var registration = @event.EventRegistrations.FirstOrDefault(er => er.UserId == user.Id);
-            if (registration == null)
-            {
-                return BadRequest(new { Message = "Người dùng chưa đăng ký tham gia sự kiện này." });
-            }
-
-            if (registration.Status == RegistrationStatus.Approved)
-            {
-                return BadRequest(new { Message = "Người dùng đã được duyệt tham gia sự kiện này rồi." });
-            }
-
-            registration.Status = RegistrationStatus.Approved;
-            _context.Entry(registration).State = EntityState.Modified;
-
-            var result = await _context.SaveChangesAsync();
-            if (result == 0) return BadRequest();
-
-            return Ok(new { Message = "Duyệt đăng ký sự kiện thành công." });
-        }
-
-        // POST : api/events/5/cancel?userId=abc123
-        // Huỷ đăng ký tham gia sự kiện
-        [HttpPost("{id}/cancel")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<ActionResult<EventFullDetailResponse>> CancelEvent(
-            int id,
-            [FromQuery] string userId)
-        {
-            var @event = await _context.Events
-                .Include(e => e.EventRegistrations)
-                .ThenInclude(er => er.User)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (@event == null) return NotFound();
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return BadRequest(new { Message = "Người dùng không tồn tại." });
-
-            var registration = @event.EventRegistrations.FirstOrDefault(er => er.UserId == user.Id);
-            if (registration == null)
-            {
-                return BadRequest(new { Message = "Người dùng chưa đăng ký tham gia sự kiện này." });
-            }
-
-            if (registration.Status == RegistrationStatus.Cancelled)
-            {
-                return BadRequest(new { Message = "Người dùng đã bị huỷ đăng ký tham gia sự kiện này rồi." });
-            }
-
-            registration.Status = RegistrationStatus.Cancelled;
-            _context.Entry(registration).State = EntityState.Modified;
-
-            var result = await _context.SaveChangesAsync();
-            if (result == 0) return BadRequest();
-
-            return Ok(new { Message = "Huỷ đăng ký sự kiện thành công." });
-
         }
 
         private string? IsEventValidToRegister(Event @event)

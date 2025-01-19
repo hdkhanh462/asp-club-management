@@ -32,15 +32,5 @@ namespace IctuTaekwondo.Api.Models
         [DisplayName("Ngày tạo")]
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? CreatedAt { get; set; }
-
-        [DisplayName("Ngày cập nhật")]
-        [Column(TypeName = "timestamp without time zone")]
-        public DateTime? UpdatedAt { get; set; }
-        
-        public string CreatedById { get; set; } = null!;
-
-        [ForeignKey("CreatedById")]
-        [InverseProperty("Finances")]
-        public virtual User CreatedBy { get; set; } = null!;
     }
 }
