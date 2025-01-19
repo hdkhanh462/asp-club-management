@@ -1,13 +1,9 @@
 ﻿using System.Security.Claims;
-using IctuTaekwondo.Api.Data;
 using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Models;
-using IctuTaekwondo.Shared.Enums;
+using IctuTaekwondo.Api.Services;
 using IctuTaekwondo.Shared.Responses.Event;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace IctuTaekwondo.Api.Controllers
 {
@@ -15,13 +11,12 @@ namespace IctuTaekwondo.Api.Controllers
     [ApiController]
     public class EventRegisterationsController : ControllerBase
     {
-        private readonly ApiDbContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly EventRegisterationService _service;
 
-        public EventRegisterationsController(ApiDbContext context, UserManager<User> userManager)
+        public EventRegisterationsController(
+            EventRegisterationService eventRegisterationService)
         {
-            _context = context;
-            _userManager = userManager;
+            _service = eventRegisterationService;
         }
 
         // POST : api/events/5/register
@@ -30,34 +25,13 @@ namespace IctuTaekwondo.Api.Controllers
         [Authorize(Roles = "Member")]
         public async Task<ActionResult<EventFullDetailResponse>> RegisterEvent(int id)
         {
-            var @event = await _context.Events
-                .Include(e => e.EventRegistrations)
-                .ThenInclude(er => er.User)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (@event == null) return NotFound();
-
-            var errorMessage = IsEventValidToRegister(@event);
-            if (errorMessage != null) return BadRequest(new { Message = errorMessage });
-
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return Unauthorized();
+            var rerulst = await _service.RegisterEvent(id, userId, true);
 
-            var registration = @event.EventRegistrations.FirstOrDefault(er => er.UserId == userId);
-            if (registration != null)
+            if (rerulst != EventRegisterationResult.Success)
             {
-                return BadRequest(new { Message = "Bạn đã đăng ký tham gia sự kiện này rồi." });
+                return BadRequest(new { Message = rerulst.GetStatusText("Bạn") });
             }
-
-            var newRegistration = new EventRegistration
-            {
-                EventId = id,
-                UserId = userId,
-            };
-            _context.EventRegistrations.Add(newRegistration);
-
-            var result = await _context.SaveChangesAsync();
-            if (result == 0) return BadRequest();
 
             return Ok(new { Message = "Đăng ký sự kiện thành công." });
         }
@@ -68,49 +42,95 @@ namespace IctuTaekwondo.Api.Controllers
         [Authorize(Roles = "Member")]
         public async Task<ActionResult<EventFullDetailResponse>> UnregisterEvent(int id)
         {
-            var @event = await _context.Events
-                .Include(e => e.EventRegistrations)
-                .ThenInclude(er => er.User)
-                .FirstOrDefaultAsync(e => e.Id == id);
-
-            if (@event == null) return NotFound();
-
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return Unauthorized();
+            var result = await _service.UnregisterEvent(id, userId);
 
-            var registration = @event.EventRegistrations.FirstOrDefault(er => er.UserId == userId);
-
-            if (registration == null)
+            if (result != EventRegisterationResult.Success)
             {
-                return BadRequest(new { Message = "Bạn chưa đăng ký tham gia sự kiện này." });
+                return BadRequest(new { Message = result.GetStatusText("Bạn") });
             }
-
-            _context.EventRegistrations.Remove(registration);
-
-            var result = await _context.SaveChangesAsync();
-            if (result == 0) return BadRequest();
 
             return Ok(new { Message = "Huỷ đăng ký tham gia sự kiện thành công." });
         }
 
-        private string? IsEventValidToRegister(Event @event)
+        // GET : api/events/5/registrations
+        // Lấy danh sách người đăng ký tham gia sự kiện
+        [HttpGet("{id}/registrations")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<ActionResult<IEnumerable<UserResgiteredEventResponse>>> GetEventRegistrations(
+            int id,
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10)
         {
-            if (@event.EndDate.HasValue && @event.EndDate.Value < DateTime.Now)
+            var @event = await _service.GetEventWithRegisterationAsync(id);
+            if (@event == null) return NotFound();
+
+            var registrations = @event.EventRegistrations
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Select(er =>
+                {
+                    var user = er.User.ToUserResgiteredEventResponse();
+                    user.RegisteredAt = er.CreatedAt;
+                    return user;
+                })
+                .ToList();
+
+            return Ok(registrations);
+        }
+
+        // GET : api/events/5/registrations/user123
+        // Lấy thông tin đăng ký tham gia sự kiện của người dùng
+        [HttpGet("{id}/registrations/{userId}")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<ActionResult<UserResgiteredEventResponse>> GetEventRegistration(
+            int id,
+            string userId)
+        {
+            var @event = await _service.GetEventWithRegisterationAsync(id);
+            if (@event == null) return NotFound();
+
+            var registration = @event.EventRegistrations.FirstOrDefault(er => er.UserId == userId);
+            if (registration == null) return NotFound();
+
+            var registeredUser = registration.User.ToUserResgiteredEventResponse();
+            registeredUser.RegisteredAt = registration.CreatedAt;
+
+            return Ok(registeredUser);
+        }
+
+        // POST : api/events/5/registrations
+        // Thêm người dùng vào sự kiện
+        [HttpPost("{id}/registrations")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<ActionResult<EventFullDetailResponse>> AddUserToEvent(
+            int id,
+            [FromQuery] string userId)
+        {
+            var result = await _service.RegisterEvent(id, userId);
+            if (result != EventRegisterationResult.Success)
             {
-                return "Sự kiện đã kết thúc.";
+                return BadRequest(new { Message = result.GetStatusText() });
             }
 
-            if (@event.StartDate < DateTime.Now)
+            return Ok(new { Message = "Thêm người dùng vào sự kiện thành công." });
+        }
+
+        // DELETE : api/events/5/registrations/user123
+        // Xóa người dùng khỏi sự kiện
+        [HttpDelete("{id}/registrations/{userId}")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<ActionResult<EventFullDetailResponse>> RemoveUserFromEvent(
+            int id,
+            string userId)
+        {
+            var result = await _service.UnregisterEvent(id, userId);
+            if (result != EventRegisterationResult.Success)
             {
-                return "Sự kiện đã diễn ra.";
+                return BadRequest(new { Message = result.GetStatusText() });
             }
 
-            if (@event.MaxParticipants.HasValue && @event.EventRegistrations.Count >= @event.MaxParticipants.Value)
-            {
-                return "Sự kiện đã đủ số lượng người tham gia.";
-            }
-
-            return null;
+            return Ok(new { Message = "Xóa người dùng khỏi sự kiện thành công." });
         }
     }
 }

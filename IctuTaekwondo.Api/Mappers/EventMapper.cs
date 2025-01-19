@@ -53,7 +53,7 @@ namespace IctuTaekwondo.Api.Mappers
                     .Select(eventResgisteration =>
                     {
                         var response = eventResgisteration.User.ToUserResgiteredEventResponse();
-                        response.CreatedAt = eventResgisteration.CreatedAt;
+                        response.RegisteredAt = eventResgisteration.CreatedAt;
                         return response;
                     }).ToList()
             };
