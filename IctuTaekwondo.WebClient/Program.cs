@@ -1,7 +1,14 @@
+using IctuTaekwondo.Shared.Utils;
+using IctuTaekwondo.WebClient.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add Scoped Services
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 

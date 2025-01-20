@@ -17,10 +17,12 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         public string Email { get; set; } = null!;
 
         [Required]
+        [DataType(DataType.Password)]
         [StringLength(50, MinimumLength = 6)]
         public string Password { get; set; } = null!;
 
         [Required]
+        [DataType(DataType.Password)]
         [Compare("Password",ErrorMessage = "Mật khẩu không trùng khớp.")]
         public string ConfirmPassword { get; set; } = null!;
     }

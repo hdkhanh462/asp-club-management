@@ -1,0 +1,20 @@
+﻿@using IctuTaekwondo.WebClient.Services
+@inject AuthService _authService
+
+<ul class="navbar-nav ms-auto">
+	@if (_authService.IsAuthenticated(User))
+	{
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
+		</li>
+	}
+	else
+	{
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Index">Login</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>
+		</li>
+	}
+</ul>

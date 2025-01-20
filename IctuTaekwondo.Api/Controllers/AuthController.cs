@@ -36,10 +36,10 @@ namespace IctuTaekwondo.Api.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var token = await _authService.LoginAsync(schema);
-            if (token == null) return Unauthorized();
+            var response = await _authService.LoginAsync(schema);
+            if (response == null) return Unauthorized();
 
-            return Ok(token);
+            return Ok(response);
         }
 
         [HttpGet("me")]

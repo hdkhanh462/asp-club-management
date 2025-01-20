@@ -8,13 +8,14 @@ using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Schemas.Auth;
+using IctuTaekwondo.Shared.Responses.Auth;
 
 namespace IctuTaekwondo.Api.Services
 {
     public interface IAuthService
     {
         public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
-        public Task<object?> LoginAsync(LoginSchema schema);
+        public Task<LoginResponse?> LoginAsync(LoginSchema schema);
         public Task<UserFullDetailResponse?> ProfileAsync(string? email);
     }
 
@@ -47,7 +48,7 @@ namespace IctuTaekwondo.Api.Services
             return await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
         }
         
-        public async Task<object?> LoginAsync(LoginSchema schema)
+        public async Task<LoginResponse?> LoginAsync(LoginSchema schema)
         {
             ArgumentNullException.ThrowIfNull(schema);
 
@@ -80,10 +81,10 @@ namespace IctuTaekwondo.Api.Services
                 )
             );
 
-            return new
+            return new LoginResponse
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Expires = token.ValidTo
+                ExpiredAt = token.ValidTo
             };
         }
 
