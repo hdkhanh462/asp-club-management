@@ -1,11 +1,11 @@
 ﻿using System.Security.Claims;
-using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Services;
+using IctuTaekwondo.Shared.Mappers;
+using IctuTaekwondo.Shared.Services;
 using IctuTaekwondo.Shared.Responses.Event;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IctuTaekwondo.Api.Controllers
+namespace IctuTaekwondo.Shared.Controllers
 {
     [Route("api/events")]
     [ApiController]

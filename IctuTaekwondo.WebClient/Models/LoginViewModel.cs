@@ -3,9 +3,9 @@ using IctuTaekwondo.Shared.Schemas.Auth;
 
 namespace IctuTaekwondo.WebClient.Models
 {
-    public class LoginViewModel:LoginSchema
+    public class LoginViewModel : LoginSchema
     {
-        [Required]
+        [Display(Name = "Lưu phiên đăng nhập")]
         public bool RememberMe { get; set; }
     }
 }

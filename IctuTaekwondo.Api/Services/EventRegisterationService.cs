@@ -1,8 +1,8 @@
-﻿using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Api.Models;
+﻿using IctuTaekwondo.Shared.Data;
+using IctuTaekwondo.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace IctuTaekwondo.Api.Services
+namespace IctuTaekwondo.Shared.Services
 {
     // Enum đại diện cho các kết quả có thể có của một thao tác đăng ký sự kiện  
     public enum EventRegisterationResult
@@ -41,10 +41,10 @@ namespace IctuTaekwondo.Api.Services
     // Lớp dịch vụ để xử lý các thao tác đăng ký sự kiện  
     public class EventRegisterationService
     {
-        private readonly ApiDbContext _context;
+        private readonly AppDbContext _context;
 
         // Constructor để khởi tạo ngữ cảnh cơ sở dữ liệu  
-        public EventRegisterationService(ApiDbContext context)
+        public EventRegisterationService(AppDbContext context)
         {
             _context = context;
         }

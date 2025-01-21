@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Shared.Data;
+using IctuTaekwondo.Shared.Mappers;
+using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Responses.Event;
 using IctuTaekwondo.Shared.Schemas.Event;
 using Microsoft.AspNetCore.Identity;
@@ -11,16 +11,16 @@ using IctuTaekwondo.Shared.Enums;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
-namespace IctuTaekwondo.Api.Controllers.Api
+namespace IctuTaekwondo.Shared.Controllers.Api
 {
     [Route("api/events")]
     [ApiController]
     public class EventsController : ControllerBase
     {
-        private readonly ApiDbContext _context;
+        private readonly AppDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public EventsController(ApiDbContext context, UserManager<User> userManager)
+        public EventsController(AppDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace IctuTaekwondo.Api.Migrations
+namespace IctuTaekwondo.Shared.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateEventRegistation : Migration

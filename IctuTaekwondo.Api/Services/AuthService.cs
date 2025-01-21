@@ -2,15 +2,15 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Shared.Mappers;
+using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Responses.Auth;
 
-namespace IctuTaekwondo.Api.Services
+namespace IctuTaekwondo.Shared.Services
 {
     public interface IAuthService
     {
@@ -58,28 +58,28 @@ namespace IctuTaekwondo.Api.Services
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, schema.Password);
             if (!isPasswordValid) return null;
 
-            var roles = await _userManager.GetRolesAsync(user);
+                var roles = await _userManager.GetRolesAsync(user);
 
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, user.FullName),
-                new(ClaimTypes.Email, user.Email!),
-                new(ClaimTypes.Role, string.Join(",", roles))
-            };
+                var claims = new List<Claim>
+                {
+                    new(ClaimTypes.NameIdentifier, user.Id),
+                    new(ClaimTypes.Name, user.FullName),
+                    new(ClaimTypes.Email, user.Email!),
+                    new(ClaimTypes.Role, string.Join(",", roles))
+                };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                audience: _configuration["Jwt:Audience"],
-                issuer: _configuration["Jwt:Issuer"],
-                expires: DateTime.Now.AddDays(30),
-                signingCredentials: new SigningCredentials(
-                    key,
-                    SecurityAlgorithms.HmacSha256
-                )
-            );
+                var token = new JwtSecurityToken(
+                    claims: claims,
+                    audience: _configuration["Jwt:Audience"],
+                    issuer: _configuration["Jwt:Issuer"],
+                    expires: DateTime.Now.AddDays(30),
+                    signingCredentials: new SigningCredentials(
+                        key,
+                        SecurityAlgorithms.HmacSha256
+                    )
+                );
 
             return new LoginResponse
             {

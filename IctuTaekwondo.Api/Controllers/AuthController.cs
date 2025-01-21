@@ -1,12 +1,13 @@
 ﻿using System.Security.Claims;
 using IctuTaekwondo.Shared.Responses.User;
-using IctuTaekwondo.Api.Services;
+using IctuTaekwondo.Shared.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using IctuTaekwondo.Shared.Schemas.Auth;
+using System.Net;
 
-namespace IctuTaekwondo.Api.Controllers
+namespace IctuTaekwondo.Shared.Controllers
 {
     [Route("api/auth")]
     [ApiController]

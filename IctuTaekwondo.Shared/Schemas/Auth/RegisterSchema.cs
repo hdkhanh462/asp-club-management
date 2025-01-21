@@ -8,28 +8,33 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         [DataType(DataType.ImageUrl)]
         public string? AvatarUrl { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Display(Name = "Họ và tên")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
+        [StringLength(50, MinimumLength = 6, ErrorMessage = "Họ và tên phải có độ dài từ 6 đến 50 ký tự.")]
         public string FullName { get; set; } = null!;
 
-        [Required]
-        [EmailAddress]
+        [Display(Name = "Địa chỉ email")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
+        [EmailAddress(ErrorMessage = "Sai định dạng email")]
         public string Email { get; set; } = null!;
 
-        [Required]
+        [Display(Name = "Mật khẩu")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         [DataType(DataType.Password)]
-        [StringLength(50, MinimumLength = 6)]
+        [StringLength(50, MinimumLength = 6, ErrorMessage = "Mật khẩu phải có độ dài từ 6 đến 50 ký tự.")]
         public string Password { get; set; } = null!;
 
-        [Required]
+        [Display(Name = "Xác nhận mật khẩu")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         [DataType(DataType.Password)]
-        [Compare("Password",ErrorMessage = "Mật khẩu không trùng khớp.")]
+        [Compare("Password", ErrorMessage = "Mật khẩu không trùng khớp.")]
         public string ConfirmPassword { get; set; } = null!;
     }
 
     public class RegisterAdminSchema : RegisterSchema
     {
-        [Required]
+        [Display(Name = "Vai trò")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         public Role Role { get; set; }
     }
 }

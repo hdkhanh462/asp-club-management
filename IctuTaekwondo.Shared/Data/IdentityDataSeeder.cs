@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Shared.Models;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace IctuTaekwondo.Api.Utils
+namespace IctuTaekwondo.Shared.Utils
 {
     public class IdentityDataSeeder
     {

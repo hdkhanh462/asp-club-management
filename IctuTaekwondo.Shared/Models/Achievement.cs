@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IctuTaekwondo.Api.Models
+namespace IctuTaekwondo.Shared.Models
 {
     public class Achievement
     {

@@ -16,6 +16,7 @@ public class APIHelper
         };
         _httpClient.DefaultRequestHeaders.Accept.Clear();
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
     }
 
     /// <summary>
@@ -32,7 +33,6 @@ public class APIHelper
     public async Task<T?> GetAsync<T>(string endpoint)
     {
         var response = await _httpClient.GetAsync(endpoint);
-        response.EnsureSuccessStatusCode();
 
         var jsonResult = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<T>(jsonResult);
@@ -47,9 +47,8 @@ public class APIHelper
         var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(endpoint, content);
-        response.EnsureSuccessStatusCode();
-
         var jsonResult = await response.Content.ReadAsStringAsync();
+
         return JsonConvert.DeserializeObject<T>(jsonResult);
     }
 
@@ -62,9 +61,8 @@ public class APIHelper
         var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PutAsync(endpoint, content);
-        response.EnsureSuccessStatusCode();
-
         var jsonResult = await response.Content.ReadAsStringAsync();
+
         return JsonConvert.DeserializeObject<T>(jsonResult);
     }
 
@@ -74,7 +72,6 @@ public class APIHelper
     public async Task<bool> DeleteAsync(string endpoint)
     {
         var response = await _httpClient.DeleteAsync(endpoint);
-        response.EnsureSuccessStatusCode();
 
         return response.IsSuccessStatusCode;
     }
@@ -101,7 +98,6 @@ public class APIHelper
 
             // Gửi yêu cầu POST
             var response = await _httpClient.PostAsync(endpoint, multipartContent);
-            response.EnsureSuccessStatusCode();
 
             var jsonResult = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(jsonResult);

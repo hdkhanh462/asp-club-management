@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using IctuTaekwondo.Shared.Schemas.Event;
 
-namespace IctuTaekwondo.Api.Models
+namespace IctuTaekwondo.Shared.Models
 {
     public class Event : TEventWithStartEndDate
     {

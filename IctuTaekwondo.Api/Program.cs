@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Api.Models;
-using IctuTaekwondo.Api.Services;
-using IctuTaekwondo.Api.Utils;
+using IctuTaekwondo.Shared.Data;
+using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Shared.Services;
+using IctuTaekwondo.Shared.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +31,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Add DbContext
-builder.Services.AddDbContext<ApiDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
@@ -45,7 +45,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
 })
-    .AddEntityFrameworkStores<ApiDbContext>()
+    .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
 // Add Authentication
@@ -72,7 +72,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EventRegisterationService>();
-
 
 var app = builder.Build();
 

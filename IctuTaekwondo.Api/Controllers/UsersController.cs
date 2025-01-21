@@ -1,22 +1,22 @@
-﻿using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Models;
+﻿using IctuTaekwondo.Shared.Data;
+using IctuTaekwondo.Shared.Mappers;
+using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace IctuTaekwondo.Api.Controllers
+namespace IctuTaekwondo.Shared.Controllers
 {
     [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly ApiDbContext _context;
+        private readonly AppDbContext _context;
 
-        public UsersController(ApiDbContext context, UserManager<User> userManager)
+        public UsersController(AppDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

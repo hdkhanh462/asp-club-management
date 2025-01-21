@@ -1,12 +1,12 @@
-﻿using IctuTaekwondo.Api.Models;
+﻿using IctuTaekwondo.Shared.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace IctuTaekwondo.Api.Data
+namespace IctuTaekwondo.Shared.Data
 {
-    public class ApiDbContext : IdentityDbContext<User>
+    public class AppDbContext : IdentityDbContext<User>
     {
-        public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 

@@ -1,8 +1,8 @@
 ﻿using IctuTaekwondo.Shared.Responses.User;
-using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace IctuTaekwondo.Api.Mappers
+namespace IctuTaekwondo.Shared.Mappers
 {
     public static class UserMapper
     {

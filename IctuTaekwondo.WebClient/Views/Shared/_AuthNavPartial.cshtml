@@ -1,8 +1,9 @@
-﻿@using IctuTaekwondo.WebClient.Services
-@inject AuthService _authService
+﻿@using Microsoft.AspNetCore.Identity;
+@using IctuTaekwondo.Shared.Models;
+@inject SignInManager<User> signInManager;
 
 <ul class="navbar-nav ms-auto">
-	@if (_authService.IsAuthenticated(User))
+	@if (signInManager.IsSignedIn(User))
 	{
 		<li class="nav-item">
 			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
@@ -11,7 +12,7 @@
 	else
 	{
 		<li class="nav-item">
-			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Index">Login</a>
+			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Login</a>
 		</li>
 		<li class="nav-item">
 			<a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">Register</a>

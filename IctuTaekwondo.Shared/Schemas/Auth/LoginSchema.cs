@@ -4,11 +4,13 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
 {
     public class LoginSchema
     {
-        [Required]
+        [Display(Name = "Địa chỉ email")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Display(Name = "Mật khẩu")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }

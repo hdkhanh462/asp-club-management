@@ -1,8 +1,8 @@
-﻿using IctuTaekwondo.Api.Models;
+﻿using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Responses.Event;
 using IctuTaekwondo.Shared.Responses.User;
 
-namespace IctuTaekwondo.Api.Mappers
+namespace IctuTaekwondo.Shared.Mappers
 {
     public static class EventMapper
     {

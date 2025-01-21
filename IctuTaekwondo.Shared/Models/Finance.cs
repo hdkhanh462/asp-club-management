@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using IctuTaekwondo.Shared.Enums;
 
-namespace IctuTaekwondo.Api.Models
+namespace IctuTaekwondo.Shared.Models
 {
     public class Finance
     {

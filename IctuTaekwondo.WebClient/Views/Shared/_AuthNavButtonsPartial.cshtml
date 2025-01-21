@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using IctuTaekwondo.Shared.Models;
+@using System.Security.Claims;
+@inject SignInManager<User> signInManager;
+
+@if (signInManager.IsSignedIn(User))
+{
+	<div class="flex items-center">
+		<div class="ms-3 flex items-center">
+			<div>
+				<button type="button" class="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+					<span class="sr-only">Open user menu</span>
+					@if (User.FindFirst("AvatarUrl")?.Value != string.Empty)
+					{
+						<img class="size-8 rounded-full" src="@User.FindFirst("AvatarUrl")?.Value" alt="user photo">
+					}
+					else
+					{
+						<div class="relative size-8 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-600">
+							<svg class="absolute -left-1 h-10 w-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+						</div>
+					}
+				</button>
+			</div>
+			<div class="z-50 my-4 hidden list-none divide-y divide-gray-100 rounded bg-white text-base shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+				<div class="px-4 py-3" role="none">
+					<p class="text-sm text-gray-900 dark:text-white" role="none">
+						@User.FindFirst("FullName")?.Value
+					</p>
+					<p class="truncate text-sm font-medium text-gray-900 dark:text-gray-300" role="none">
+						@User.Identity?.Name
+					</p>
+				</div>
+				<ul class="py-1" role="none">
+					<li>
+						<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</a>
+					</li>
+					<li>
+						<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</a>
+					</li>
+					<li>
+						<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Earnings</a>
+					</li>
+					<li>
+						<a asp-controller="Auth" asp-action="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+}
+else
+{
+	<div class="flex gap-2">
+		<a asp-controller="Auth" asp-action="Login" class="rounded-lg bg-blue-700 px-3 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+			Đăng nhập
+		</a>
+		<a asp-controller="Auth" asp-action="Register" class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+			Đăng ký
+		</a>
+	</div>
+}
