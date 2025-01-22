@@ -38,8 +38,15 @@ namespace IctuTaekwondo.Shared.Services
         }
     }
 
+    public interface IEventRegisterationService
+    {
+        Task<EventRegisterationResult> RegisterEvent(int id, string? userId, bool isCheckValid = false);
+        Task<EventRegisterationResult> UnregisterEvent(int id, string? userId);
+        Task<Event?> GetEventWithRegisterationAsync(int id);
+    }
+
     // Lớp dịch vụ để xử lý các thao tác đăng ký sự kiện  
-    public class EventRegisterationService
+    public class EventRegisterationService : IEventRegisterationService
     {
         private readonly AppDbContext _context;
 
@@ -71,7 +78,7 @@ namespace IctuTaekwondo.Shared.Services
             var newRegistration = new EventRegistration
             {
                 EventId = id,
-                UserId = userId,
+                UserId = userId!,
             };
 
             // Thêm đăng ký mới vào ngữ cảnh  

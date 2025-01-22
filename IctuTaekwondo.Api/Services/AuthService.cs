@@ -21,13 +21,13 @@ namespace IctuTaekwondo.Shared.Services
 
     public class AuthService : IAuthService
     {
-        private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<User> _userManager;
 
-        public AuthService(UserManager<User> userManager, IConfiguration configuration)
+        public AuthService(IConfiguration configuration, UserManager<User> userManager)
         {
-            _userManager = userManager;
             _configuration = configuration;
+            _userManager = userManager;
         }
 
         public async Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema)

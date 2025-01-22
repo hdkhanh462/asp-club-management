@@ -70,8 +70,8 @@ builder.Services.AddAuthentication(options =>
 
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<EventRegisterationService>();
+builder.Services.AddScoped<IAuthService ,AuthService>();
+builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
 
 var app = builder.Build();
 

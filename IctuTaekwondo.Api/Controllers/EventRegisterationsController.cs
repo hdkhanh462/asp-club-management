@@ -11,10 +11,10 @@ namespace IctuTaekwondo.Shared.Controllers
     [ApiController]
     public class EventRegisterationsController : ControllerBase
     {
-        private readonly EventRegisterationService _service;
+        private readonly IEventRegisterationService _service;
 
         public EventRegisterationsController(
-            EventRegisterationService eventRegisterationService)
+            IEventRegisterationService eventRegisterationService)
         {
             _service = eventRegisterationService;
         }
