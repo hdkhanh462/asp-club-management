@@ -15,8 +15,9 @@ namespace IctuTaekwondo.Shared.Services
     public interface IAuthService
     {
         public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
-        public Task<LoginResponse?> LoginAsync(LoginSchema schema);
+        public Task<JwtResponse?> LoginAsync(LoginSchema schema);
         public Task<UserFullDetailResponse?> ProfileAsync(string? email);
+        public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm);
     }
 
     public class AuthService : IAuthService
@@ -47,8 +48,8 @@ namespace IctuTaekwondo.Shared.Services
 
             return await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
         }
-        
-        public async Task<LoginResponse?> LoginAsync(LoginSchema schema)
+
+        public async Task<JwtResponse?> LoginAsync(LoginSchema schema)
         {
             ArgumentNullException.ThrowIfNull(schema);
 
@@ -58,9 +59,9 @@ namespace IctuTaekwondo.Shared.Services
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, schema.Password);
             if (!isPasswordValid) return null;
 
-                var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
-                var claims = new List<Claim>
+            var claims = new List<Claim>
                 {
                     new(ClaimTypes.NameIdentifier, user.Id),
                     new(ClaimTypes.Name, user.FullName),
@@ -68,24 +69,7 @@ namespace IctuTaekwondo.Shared.Services
                     new(ClaimTypes.Role, string.Join(",", roles))
                 };
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-
-                var token = new JwtSecurityToken(
-                    claims: claims,
-                    audience: _configuration["Jwt:Audience"],
-                    issuer: _configuration["Jwt:Issuer"],
-                    expires: DateTime.Now.AddDays(30),
-                    signingCredentials: new SigningCredentials(
-                        key,
-                        SecurityAlgorithms.HmacSha256
-                    )
-                );
-
-            return new LoginResponse
-            {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                ExpiredAt = token.ValidTo
-            };
+            return GenerateJwt(claims, null, null);
         }
 
         public async Task<UserFullDetailResponse?> ProfileAsync(string? email)
@@ -100,6 +84,26 @@ namespace IctuTaekwondo.Shared.Services
             userDetail.Roles = roles.ToList();
 
             return userDetail;
+        }
+
+        public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            var signingCredentials = new SigningCredentials(key, algorithm ?? SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                audience: _configuration["Jwt:Audience"],
+                issuer: _configuration["Jwt:Issuer"],
+                expires: expires ?? DateTime.Now.AddDays(30),
+                signingCredentials: signingCredentials
+            );
+
+            return new JwtResponse
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                ExpiredAt = token.ValidTo
+            };
         }
     }
 }
