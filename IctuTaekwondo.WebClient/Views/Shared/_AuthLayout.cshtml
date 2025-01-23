@@ -13,16 +13,16 @@
 
 </head>
 <body>
-	<partial name="_NavbarPartial" />
+	@await Html.PartialAsync("~/Views/Shared/Partials/_NavbarPartial.cshtml")
 
-	<div class="container py-4">
+	<div class="p-4">
 		<div class="mt-14">
 			<main>
 				@RenderBody()
 			</main>
 		</div>
 	</div>
-	<partial name="_FooterPartial" />
+	@await Html.PartialAsync("~/Views/Shared/Partials/_FooterPartial.cshtml")
 
 	@await RenderSectionAsync("Scripts", required: false)
 </body>

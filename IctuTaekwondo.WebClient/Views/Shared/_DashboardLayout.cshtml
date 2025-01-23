@@ -13,18 +13,18 @@
 
 </head>
 <body>
-	<partial name="_NavbarPartial" />
-	<partial name="_SidebarPartial" />
+	@await Html.PartialAsync("~/Views/Shared/Partials/_NavbarPartial.cshtml")
+	@await Html.PartialAsync("~/Views/Shared/Partials/_SidebarPartial.cshtml")
 
 	<div class="sm:ml-64">
 		<div class="p-4">
-			<div class="mt-14 rounded-lg p-4">
-				<main class="h-screen">
+			<div class="mt-14">
+				<main class="min-h-screen">
 					@RenderBody()
 				</main>
 			</div>
 		</div>
-		<partial name="_FooterPartial" />
+		@await Html.PartialAsync("~/Views/Shared/Partials/_FooterPartial.cshtml")
 	</div>
 
 	@await RenderSectionAsync("Scripts", required: false)

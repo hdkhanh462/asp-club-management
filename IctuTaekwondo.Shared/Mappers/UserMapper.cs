@@ -1,6 +1,5 @@
 ﻿using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace IctuTaekwondo.Shared.Mappers
 {
@@ -42,7 +41,7 @@ namespace IctuTaekwondo.Shared.Mappers
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
                 AvatarUrl = user.AvatarUrl,
-                Profile = user.UserProfile != null ? ToUserProfileResponse(user.UserProfile) : null,
+                Profile = user.UserProfile != null ? ToUserProfileResponse(user.UserProfile) : new UserProfileResponse(),
             };
         }
     }

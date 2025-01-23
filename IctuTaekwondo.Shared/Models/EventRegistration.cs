@@ -10,7 +10,6 @@ namespace IctuTaekwondo.Shared.Models
         [Key]
         public int Id { get; set; }
 
-        [DisplayName("Ngày tạo")]
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? CreatedAt { get; set; }
 

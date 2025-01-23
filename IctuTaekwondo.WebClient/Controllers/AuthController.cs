@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using IctuTaekwondo.Shared.Data;
 using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.WebClient.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
-    [Route("auth")]
     public class AuthController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -20,13 +20,13 @@ namespace IctuTaekwondo.WebClient.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpGet("login")]
+        [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
@@ -56,14 +56,14 @@ namespace IctuTaekwondo.WebClient.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
-        [HttpGet("register")]
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult Register()
         {
             return View();
         }
 
-        [HttpPost("register")]
+        [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register(
             RegisterViewModel model,
@@ -95,7 +95,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             return RedirectToAction("Index", "Dashboard");
         }
 
-        [HttpGet("logout")]
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

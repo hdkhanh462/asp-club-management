@@ -1,0 +1,40 @@
+﻿<div class="flex items-center">
+	<div class="ms-3 flex items-center">
+		<div>
+			<button type="button" class="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+				<span class="sr-only">Open user menu</span>
+				@if (Model.AvatarUrl != null && Model.AvatarUrl != string.Empty)
+				{
+					<img class="size-8 rounded-full" src="@Model.AvatarUrl" alt="avatar">
+				}
+				else
+				{
+					<div class="relative size-8 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-600">
+						<svg class="absolute -left-1 h-10 w-10 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+					</div>
+				}
+			</button>
+		</div>
+		<div class="z-50 my-4 hidden list-none divide-y divide-gray-100 rounded bg-white text-base shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+			<div class="px-4 py-3" role="none">
+				<p class="text-sm text-gray-900 dark:text-white" role="none">
+					@Model.FullName
+				</p>
+				<p class="truncate text-sm font-medium text-gray-900 dark:text-gray-300" role="none">
+					@Model.Email
+				</p>
+			</div>
+			<ul class="py-1" role="none">
+				<li>
+					<a asp-controller="Dashboard" asp-action="Index" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Bảng điều khiển</a>
+				</li>
+				<li>
+					<a asp-controller="Account" asp-action="Profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Tài khoản</a>
+				</li>
+				<li>
+					<a asp-controller="Auth" asp-action="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Đăng xuất</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

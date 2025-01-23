@@ -1,0 +1,202 @@
+﻿@using IctuTaekwondo.Shared.Enums
+@using IctuTaekwondo.Shared.Responses.User;
+@model UserFullDetailResponse;
+
+@{
+	ViewData["Title"] = "Hồ sơ cá nhân";
+	Layout = "_DashboardLayout";
+}
+
+<section class="bg-white py-4 antialiased dark:bg-gray-900">
+	<div class="mx-auto max-w-screen-lg px-4">
+
+		<!-- Breadcrumb -->
+		<nav class="mb-4 flex" aria-label="Breadcrumb">
+			<ol class="inline-flex items-center space-x-1 rtl:space-x-reverse md:space-x-2">
+				<li class="inline-flex items-center">
+					<a href="/" class="inline-flex items-center text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 dark:hover:text-white">
+						<svg class="me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+						</svg>
+						Trang chủ
+					</a>
+				</li>
+				<li>
+					<div class="flex items-center">
+						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+						</svg>
+						<a asp-controller="Account" asp-action="Profile" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
+							Tài khoản
+						</a>
+					</div>
+				</li>
+				<li aria-current="page">
+					<div class="flex items-center">
+						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+						</svg>
+						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Hồ sơ cá nhân</span>
+					</div>
+				</li>
+			</ol>
+		</nav>
+
+		<h2 class="border-b border-gray-200 pb-4 text-xl font-semibold text-gray-900 dark:text-white dark:border-gray-700 sm:text-2xl">
+			Hồ sơ cá nhân	
+		</h2>
+
+		<!-- Hồ sơ -->
+		<div class="py-6">
+			<div class="mb-4 grid gap-4 sm:grid-cols-2 sm:gap-8 lg:gap-16">
+				<div class="space-y-4">
+					<div class="flex space-x-4">
+						@if (Model.AvatarUrl != null && Model.AvatarUrl != string.Empty)
+						{
+							<img class="size-16 rounded-lg" src="@Model.AvatarUrl" alt="avatar" />
+						}
+						else
+						{
+							<div class="relative size-16 overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-600">
+								<svg class="size-18 absolute -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+							</div>
+						}
+						<div>
+							<span class="mb-2 inline-block rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+								@Model.Roles.First()
+							</span>
+							<h2 class="flex items-center text-xl font-bold leading-none text-gray-900 dark:text-white sm:text-2xl">@Model.FullName</h2>
+						</div>
+					</div>
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16v-5.5A3.5 3.5 0 0 0 7.5 7m3.5 9H4v-5.5A3.5 3.5 0 0 1 7.5 7m3.5 9v4M7.5 7H14m0 0V4h2.5M14 7v3m-3.5 6H20v-6a3 3 0 0 0-3-3m-2 9v4m-8-6.5h1" />
+							</svg>
+							@Html.DisplayNameFor(m => m.Email)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">@Model.Email</dd>
+					</dl>
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z" />
+							</svg>
+							@Html.DisplayNameFor(m => m.PhoneNumber)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">
+							@if (Model.PhoneNumber != null)
+							{
+								@Model.PhoneNumber
+							}
+							else
+							{
+								<span class="text-red-800">Chưa cập nhật</span>
+							}
+						</dd>
+					</dl>
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+							</svg>
+							@Html.DisplayNameFor(m => m.Profile.Address)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">
+							
+							@if (Model.Profile?.Address != null)
+							{
+								@Model.Profile?.Address
+							}
+							else
+							{
+								<span class="text-red-800" >Chưa cập nhật</span>
+							}
+						</dd>
+					</dl>
+				</div>
+				<div class="space-y-4">
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+							</svg>
+							@Html.DisplayNameFor(m=>m.Profile.Gender)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">
+							@if (Model.Profile?.Gender != null)
+							{
+								@Model.Profile.Gender.GetDisplayName()
+							}
+							else
+							{
+								<span class="text-red-800">Chưa cập nhật</span>
+							}
+						</dd>
+					</dl>
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
+							</svg>
+							@Html.DisplayNameFor(m => m.Profile.DateOfBirth)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">
+							@if (Model.Profile?.DateOfBirth != null)
+							{
+								@Model.Profile?.DateOfBirth.ToString()
+							}
+							else
+							{
+								<span class="text-red-800">Chưa cập nhật</span>
+							}
+						</dd>
+					</dl>
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7.171 12.906-2.153 6.411 2.672-.89 1.568 2.34 1.825-5.183m5.73-2.678 2.154 6.411-2.673-.89-1.568 2.34-1.825-5.183M9.165 4.3c.58.068 1.153-.17 1.515-.628a1.681 1.681 0 0 1 2.64 0 1.68 1.68 0 0 0 1.515.628 1.681 1.681 0 0 1 1.866 1.866c-.068.58.17 1.154.628 1.516a1.681 1.681 0 0 1 0 2.639 1.682 1.682 0 0 0-.628 1.515 1.681 1.681 0 0 1-1.866 1.866 1.681 1.681 0 0 0-1.516.628 1.681 1.681 0 0 1-2.639 0 1.681 1.681 0 0 0-1.515-.628 1.681 1.681 0 0 1-1.867-1.866 1.681 1.681 0 0 0-.627-1.515 1.681 1.681 0 0 1 0-2.64c.458-.361.696-.935.627-1.515A1.681 1.681 0 0 1 9.165 4.3ZM14 9a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" />
+							</svg>
+							@Html.DisplayNameFor(m => m.Profile.CurrentRank)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">
+							@if (Model.Profile?.CurrentRank != null)
+							{
+								@Model.Profile.CurrentRank.GetDisplayName()
+							}
+							else
+							{
+								<span class="text-red-800">Chưa cập nhật</span>
+							}
+						</dd>
+					</dl>
+					<dl>
+						<dt class="flex items-center gap-1 font-semibold text-gray-900 dark:text-white">
+							<svg class="shrink-0 hidden size-5 lg:inline" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+							</svg>
+							@Html.DisplayNameFor(m => m.Profile.JoinDate)
+						</dt>
+						<dd class="text-gray-500 dark:text-gray-400">
+							@if (Model.Profile?.JoinDate != null)
+							{
+								@Model.Profile?.JoinDate.ToString()
+							}
+							else
+							{
+								<span class="text-red-800">Chưa cập nhật</span>
+							}
+						</dd>
+					</dl>
+
+				</div>
+			</div>
+			<button type="button" data-modal-target="accountInformationModal2" data-modal-toggle="accountInformationModal2" class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 sm:w-auto dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+				<svg class="-ms-0.5 me-1.5 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"></path>
+				</svg>
+				Cập nhật hồ sơ
+			</button>
+		</div>
+	</div>
+</section>

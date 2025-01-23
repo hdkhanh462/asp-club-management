@@ -13,21 +13,16 @@ namespace IctuTaekwondo.Shared.Models
         [Key]
         public int Id { get; set; }
 
-        [DisplayName("Giới tính")]
-        [MaxLength(10)]
+        [StringLength(10)]
         public Gender? Gender { get; set; } = null!;
 
-        [DisplayName("Ngày sinh")]
         public DateOnly? DateOfBirth { get; set; } 
 
-        [DisplayName("Địa chỉ")]
         public string? Address { get; set; } 
 
-        [DisplayName("Cấp đai")]
-        [MaxLength(50)]
+        [StringLength(50)]
         public RankName? CurrentRank { get; set; } = null!;
 
-        [DisplayName("Ngày tham gia")]
         public DateOnly? JoinDate { get; set; } 
 
         public string UserId { get; set; } = null!;

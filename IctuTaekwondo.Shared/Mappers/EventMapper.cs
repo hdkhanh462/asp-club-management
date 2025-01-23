@@ -1,6 +1,5 @@
 ﻿using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Responses.Event;
-using IctuTaekwondo.Shared.Responses.User;
 
 namespace IctuTaekwondo.Shared.Mappers
 {
