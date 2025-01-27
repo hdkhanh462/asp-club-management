@@ -11,7 +11,7 @@ namespace IctuTaekwondo.Shared.Responses.User
         public Gender? Gender { get; set; }
 
         [Display(Name = "Ngày sinh")]
-        // Chuyển DateOnly thành định dang dd/MM/yyyy
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateOnly? DateOfBirth { get; set; }
 
         [Display(Name = "Địa chỉ")]
@@ -21,6 +21,7 @@ namespace IctuTaekwondo.Shared.Responses.User
         public RankName? CurrentRank { get; set; }
 
         [Display(Name = "Ngày tham gia")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateOnly? JoinDate { get; set; }
     }
 }

@@ -50,18 +50,6 @@ namespace IctuTaekwondo.Shared.Enums
         [Display(Name = "Chi tiêu")]
         Expense
     }
-
-    public enum RegistrationStatus
-    {
-        [Display(Name = "Đang chờ")]
-        Pending,
-
-        [Display(Name = "Đã duyệt")]
-        Approved,
-
-        [Display(Name = "Đã huỷ")]
-        Cancelled,
-    }
     
     public enum Role
     {

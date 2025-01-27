@@ -6,7 +6,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
 {
     public class RegisterSchema : UserProfileSchema
     {
-        [DataType(DataType.ImageUrl)]
+        [DataType(DataType.ImageUrl, ErrorMessage = "Định dạng địa chỉ avatar không chính xác")]
         public string? AvatarUrl { get; set; }
 
         [Display(Name = "Họ và tên")]

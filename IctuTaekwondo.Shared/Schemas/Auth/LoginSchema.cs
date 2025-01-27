@@ -6,7 +6,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
     {
         [Display(Name = "Địa chỉ email")]
         [Required(ErrorMessage = "Trường bắt buộc")]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Định dạng email không chính xác")]
         public string Email { get; set; }
 
         [Display(Name = "Mật khẩu")]

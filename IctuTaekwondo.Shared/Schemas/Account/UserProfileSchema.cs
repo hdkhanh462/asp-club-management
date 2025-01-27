@@ -11,6 +11,8 @@ namespace IctuTaekwondo.Shared.Schemas.Account
         public Gender? Gender { get; set; } = null!;
 
         [DisplayName("Ngày sinh")]
+        [DataType(DataType.Date, ErrorMessage = "Đinh dạng ngày tháng không chính xác")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateOnly? DateOfBirth { get; set; }
 
         [DisplayName("Địa chỉ")]
@@ -21,6 +23,8 @@ namespace IctuTaekwondo.Shared.Schemas.Account
         public RankName? CurrentRank { get; set; } = null!;
 
         [DisplayName("Ngày tham gia")]
+        [DataType(DataType.Date, ErrorMessage = "Đinh dạng ngày tháng không chính xác")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateOnly? JoinDate { get; set; }
     }
 }

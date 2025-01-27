@@ -6,11 +6,11 @@ namespace IctuTaekwondo.Shared.Schemas.Event
     public class TEventWithStartEndDate
     {
         [Display(Name = "Bắt đầu vào")]
-        [Column(TypeName = "timestamp without time zone")]
+        [DataType(DataType.DateTime, ErrorMessage = "Định dạng ngày tháng không chính xác")]
         public DateTime StartDate { get; set; }
         
         [Display(Name = "Kết thúc vào")]
-        [Column(TypeName = "timestamp without time zone")]
+        [DataType(DataType.DateTime, ErrorMessage = "Định dạng ngày tháng không chính xác")]
         [EndDateGreaterThanStartDate]
         public DateTime? EndDate { get; set; }
     }
@@ -22,7 +22,7 @@ namespace IctuTaekwondo.Shared.Schemas.Event
             var eventObj = (TEventWithStartEndDate)validationContext.ObjectInstance;
             if (eventObj.EndDate.HasValue && eventObj.EndDate <= eventObj.StartDate)
             {
-                return new ValidationResult("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                return new ValidationResult("Thời điểm kết thúc phải lớn hơn thời điểm bắt đầu.");
             }
             return ValidationResult.Success!;
         }
@@ -30,15 +30,23 @@ namespace IctuTaekwondo.Shared.Schemas.Event
 
     public class EventCreateSchema : TEventWithStartEndDate
     {
+        [Display(Name = "Tên sự kiện")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         [MaxLength(100)]
         public string Name { get; set; }
 
+        [Display(Name = "Địa điểm")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         public string Location { get; set; }
 
+        [Display(Name = "Mô tả")]
         public string? Description { get; set; }
 
+        [Display(Name = "Phí tham gia")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         public int Fee { get; set; }
 
+        [Display(Name = "Giới hạn tham gia")]
         public int? MaxParticipants { get; set; }
     }
 }
