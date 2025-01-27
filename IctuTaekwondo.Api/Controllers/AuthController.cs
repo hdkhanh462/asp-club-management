@@ -2,10 +2,11 @@
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using IctuTaekwondo.Shared.Schemas.Auth;
+using IctuTaekwondo.Shared.Responses;
 using System.Net;
+using IctuTaekwondo.Shared.Responses.Auth;
 
 namespace IctuTaekwondo.Shared.Controllers
 {
@@ -21,37 +22,78 @@ namespace IctuTaekwondo.Shared.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register(RegisterAdminSchema schema)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Register([FromBody] RegisterAdminSchema schema)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var result = await _authService.RegisterAsync(schema);
 
-            if (!result.Succeeded) return BadRequest(result.Errors);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Đăng ký không thành công",
+                    Errors = result.Errors.ToDictionary(
+                        kvp => kvp.Code,
+                        kvp => new[] { kvp.Description }
+                    ),
+                });
+            }
 
-            return Ok(new { Message = "Đăng ký tài khoản thành công." });
+            return Ok(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.Created,
+                Message = "Đăng ký thành công",
+            });
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(LoginSchema schema)
+        public async Task<IActionResult> Login([FromBody] LoginSchema schema)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = await _authService.LoginAsync(schema);
+            if (result == null)
+            {
+                return Unauthorized(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    Message = "Email hoặc mật khẩu không chính xác",
+                });
+            }
 
-            var response = await _authService.LoginAsync(schema);
-            if (response == null) return Unauthorized();
-
-            return Ok(response);
+            return Ok(new ApiResponse<JwtResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = "Đăng nhập thành công",
+                Data = result
+            });
         }
 
-        [HttpGet("me")]
+        [HttpGet("profile")]
         [Authorize]
-        public async Task<ActionResult<UserFullDetailResponse>> Profile()
+        public async Task<IActionResult> Profile()
         {
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var profile = await _authService.ProfileAsync(email);
-            if (profile == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.Unauthorized,
+                Message = "Không tìm thấy thông tin người dùng",
+            });
 
-            return Ok(profile);
+            var userDetail = await _authService.GetProfileAsync(userId);
+            if (userDetail == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    Message = "Không tìm thấy thông tin người dùng",
+                });
+            }
+
+            return Ok(new ApiResponse<UserFullDetailResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = userDetail
+            });
         }
     }
 }

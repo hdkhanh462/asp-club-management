@@ -7,7 +7,7 @@ namespace IctuTaekwondo.Shared.Schemas.Account
     public class UserProfileSchema
     {
         [DisplayName("Giới tính")]
-        [StringLength(10)]
+        [EnumDataType(typeof(Gender), ErrorMessage = "Giới tính không hợp lệ.")]
         public Gender? Gender { get; set; } = null!;
 
         [DisplayName("Ngày sinh")]
@@ -17,12 +17,10 @@ namespace IctuTaekwondo.Shared.Schemas.Account
         public string? Address { get; set; }
 
         [DisplayName("Cấp đai")]
-        [StringLength(50)]
+        [EnumDataType(typeof(RankName), ErrorMessage = "Cấp đai không hợp lệ.")]
         public RankName? CurrentRank { get; set; } = null!;
 
         [DisplayName("Ngày tham gia")]
         public DateOnly? JoinDate { get; set; }
-
-        public string UserId { get; set; } = null!;
     }
 }

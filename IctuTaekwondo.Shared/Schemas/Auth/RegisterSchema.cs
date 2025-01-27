@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using IctuTaekwondo.Shared.Enums;
+using IctuTaekwondo.Shared.Schemas.Account;
 
 namespace IctuTaekwondo.Shared.Schemas.Auth
 {
-    public class RegisterSchema
+    public class RegisterSchema : UserProfileSchema
     {
         [DataType(DataType.ImageUrl)]
         public string? AvatarUrl { get; set; }
@@ -35,6 +36,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
     {
         [Display(Name = "Vai trò")]
         [Required(ErrorMessage = "Trường bắt buộc")]
+        [EnumDataType(typeof(Role), ErrorMessage = "Vai trò không hợp lệ.")]
         public Role Role { get; set; }
     }
 }

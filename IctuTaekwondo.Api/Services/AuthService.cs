@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Responses.Auth;
+using IctuTaekwondo.Shared.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace IctuTaekwondo.Shared.Services
 {
@@ -16,7 +18,7 @@ namespace IctuTaekwondo.Shared.Services
     {
         public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
         public Task<JwtResponse?> LoginAsync(LoginSchema schema);
-        public Task<UserFullDetailResponse?> ProfileAsync(string? email);
+        public Task<UserFullDetailResponse?> GetProfileAsync(string userId);
         public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm);
     }
 
@@ -24,17 +26,17 @@ namespace IctuTaekwondo.Shared.Services
     {
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
+        private readonly AppDbContext _context;
 
-        public AuthService(IConfiguration configuration, UserManager<User> userManager)
+        public AuthService(IConfiguration configuration, UserManager<User> userManager, AppDbContext context)
         {
             _configuration = configuration;
             _userManager = userManager;
+            _context = context;
         }
 
         public async Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema)
         {
-            ArgumentNullException.ThrowIfNull(schema);
-
             var newUser = new User
             {
                 AvatarUrl = schema.AvatarUrl,
@@ -43,16 +45,36 @@ namespace IctuTaekwondo.Shared.Services
                 UserName = schema.Email
             };
 
-            var result = await _userManager.CreateAsync(newUser, schema.Password);
-            if (!result.Succeeded) return result;
+            var createUserResult = await _userManager.CreateAsync(newUser, schema.Password);
+            if (!createUserResult.Succeeded) return createUserResult;
 
-            return await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
+            var addRoleResult = await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
+            if (!addRoleResult.Succeeded) return addRoleResult;
+
+            _context.UserProfiles.Add(new UserProfile
+            {
+                User = newUser,
+                Gender = schema.Gender,
+                DateOfBirth = schema.DateOfBirth,
+                Address = schema.Address,
+                CurrentRank = schema.CurrentRank,
+                JoinDate = schema.JoinDate
+            });
+
+            var saveResult = await _context.SaveChangesAsync();
+            if (saveResult <= 0)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Description = "Failed to save user profile."
+                });
+            }
+
+            return IdentityResult.Success;
         }
 
         public async Task<JwtResponse?> LoginAsync(LoginSchema schema)
         {
-            ArgumentNullException.ThrowIfNull(schema);
-
             var user = await _userManager.FindByEmailAsync(schema.Email);
             if (user == null) return null;
 
@@ -69,14 +91,15 @@ namespace IctuTaekwondo.Shared.Services
                     new(ClaimTypes.Role, string.Join(",", roles))
                 };
 
-            return GenerateJwt(claims, null, null);
+            return GenerateJwt(claims);
         }
 
-        public async Task<UserFullDetailResponse?> ProfileAsync(string? email)
+        public async Task<UserFullDetailResponse?> GetProfileAsync(string userId)
         {
-            ArgumentNullException.ThrowIfNull(email);
+            var user = _context.Users
+                .Include(u => u.UserProfile)
+                .FirstOrDefault(u => u.Id == userId);
 
-            var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return null;
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -86,10 +109,10 @@ namespace IctuTaekwondo.Shared.Services
             return userDetail;
         }
 
-        public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm)
+        public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires = null, string? algorithm = SecurityAlgorithms.HmacSha256)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
-            var signingCredentials = new SigningCredentials(key, algorithm ?? SecurityAlgorithms.HmacSha256);
+            var signingCredentials = new SigningCredentials(key, algorithm);
 
             var token = new JwtSecurityToken(
                 claims: claims,
