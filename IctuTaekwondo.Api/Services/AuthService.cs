@@ -1,5 +1,4 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using IctuTaekwondo.Shared.Mappers;
@@ -9,8 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Responses.Auth;
-using IctuTaekwondo.Shared.Data;
 using Microsoft.EntityFrameworkCore;
+using IctuTaekwondo.Api.Data;
 
 namespace IctuTaekwondo.Shared.Services
 {
@@ -26,9 +25,9 @@ namespace IctuTaekwondo.Shared.Services
     {
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
-        private readonly AppDbContext _context;
+        private readonly ApiDbContext _context;
 
-        public AuthService(IConfiguration configuration, UserManager<User> userManager, AppDbContext context)
+        public AuthService(IConfiguration configuration, UserManager<User> userManager, ApiDbContext context)
         {
             _configuration = configuration;
             _userManager = userManager;
@@ -51,7 +50,7 @@ namespace IctuTaekwondo.Shared.Services
             var addRoleResult = await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
             if (!addRoleResult.Succeeded) return addRoleResult;
 
-            _context.UserProfiles.Add(new UserProfile
+            _context.Add(new UserProfile
             {
                 User = newUser,
                 Gender = schema.Gender,

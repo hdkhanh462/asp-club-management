@@ -11,6 +11,7 @@ namespace IctuTaekwondo.Shared.Responses.User
         public Gender? Gender { get; set; }
 
         [Display(Name = "Ngày sinh")]
+        // Chuyển DateOnly thành định dang dd/MM/yyyy
         public DateOnly? DateOfBirth { get; set; }
 
         [Display(Name = "Địa chỉ")]

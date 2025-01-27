@@ -1,9 +1,9 @@
 ﻿using System.Text;
-using IctuTaekwondo.Shared.Data;
+using IctuTaekwondo.Api.Data;
 using IctuTaekwondo.Shared.Filters;
 using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Services;
-using IctuTaekwondo.Shared.Utils;
+using IctuTaekwondo.Shared.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Add DbContext
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<IctuTaekwondo.Api.Data.ApiDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
@@ -55,7 +55,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
 })
-    .AddEntityFrameworkStores<AppDbContext>()
+    .AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<VietnameseIdentityErrorDescriber>();
 

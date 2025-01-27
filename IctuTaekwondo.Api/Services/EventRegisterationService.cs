@@ -1,4 +1,4 @@
-﻿using IctuTaekwondo.Shared.Data;
+﻿using IctuTaekwondo.Api.Data;
 using IctuTaekwondo.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,10 +48,10 @@ namespace IctuTaekwondo.Shared.Services
     // Lớp dịch vụ để xử lý các thao tác đăng ký sự kiện  
     public class EventRegisterationService : IEventRegisterationService
     {
-        private readonly AppDbContext _context;
+        private readonly ApiDbContext _context;
 
         // Constructor để khởi tạo ngữ cảnh cơ sở dữ liệu  
-        public EventRegisterationService(AppDbContext context)
+        public EventRegisterationService(ApiDbContext context)
         {
             _context = context;
         }

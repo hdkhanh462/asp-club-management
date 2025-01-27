@@ -12,9 +12,9 @@ namespace IctuTaekwondo.WebClient.Controllers
 {
     public class UserProfilesController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly SharedDbContext _context;
 
-        public UserProfilesController(AppDbContext context)
+        public UserProfilesController(SharedDbContext context)
         {
             _context = context;
         }

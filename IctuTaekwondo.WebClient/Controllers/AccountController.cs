@@ -11,10 +11,10 @@ namespace IctuTaekwondo.WebClient.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly SharedDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public AccountController(AppDbContext context, UserManager<User> userManager)
+        public AccountController(SharedDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;

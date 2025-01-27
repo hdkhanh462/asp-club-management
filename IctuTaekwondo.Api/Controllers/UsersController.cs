@@ -1,5 +1,4 @@
-﻿using IctuTaekwondo.Shared.Data;
-using IctuTaekwondo.Shared.Mappers;
+﻿using IctuTaekwondo.Shared.Mappers;
 using IctuTaekwondo.Shared.Models;
 using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +13,9 @@ namespace IctuTaekwondo.Shared.Controllers
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly AppDbContext _context;
 
-        public UsersController(AppDbContext context, UserManager<User> userManager)
+        public UsersController( UserManager<User> userManager)
         {
-            _context = context;
             _userManager = userManager;
         }
 

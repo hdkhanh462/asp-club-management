@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using IctuTaekwondo.Shared.Models;
-using Microsoft.Extensions.DependencyInjection;
+using IctuTaekwondo.Shared.Enums;
 
-namespace IctuTaekwondo.Shared.Utils
+namespace IctuTaekwondo.Api.Data
 {
     public class IdentityDataSeeder
     {
@@ -11,6 +11,7 @@ namespace IctuTaekwondo.Shared.Utils
             // Lấy các dịch vụ Identity
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var context = serviceProvider.GetRequiredService<ApiDbContext>();
 
             // Danh sách các roles cần seed
             var roles = new[] { "Admin", "Manager", "Member" };
@@ -43,6 +44,20 @@ namespace IctuTaekwondo.Shared.Utils
                 {
                     // Gán role Admin cho tài khoản
                     await userManager.AddToRoleAsync(adminUser, "Admin");
+
+                    // Tạo UserProfile cho tài khoản Admin
+                    var userProfile = new UserProfile
+                    {
+                        User = adminUser,
+                        Gender = Gender.Male,
+                        CurrentRank = RankName.BlackBelt,
+                        JoinDate = new DateOnly(2020, 2, 2),
+                    };
+
+                    context.UserProfiles.Add(userProfile);
+                    await context.SaveChangesAsync();
+
+                    // Tạo một số dữ liệu mẫu khác ở đây
                 }
             }
         }

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IctuTaekwondo.Shared.Data
 {
-    public class AppDbContext : IdentityDbContext<User>
+    public class SharedDbContext : IdentityDbContext<User>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public SharedDbContext(DbContextOptions<SharedDbContext> options) : base(options)
         {
         }
 
