@@ -1,106 +1,105 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
+using IctuTaekwondo.Shared.Responses;
 
 namespace IctuTaekwondo.Shared.Utils;
-public class APIHelper
+
+public class ApiHelper
 {
     private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    // Constructor
-    public APIHelper(string baseUrl)
+    public ApiHelper(string baseUrl, JsonSerializerOptions? jsonSerializerOptions = null)
     {
         _httpClient = new HttpClient
         {
-            BaseAddress = new Uri(baseUrl)
-        };
-        _httpClient.DefaultRequestHeaders.Accept.Clear();
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-    }
-
-    /// <summary>
-    /// Đặt mã thông báo ủy quyền
-    /// </summary>
-    public void SetAuthorizationToken(string token)
-    {
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-    }
-
-    /// <summary>
-    /// Gửi yêu cầu GET
-    /// </summary>
-    public async Task<T?> GetAsync<T>(string endpoint)
-    {
-        var response = await _httpClient.GetAsync(endpoint);
-
-        var jsonResult = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<T>(jsonResult);
-    }
-
-    /// <summary>
-    /// Gửi yêu cầu POST
-    /// </summary>
-    public async Task<T?> PostAsync<T>(string endpoint, object data)
-    {
-        var jsonData = JsonConvert.SerializeObject(data);
-        var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.PostAsync(endpoint, content);
-        var jsonResult = await response.Content.ReadAsStringAsync();
-
-        return JsonConvert.DeserializeObject<T>(jsonResult);
-    }
-
-    /// <summary>
-    /// Gửi yêu cầu PUT
-    /// </summary>
-    public async Task<T?> PutAsync<T>(string endpoint, object data)
-    {
-        var jsonData = JsonConvert.SerializeObject(data);
-        var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
-        var response = await _httpClient.PutAsync(endpoint, content);
-        var jsonResult = await response.Content.ReadAsStringAsync();
-
-        return JsonConvert.DeserializeObject<T>(jsonResult);
-    }
-
-    /// <summary>
-    /// Gửi yêu cầu DELETE
-    /// </summary>
-    public async Task<bool> DeleteAsync(string endpoint)
-    {
-        var response = await _httpClient.DeleteAsync(endpoint);
-
-        return response.IsSuccessStatusCode;
-    }
-
-    /// <summary>
-    /// Gửi yêu cầu POST với tệp (hình ảnh hoặc bất kỳ loại tệp nào).
-    /// </summary>
-    public async Task<T?> PostFileAsync<T>(string endpoint, string filePath, string fileKey = "file", object additionalData = null)
-    {
-        // Tạo đối tượng MultipartFormDataContent
-        using (var multipartContent = new MultipartFormDataContent())
-        {
-            // Thêm tệp vào dữ liệu biểu mẫu
-            var fileContent = new ByteArrayContent(await File.ReadAllBytesAsync(filePath));
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            multipartContent.Add(fileContent, fileKey, Path.GetFileName(filePath));
-
-            // Thêm bất kỳ dữ liệu bổ sung nào (tùy chọn)
-            if (additionalData != null)
+            BaseAddress = new Uri(baseUrl),
+            DefaultRequestHeaders =
             {
-                var jsonData = JsonConvert.SerializeObject(additionalData);
-                multipartContent.Add(new StringContent(jsonData, Encoding.UTF8, "application/json"), "metadata");
+                Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
             }
+        };
 
-            // Gửi yêu cầu POST
-            var response = await _httpClient.PostAsync(endpoint, multipartContent);
+        _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+    }
 
-            var jsonResult = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(jsonResult);
+    public Task<ApiResponse<T>> GetAsync<T>(string endpoint) =>
+        ExecuteApiRequest<T>(() => _httpClient.GetAsync(endpoint));
+
+    public Task<ApiResponse<T>> PostAsync<T>(string endpoint, object data) =>
+        ExecuteApiRequest<T>(() =>
+        {
+            var content = CreateJsonContent(data);
+            return _httpClient.PostAsync(endpoint, content);
+        });
+
+    public Task<ApiResponse<T>> PutAsync<T>(string endpoint, object data) =>
+        ExecuteApiRequest<T>(() =>
+        {
+            var content = CreateJsonContent(data);
+            return _httpClient.PutAsync(endpoint, content);
+        });
+
+    public Task<ApiResponse<T>> DeleteAsync<T>(string endpoint) =>
+        ExecuteApiRequest<T>(() => _httpClient.DeleteAsync(endpoint));
+
+    public void AddHeaders(Dictionary<string, string> headers)
+    {
+        foreach (var (key, value) in headers)
+        {
+            if (!_httpClient.DefaultRequestHeaders.Contains(key))
+            {
+                _httpClient.DefaultRequestHeaders.Add(key, value);
+            }
         }
     }
+
+    private static StringContent CreateJsonContent(object data) =>
+        new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+
+    private async Task<ApiResponse<T>> ExecuteApiRequest<T>(Func<Task<HttpResponseMessage>> request)
+    {
+        try
+        {
+            using var response = await request();
+            return await HandleResponse<T>(response);
+        }
+        catch (Exception ex)
+        {
+            return new ApiResponse<T>
+            {
+                StatusCode = HttpStatusCode.InternalServerError,
+                Message = $"An error occurred: {ex.Message}"
+            };
+        }
+    }
+
+    private async Task<ApiResponse<T>> HandleResponse<T>(HttpResponseMessage response)
+    {
+        var responseContent = await response.Content.ReadAsStringAsync();
+
+        try
+        {
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(responseContent, _jsonSerializerOptions);
+            return apiResponse ?? CreateDefaultResponse<T>(response);
+        }
+        catch (JsonException)
+        {
+            return CreateDefaultResponse<T>(response, responseContent);
+        }
+    }
+
+    private static ApiResponse<T> CreateDefaultResponse<T>(HttpResponseMessage response, string? responseContent = null) =>
+        new ApiResponse<T>
+        {
+            StatusCode = response.StatusCode,
+            Message = string.IsNullOrWhiteSpace(responseContent)
+                ? response.ReasonPhrase
+                : $"Invalid JSON: {responseContent}"
+        };
 }

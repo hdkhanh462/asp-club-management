@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace IctuTaekwondo.Shared.Responses
 {
-    public class ApiResponse
+    public class ApiResponse<T>
     {
-        public string Message { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string? Message { get; set; }
+        public Dictionary<string, string[]>? Errors { get; set; }
+        public T? Data { get; set; }
     }
 }
