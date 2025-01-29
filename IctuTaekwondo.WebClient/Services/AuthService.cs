@@ -18,7 +18,7 @@ namespace IctuTaekwondo.WebClient.Services
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies,
             IResponseCookies responseCookies);
-        public Task<bool> LogoutAsync(IRequestCookieCollection requestCookies,
+        public bool Logout(IRequestCookieCollection requestCookies,
             IResponseCookies responseCookies);
 
         public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState);
@@ -100,14 +100,11 @@ namespace IctuTaekwondo.WebClient.Services
             return true;
         }
 
-        public async Task<bool> LogoutAsync(IRequestCookieCollection requestCookies, IResponseCookies responseCookies)
+        public bool Logout(IRequestCookieCollection requestCookies, IResponseCookies responseCookies)
         {
-            var response = await _apiHelper.DeleteAsync<object>("api/auth/logout");
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                _logger.LogError("Logout failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
-                return false;
-            }
+            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return false;
+
+            responseCookies.Delete(GlobalConst.CookieAuthTokenKey);
 
             return true;
         }

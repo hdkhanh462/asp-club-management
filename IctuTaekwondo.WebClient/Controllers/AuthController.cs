@@ -76,8 +76,10 @@ namespace IctuTaekwondo.WebClient.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
+            _authService.Logout(Request.Cookies, Response.Cookies);
+
             return RedirectToAction("Index", "Home");
         }
     }
