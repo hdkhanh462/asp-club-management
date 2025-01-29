@@ -1,25 +1,19 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using IctuTaekwondo.Shared.Mappers;
 using IctuTaekwondo.Shared.Models;
-using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Responses.Auth;
-using Microsoft.EntityFrameworkCore;
 using IctuTaekwondo.Api.Data;
 
-namespace IctuTaekwondo.Shared.Services
+namespace IctuTaekwondo.Api.Services
 {
     public interface IAuthService
     {
         public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
         public Task<JwtResponse?> LoginAsync(LoginSchema schema);
-        public Task<UserResponse?> GetUserAsync(string userId);
-        public Task<UserFullDetailResponse?> GetProfileAsync(string userId);
-        //public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm);
     }
 
     public class AuthService : IAuthService
@@ -112,36 +106,6 @@ namespace IctuTaekwondo.Shared.Services
                 };
 
             return GenerateJwt(claims);
-        }
-
-        public async Task<UserResponse?> GetUserAsync(string userId)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                _logger.LogError("User not found: {0}", userId);
-                return null;
-            }
-            return user.ToUserResponse();
-        }
-
-        public async Task<UserFullDetailResponse?> GetProfileAsync(string userId)
-        {
-            var user = _context.Users
-                .Include(u => u.UserProfile)
-                .FirstOrDefault(u => u.Id == userId);
-
-            if (user == null)
-            {
-                _logger.LogError("User not found: {0}", userId);
-                return null;
-            }
-
-            var roles = await _userManager.GetRolesAsync(user);
-            var userDetail = user.ToUserFullDetailResponse();
-            userDetail.Roles = roles.ToList();
-
-            return userDetail;
         }
 
         public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires = null, string? algorithm = SecurityAlgorithms.HmacSha256)

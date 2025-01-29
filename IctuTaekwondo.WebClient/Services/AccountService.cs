@@ -1,0 +1,124 @@
+﻿using IctuTaekwondo.Shared.Responses.User;
+using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Utils;
+using IctuTaekwondo.Shared.Schemas.Account;
+using System.Net;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using IctuTaekwondo.Shared.Responses;
+
+namespace IctuTaekwondo.WebClient.Services
+{
+    public interface IAccountService : ICallApiService
+    {
+        UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies);
+        UserResponse? GetUserAsync(IRequestCookieCollection requestCookies);
+        Task<bool> UpdateProfileAsync(UserProfileSchema schema,
+            ModelStateDictionary modelState, 
+            IRequestCookieCollection requestCookies);
+        Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
+            ModelStateDictionary modelState, 
+            IRequestCookieCollection requestCookies);
+    }
+
+    public class AccountService : IAccountService
+    {
+        private readonly ILogger<AccountService> _logger;
+        private readonly ApiHelper _apiHelper;
+
+        public AccountService(ILogger<AccountService> logger, ApiHelper apiHelper)
+        {
+            _logger = logger;
+            _apiHelper = apiHelper;
+        }
+
+        public UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies)
+        {
+            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
+
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
+            });
+
+            return _apiHelper.GetAsync<UserFullDetailResponse>("api/account/profile").Result.Data;
+        }
+
+        public UserResponse? GetUserAsync(IRequestCookieCollection requestCookies)
+        {
+            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
+
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
+            });
+
+            return _apiHelper.GetAsync<UserResponse>("api/account/me").Result.Data;
+        }
+
+        public async Task<bool> UpdateProfileAsync(UserProfileSchema schema, 
+            ModelStateDictionary modelState, 
+            IRequestCookieCollection requestCookies)
+        {
+            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
+            {
+                modelState.AddModelError(string.Empty, "Không tìm thấy thông tin người dùng");
+                return false;
+            };
+
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
+            });
+
+            var response = await _apiHelper.PutAsync<object>("api/account/profile", schema);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<object>(response, modelState);
+                return false;
+            };
+
+            return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies)
+        {
+            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
+            {
+                modelState.AddModelError(string.Empty, "Không tìm thấy thông tin người dùng");
+                return false;
+            };
+
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
+            });
+
+            var response = await _apiHelper.PutAsync<object>("api/account/change-password", schema);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<object>(response, modelState);
+                return false;
+            };
+
+            return true;
+        }
+
+        public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState)
+        {
+            if (response.Message != null && response.Errors == null) modelState.AddModelError(string.Empty, response.Message);
+            if (response.Errors != null)
+            {
+                foreach (var (key, value) in response.Errors)
+                {
+                    foreach (var error in value)
+                    {
+                        modelState.AddModelError(string.Empty, error);
+                    }
+                }
+            }
+            _logger.LogError("Register failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
+        }
+    }
+}

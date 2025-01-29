@@ -8,7 +8,12 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace IctuTaekwondo.WebClient.Services
 {
-    public interface IAuthService
+    public interface ICallApiService
+    {
+        public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState);
+    }
+
+    public interface IAuthService : ICallApiService
     {
         public Task<bool> LoginAsync(LoginViewModel model,
             ModelStateDictionary modelState,
@@ -20,9 +25,6 @@ namespace IctuTaekwondo.WebClient.Services
             IResponseCookies responseCookies);
         public bool Logout(IRequestCookieCollection requestCookies,
             IResponseCookies responseCookies);
-
-        public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState);
-
     }
 
     public class AuthService : IAuthService
@@ -129,5 +131,6 @@ namespace IctuTaekwondo.WebClient.Services
             }
             _logger.LogError("Register failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
         }
+
     }
 }

@@ -25,7 +25,6 @@ builder.Services.AddAuthentication("Bearer")
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
 
-        // Đọc JWT từ cookie
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -49,6 +48,7 @@ builder.Services.AddHttpClient<ApiHelper>(client =>
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 

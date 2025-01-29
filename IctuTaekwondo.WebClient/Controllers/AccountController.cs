@@ -1,75 +1,52 @@
-﻿using IctuTaekwondo.Shared.Data;
-using IctuTaekwondo.Shared.Models;
-using IctuTaekwondo.Shared.Schemas.Account;
-using IctuTaekwondo.Shared.Mappers;
-using Microsoft.AspNetCore.Identity;
+﻿using IctuTaekwondo.Shared.Schemas.Account;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using IctuTaekwondo.WebClient.Services;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SharedDbContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly IAccountService _accountService;
+        private readonly IAuthService _authService;
 
-        public AccountController(SharedDbContext context, UserManager<User> userManager)
+        public AccountController(IAccountService accountService, IAuthService authService)
         {
-            _context = context;
-            _userManager = userManager;
+            _accountService = accountService;
+            _authService = authService;
         }
 
         [Authorize]
-        public async Task<IActionResult> Profile()
+        public IActionResult Profile()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return Unauthorized();
+            var userDetail = _accountService.GetProfileAsync(Request.Cookies);
+            if (userDetail == null)
+            {
+                _authService.Logout(Request.Cookies, Response.Cookies);
+                return RedirectToAction("Login", "Auth");
+            }
 
-            var model = user.ToUserFullDetailResponse();
-            model.Roles = await _userManager.GetRolesAsync(user);
-
-            return View(model);
+            return View(userDetail);
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize]
         public async Task<IActionResult> Profile(UserProfileSchema schema)
         {
-            if (!ModelState.IsValid) return View(schema);
+            var response = await _accountService.UpdateProfileAsync(schema, ModelState, Request.Cookies);
+            if (!response) return View(schema);
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return Unauthorized();
+            return RedirectToAction("Profile", "Account");
+        }
 
-            var existingProfile = await _context.UserProfiles.FirstOrDefaultAsync(p => p.UserId == user.Id);
-            if (existingProfile == null)
-            {
-                var newProfile = new UserProfile
-                {
-                    UserId = user.Id,
-                    Gender = schema.Gender,
-                    DateOfBirth = schema.DateOfBirth,
-                    Address = schema.Address,
-                    CurrentRank = schema.CurrentRank,
-                    JoinDate = schema.JoinDate,
-                };
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordSchema schema)
+        {
+            var response = await _accountService.ChangePasswordAsync(schema, ModelState, Request.Cookies);
+            if (!response) return View(schema);
 
-                _context.Add(newProfile);
-            }
-            else
-            {
-                existingProfile.Gender = schema.Gender;
-                existingProfile.DateOfBirth = schema.DateOfBirth;
-                existingProfile.Address = schema.Address;
-                existingProfile.CurrentRank = schema.CurrentRank;
-                existingProfile.JoinDate = schema.JoinDate;
-
-                _context.Update(existingProfile);
-            }
-
-            await _context.SaveChangesAsync();
-
-            return View(existingProfile);
+            return RedirectToAction("Profile", "Account");
         }
     }
 }

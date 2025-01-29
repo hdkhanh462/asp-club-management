@@ -1,14 +1,12 @@
-﻿using System.Security.Claims;
-using IctuTaekwondo.Shared.Responses.User;
-using IctuTaekwondo.Shared.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Responses;
 using System.Net;
 using IctuTaekwondo.Shared.Responses.Auth;
+using IctuTaekwondo.Api.Services;
 
-namespace IctuTaekwondo.Shared.Controllers
+namespace IctuTaekwondo.api.Controllers
 {
     [Route("api/auth")]
     [ApiController]
@@ -68,59 +66,6 @@ namespace IctuTaekwondo.Shared.Controllers
             });
         }
 
-        [HttpGet("me")]
-        [Authorize]
-        public async Task<IActionResult> UserDetail()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized(new ApiResponse<object>
-            {
-                StatusCode = HttpStatusCode.Unauthorized,
-                Message = "Không tìm thấy thông tin người dùng",
-            });
-            var userDetail = await _authService.GetUserAsync(userId);
-            if (userDetail == null)
-            {
-                return NotFound(new ApiResponse<object>
-                {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                    Message = "Không tìm thấy thông tin người dùng",
-                });
-            }
-
-            return Ok(new ApiResponse<UserResponse>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Data = userDetail
-            });
-        }
-
-        [HttpGet("profile")]
-        [Authorize]
-        public async Task<IActionResult> UserProfile()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized(new ApiResponse<object>
-            {
-                StatusCode = HttpStatusCode.Unauthorized,
-                Message = "Không tìm thấy thông tin người dùng",
-            });
-
-            var userDetail = await _authService.GetProfileAsync(userId);
-            if (userDetail == null)
-            {
-                return NotFound(new ApiResponse<object>
-                {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                    Message = "Không tìm thấy thông tin người dùng",
-                });
-            }
-
-            return Ok(new ApiResponse<UserFullDetailResponse>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Data = userDetail
-            });
-        }
+        
     }
 }

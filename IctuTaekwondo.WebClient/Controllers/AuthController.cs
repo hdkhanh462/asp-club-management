@@ -1,8 +1,4 @@
-﻿using System.Net;
-using IctuTaekwondo.Shared;
-using IctuTaekwondo.Shared.Responses.Auth;
-using IctuTaekwondo.Shared.Utils;
-using IctuTaekwondo.WebClient.Models;
+﻿using IctuTaekwondo.WebClient.Models;
 using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +72,7 @@ namespace IctuTaekwondo.WebClient.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Logout()
         {
             _authService.Logout(Request.Cookies, Response.Cookies);
