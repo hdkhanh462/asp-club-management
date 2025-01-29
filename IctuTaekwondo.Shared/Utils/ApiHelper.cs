@@ -11,17 +11,9 @@ public class ApiHelper
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public ApiHelper(string baseUrl, JsonSerializerOptions? jsonSerializerOptions = null)
+    public ApiHelper(HttpClient httpClient, JsonSerializerOptions? jsonSerializerOptions =null)
     {
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(baseUrl),
-            DefaultRequestHeaders =
-            {
-                Accept = { new MediaTypeWithQualityHeaderValue("application/json") }
-            }
-        };
-
+        _httpClient = httpClient;
         _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -90,16 +82,18 @@ public class ApiHelper
         }
         catch (JsonException)
         {
-            return CreateDefaultResponse<T>(response, responseContent);
+            return new ApiResponse<T>
+            {
+                StatusCode = HttpStatusCode.InternalServerError,
+                Message = $"Invalid JSON: {responseContent}"
+            };
         }
     }
 
-    private static ApiResponse<T> CreateDefaultResponse<T>(HttpResponseMessage response, string? responseContent = null) =>
+    private static ApiResponse<T> CreateDefaultResponse<T>(HttpResponseMessage response) =>
         new ApiResponse<T>
         {
             StatusCode = response.StatusCode,
-            Message = string.IsNullOrWhiteSpace(responseContent)
-                ? response.ReasonPhrase
-                : $"Invalid JSON: {responseContent}"
+            Message = response.ReasonPhrase
         };
 }

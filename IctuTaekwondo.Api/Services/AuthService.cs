@@ -18,7 +18,7 @@ namespace IctuTaekwondo.Shared.Services
         public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
         public Task<JwtResponse?> LoginAsync(LoginSchema schema);
         public Task<UserFullDetailResponse?> GetProfileAsync(string userId);
-        public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm);
+        //public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm);
     }
 
     public class AuthService : IAuthService
@@ -65,7 +65,8 @@ namespace IctuTaekwondo.Shared.Services
             {
                 return IdentityResult.Failed(new IdentityError
                 {
-                    Description = "Failed to save user profile."
+                    Code = "SaveProfileFailed",
+                    Description = "Lưu thông tin người dùng thất bại"
                 });
             }
 

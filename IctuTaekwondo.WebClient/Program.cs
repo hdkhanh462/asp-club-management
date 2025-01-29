@@ -1,38 +1,53 @@
-using IctuTaekwondo.Shared.Data;
-using IctuTaekwondo.Shared.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Text;
+using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add DbContext
-builder.Services.AddDbContext<SharedDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            RequireExpirationTime = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
 
-// Add Identity
-builder.Services.AddIdentity<User, IdentityRole>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 6;
-})
-    .AddEntityFrameworkStores<SharedDbContext>()
-    .AddDefaultTokenProviders()
-    .AddErrorDescriber<VietnameseIdentityErrorDescriber>();
+        // Đọc JWT từ cookie
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
+                {
+                    context.Token = context.Request.Cookies[GlobalConst.CookieAuthTokenKey];
+                }
+                return Task.CompletedTask;
+            }
+        };
+    }).AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login"; 
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/Login"; 
+    });
 
-//// Add Cookie Configuration
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpClient<ApiHelper>(client =>
 {
-    options.LoginPath = "/auth/login";
-    options.LogoutPath = "/auth/logout";
-    options.AccessDeniedPath = "/auth/login";
+    client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
 });
 
 // Add Scoped Services

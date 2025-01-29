@@ -1,5 +1,8 @@
-﻿using IctuTaekwondo.Shared.Mappers;
+﻿using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Mappers;
 using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Shared.Responses.User;
+using IctuTaekwondo.Shared.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,21 +10,29 @@ namespace IctuTaekwondo.WebClient.Components
 {
     public class HeaderViewComponent : ViewComponent
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly ApiHelper _apiHelper;
 
-        public HeaderViewComponent(UserManager<User> userManager, SignInManager<User> signInManager)
+        public HeaderViewComponent(ApiHelper apiHelper)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _apiHelper = apiHelper;
         }
 
         public IViewComponentResult Invoke()
         {
-            if (!_signInManager.IsSignedIn(HttpContext.User)) return View("LoggedOutNavButton");
-            var user = _userManager.GetUserAsync(HttpContext.User).Result;
+            if (User?.Identity?.IsAuthenticated == false || !Request.Cookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
+            {
+                return View("LoggedOutNavButton");
+            }
 
-            return View("LoggedInNavButton", user?.ToUserResponse());
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {Request.Cookies[GlobalConst.CookieAuthTokenKey]}"
+            });
+
+            var userDetail = _apiHelper.GetAsync<UserFullDetailResponse>("api/auth/profile").Result.Data;
+            if (userDetail == null) return View("LoggedOutNavButton");
+
+            return View("LoggedInNavButton", userDetail);
         }
     }
 }

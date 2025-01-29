@@ -1,23 +1,20 @@
-﻿using System.Security.Claims;
-using IctuTaekwondo.Shared.Data;
-using IctuTaekwondo.Shared.Models;
+﻿using System.Net;
+using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Responses.Auth;
+using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.WebClient.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly string[] nextUrlsValid = ["/dashboard", "/users"];
+        private readonly ApiHelper _apiHelper;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AuthController(ApiHelper apiHelper)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _apiHelper = apiHelper;
         }
 
         [HttpGet]
@@ -31,27 +28,45 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+            var response = await _apiHelper.PostAsync<JwtResponse>("api/auth/login", model);
+            if (response.StatusCode != HttpStatusCode.OK)
             {
-                ModelState.AddModelError(string.Empty, "Tài khoản hoặc mật khẩu không chính xác");
-                return View(model);
-            }
-
-            var isPasswordValid = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-            if (!isPasswordValid.Succeeded)
-            {
-                ModelState.AddModelError(string.Empty, "Tài khoản hoặc mật khẩu không chính xác");
-                return View(model);
-            }
-
-            var claims = new List<Claim>
+                if (response.Message != null) ModelState.AddModelError(string.Empty, response.Message);
+                if (response.Errors != null)
                 {
-                    new("FullName", user.FullName),
-                    new("AvatarUrl", user.AvatarUrl ?? string.Empty)
-                };
+                    foreach (var (key, value) in response.Errors)
+                    {
+                        foreach (var error in value)
+                        {
+                            ModelState.AddModelError(key, error);
+                        }
+                    }
+                }
+                return View(model);
+            }
 
-            await _signInManager.SignInWithClaimsAsync(user, model.RememberMe, claims);
+            var jwtResponse = response.Data;
+
+            if (jwtResponse == null)
+            {
+                ModelState.AddModelError(string.Empty, "Không thể đăng nhập vào hệ thống");
+                return View(model);
+            }
+
+            if (Request.Cookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
+            {
+                Response.Cookies.Delete(GlobalConst.CookieAuthTokenKey);
+            }
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, 
+                Secure = true,
+                Expires = model.RememberMe ? jwtResponse.ExpiredAt : null,
+                SameSite = SameSiteMode.Strict
+            };
+
+            Response.Cookies.Append(GlobalConst.CookieAuthTokenKey, jwtResponse.Token, cookieOptions);
 
             return RedirectToAction("Index", "Dashboard");
         }
@@ -71,34 +86,12 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = new User
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FullName = model.FullName
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return View(model);
-            }
-
-            await _userManager.AddToRoleAsync(user, model.Role.ToString());
-
-            if (!string.IsNullOrEmpty(next) && nextUrlsValid.Contains(next)) return Redirect(next);
-
             return RedirectToAction("Index", "Dashboard");
         }
 
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
     }
