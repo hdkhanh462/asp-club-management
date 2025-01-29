@@ -29,6 +29,18 @@
 			</div>
 		}
 
+		@if (TempData["SuccessMessage"] != null)
+		{
+			<div class="mb-4 flex items-center rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-gray-800 dark:text-green-400" role="alert">
+				<svg class="shrink-0 me-3 inline h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+					<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+				</svg>
+				<div class="font-medium">
+					@TempData["SuccessMessage"]
+				</div>
+			</div>
+		}
+
 		<div class="mb-5">
 			<label asp-for="FullName" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input asp-for="FullName" autofocus class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Nguyễn Văn A" />
@@ -50,9 +62,16 @@
 		<div class="mb-5">
 			<label asp-for="Email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input asp-for="Email" autocomplete="new-password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="email@example.com" />
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
-				<span asp-validation-for="Email"></span>
-			</p>
+
+			@if (!ViewData.ModelState.IsValid && ViewData.ModelState["Email"]?.Errors.Count > 0)
+			{
+				<ul class="mt-2 list-inside list-disc text-sm text-red-600 dark:text-red-500">
+					@foreach (var error in ViewData.ModelState["Email"]?.Errors!)
+					{
+						<li>@error.ErrorMessage</li>
+					}
+				</ul>
+			}
 		</div>
 		<div class="mb-5">
 			<label asp-for="Password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
@@ -64,9 +83,16 @@
 		<div class="mb-5">
 			<label asp-for="ConfirmPassword" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input asp-for="ConfirmPassword" autocomplete="new-password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
-				<span asp-validation-for="ConfirmPassword"></span>
-			</p>
+			
+			@if (!ViewData.ModelState.IsValid && ViewData.ModelState["ConfirmPassword"]?.Errors.Count > 0)
+			{
+				<ul class="mt-2 list-inside list-disc text-sm text-red-600 dark:text-red-500">
+					@foreach (var error in ViewData.ModelState["ConfirmPassword"]?.Errors!)
+					{
+						<li>@error.ErrorMessage</li>
+					}
+				</ul>
+			}
 		</div>
 
 		<button type="submit" class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

@@ -34,9 +34,9 @@ namespace IctuTaekwondo.Shared.Controllers
                     StatusCode = HttpStatusCode.BadRequest,
                     Message = "Đăng ký không thành công",
                     Errors = result.Errors.ToDictionary(
-                        kvp => kvp.Code,
-                        kvp => new[] { kvp.Description }
-                    ),
+                            kvp => kvp.Code,
+                            kvp => new[] { kvp.Description }
+                        ),
                 });
             }
 
@@ -68,9 +68,36 @@ namespace IctuTaekwondo.Shared.Controllers
             });
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> UserDetail()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.Unauthorized,
+                Message = "Không tìm thấy thông tin người dùng",
+            });
+            var userDetail = await _authService.GetUserAsync(userId);
+            if (userDetail == null)
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    Message = "Không tìm thấy thông tin người dùng",
+                });
+            }
+
+            return Ok(new ApiResponse<UserResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = userDetail
+            });
+        }
+
         [HttpGet("profile")]
         [Authorize]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> UserProfile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized(new ApiResponse<object>

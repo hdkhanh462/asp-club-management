@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Utils;
+using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -36,11 +37,6 @@ builder.Services.AddAuthentication("Bearer")
                 return Task.CompletedTask;
             }
         };
-    }).AddCookie(options =>
-    {
-        options.LoginPath = "/Auth/Login"; 
-        options.LogoutPath = "/Auth/Logout";
-        options.AccessDeniedPath = "/Auth/Login"; 
     });
 
 builder.Services.AddAuthorization();
@@ -52,6 +48,7 @@ builder.Services.AddHttpClient<ApiHelper>(client =>
 
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 

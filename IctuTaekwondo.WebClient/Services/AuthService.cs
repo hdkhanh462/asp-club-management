@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.WebClient.Models;
@@ -9,11 +10,19 @@ namespace IctuTaekwondo.WebClient.Services
 {
     public interface IAuthService
     {
-        public void LoginAsync(
-            LoginViewModel model,
+        public Task<bool> LoginAsync(LoginViewModel model,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies,
             IResponseCookies responseCookies);
+        public Task<bool> RegisterAsync(RegisterViewModel model,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies,
+            IResponseCookies responseCookies);
+        public Task<bool> LogoutAsync(IRequestCookieCollection requestCookies,
+            IResponseCookies responseCookies);
+
+        public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState);
+
     }
 
     public class AuthService : IAuthService
@@ -27,8 +36,7 @@ namespace IctuTaekwondo.WebClient.Services
             _apiHelper = apiHelper;
         }
 
-        public async void LoginAsync(
-            LoginViewModel model,
+        public async Task<bool> LoginAsync(LoginViewModel model,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies,
             IResponseCookies responseCookies)
@@ -36,20 +44,8 @@ namespace IctuTaekwondo.WebClient.Services
             var response = await _apiHelper.PostAsync<JwtResponse>("api/auth/login", model);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                if (response.Message != null) modelState.AddModelError(string.Empty, response.Message);
-                if (response.Errors != null)
-                {
-                    foreach (var (key, value) in response.Errors)
-                    {
-                        foreach (var error in value)
-                        {
-                            modelState.AddModelError(key, error);
-                        }
-                    }
-                }
-
-                _logger.LogError("Login failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
-                return;
+                HandleErrors<JwtResponse>(response, modelState);
+                return false;
             }
 
             var jwtResponse = response.Data;
@@ -57,7 +53,7 @@ namespace IctuTaekwondo.WebClient.Services
             {
                 modelState.AddModelError(string.Empty, "Không thể đăng nhập vào hệ thống");
                 _logger.LogError("JWT response is null.");
-                return;
+                return false;
             }
 
             if (requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
@@ -76,6 +72,65 @@ namespace IctuTaekwondo.WebClient.Services
             responseCookies.Append(GlobalConst.CookieAuthTokenKey, jwtResponse.Token, cookieOptions);
 
             _logger.LogInformation("User logged in successfully, token set in cookies.");
+            return true;
+        }
+
+        public async Task<bool> RegisterAsync(RegisterViewModel model,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies,
+            IResponseCookies responseCookies)
+        {
+            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return false;
+
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                {
+                    GlobalConst.ApiAuthorizationKey,
+                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}" 
+                }
+            });
+
+            var response = await _apiHelper.PostAsync<object>("api/auth/register", model);
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                HandleErrors<object>(response, modelState);
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> LogoutAsync(IRequestCookieCollection requestCookies, IResponseCookies responseCookies)
+        {
+            var response = await _apiHelper.DeleteAsync<object>("api/auth/logout");
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                _logger.LogError("Logout failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
+                return false;
+            }
+
+            return true;
+        }
+
+        public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState)
+        {
+            if (response.Message != null && response.Errors == null) modelState.AddModelError(string.Empty, response.Message);
+            if (response.Errors != null)
+            {
+                foreach (var (key, value) in response.Errors)
+                {
+                    var keyName = string.Empty;
+
+                    if (key.Contains("Email") || key.Contains("UserName")) keyName = "Email";
+                    if (key.Contains("Password")) keyName = "ConfirmPassword";
+
+                    foreach (var error in value)
+                    {
+                        modelState.AddModelError(keyName, error);
+                    }
+                }
+            }
+            _logger.LogError("Register failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
         }
     }
 }

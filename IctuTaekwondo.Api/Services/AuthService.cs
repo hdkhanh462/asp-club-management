@@ -17,18 +17,21 @@ namespace IctuTaekwondo.Shared.Services
     {
         public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
         public Task<JwtResponse?> LoginAsync(LoginSchema schema);
+        public Task<UserResponse?> GetUserAsync(string userId);
         public Task<UserFullDetailResponse?> GetProfileAsync(string userId);
         //public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires, string? algorithm);
     }
 
     public class AuthService : IAuthService
     {
+        private readonly ILogger<AuthService> _logger;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
         private readonly ApiDbContext _context;
 
-        public AuthService(IConfiguration configuration, UserManager<User> userManager, ApiDbContext context)
+        public AuthService(ILogger<AuthService> logger, IConfiguration configuration, UserManager<User> userManager, ApiDbContext context)
         {
+            _logger = logger;
             _configuration = configuration;
             _userManager = userManager;
             _context = context;
@@ -45,10 +48,18 @@ namespace IctuTaekwondo.Shared.Services
             };
 
             var createUserResult = await _userManager.CreateAsync(newUser, schema.Password);
-            if (!createUserResult.Succeeded) return createUserResult;
+            if (!createUserResult.Succeeded)
+            {
+                _logger.LogError("Create user failed: {0}", createUserResult.Errors);
+                return createUserResult;
+            }
 
             var addRoleResult = await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
-            if (!addRoleResult.Succeeded) return addRoleResult;
+            if (!addRoleResult.Succeeded)
+            {
+                _logger.LogError("Add role failed: {0}", addRoleResult.Errors);
+                return addRoleResult;
+            };
 
             _context.Add(new UserProfile
             {
@@ -63,6 +74,7 @@ namespace IctuTaekwondo.Shared.Services
             var saveResult = await _context.SaveChangesAsync();
             if (saveResult <= 0)
             {
+                _logger.LogError("Save profile failed");
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "SaveProfileFailed",
@@ -76,10 +88,18 @@ namespace IctuTaekwondo.Shared.Services
         public async Task<JwtResponse?> LoginAsync(LoginSchema schema)
         {
             var user = await _userManager.FindByEmailAsync(schema.Email);
-            if (user == null) return null;
+            if (user == null)
+            {
+                _logger.LogError("User not found: {0}", schema.Email);
+                return null;
+            }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, schema.Password);
-            if (!isPasswordValid) return null;
+            if (!isPasswordValid)
+            {
+                _logger.LogError("Invalid password: {0}", schema.Email);
+                return null;
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -94,13 +114,28 @@ namespace IctuTaekwondo.Shared.Services
             return GenerateJwt(claims);
         }
 
+        public async Task<UserResponse?> GetUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogError("User not found: {0}", userId);
+                return null;
+            }
+            return user.ToUserResponse();
+        }
+
         public async Task<UserFullDetailResponse?> GetProfileAsync(string userId)
         {
             var user = _context.Users
                 .Include(u => u.UserProfile)
                 .FirstOrDefault(u => u.Id == userId);
 
-            if (user == null) return null;
+            if (user == null)
+            {
+                _logger.LogError("User not found: {0}", userId);
+                return null;
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
             var userDetail = user.ToUserFullDetailResponse();

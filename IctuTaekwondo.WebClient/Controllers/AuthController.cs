@@ -3,6 +3,7 @@ using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.WebClient.Models;
+using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,16 @@ namespace IctuTaekwondo.WebClient.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly ApiHelper _apiHelper;
+        private readonly IAuthService _authService;
+        private readonly string[] allowedRedirectUrl =
+        [
+            "/accounts",
+            "/auth/register",
+        ];
 
-        public AuthController(ApiHelper apiHelper)
+        public AuthController(IAuthService authService)
         {
-            _apiHelper = apiHelper;
+            _authService = authService;
         }
 
         [HttpGet]
@@ -28,45 +34,12 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var response = await _apiHelper.PostAsync<JwtResponse>("api/auth/login", model);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                if (response.Message != null) ModelState.AddModelError(string.Empty, response.Message);
-                if (response.Errors != null)
-                {
-                    foreach (var (key, value) in response.Errors)
-                    {
-                        foreach (var error in value)
-                        {
-                            ModelState.AddModelError(key, error);
-                        }
-                    }
-                }
-                return View(model);
-            }
+            var result = await _authService.LoginAsync(model, 
+                ModelState, 
+                Request.Cookies, 
+                Response.Cookies);
 
-            var jwtResponse = response.Data;
-
-            if (jwtResponse == null)
-            {
-                ModelState.AddModelError(string.Empty, "Không thể đăng nhập vào hệ thống");
-                return View(model);
-            }
-
-            if (Request.Cookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
-            {
-                Response.Cookies.Delete(GlobalConst.CookieAuthTokenKey);
-            }
-
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true, 
-                Secure = true,
-                Expires = model.RememberMe ? jwtResponse.ExpiredAt : null,
-                SameSite = SameSiteMode.Strict
-            };
-
-            Response.Cookies.Append(GlobalConst.CookieAuthTokenKey, jwtResponse.Token, cookieOptions);
+            if (!result) return View(model);
 
             return RedirectToAction("Index", "Dashboard");
         }
@@ -86,7 +59,20 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            return RedirectToAction("Index", "Dashboard");
+            var result = await _authService.RegisterAsync(model,
+                ModelState,
+                Request.Cookies,
+                Response.Cookies);
+
+            if (!result) return View(model);
+
+            if (next != null && allowedRedirectUrl.Contains(next)) return Redirect(next);
+
+            ModelState.Clear();
+
+            TempData["SuccessMessage"] = "Đăng ký thành công!";
+
+            return RedirectToAction("Register", "Auth");
         }
 
         [HttpGet]
