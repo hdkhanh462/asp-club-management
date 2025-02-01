@@ -79,14 +79,14 @@
 				<div class="grid-cols-1 mb-5 grid gap-4 sm:grid-cols-2">
 					<div class="col-span-2">
 						<div class="flex justify-center">
-							<label id="Avatar_Label" asp-for="@Model.Avatar" class="flex size-24 items-center justify-center overflow-hidden rounded-lg border bg-gray-100 hover:cursor-pointer dark:bg-gray-600">
+							<label id="Avatar_Label" asp-for="@Model.Avatar" class="flex size-32 items-center justify-center overflow-hidden rounded-lg border bg-gray-100 hover:cursor-pointer dark:bg-gray-600">
 								@if (!string.IsNullOrEmpty(Model.AvatarUrl))
 								{
 									<img id="Avatar_Preview" src="@Model.AvatarUrl" alt="Avatar" class="h-full w-full object-cover" />
 								}
 								else
 								{
-									<svg id="Avatar_Icon" class="size-24 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+									<svg id="Avatar_Icon" class="size-32 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
 								}
 							</label>
 						</div>
