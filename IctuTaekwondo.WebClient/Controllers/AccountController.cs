@@ -29,24 +29,58 @@ namespace IctuTaekwondo.WebClient.Controllers
             return View(userDetail);
         }
 
-        [HttpPut]
         [Authorize]
-        public async Task<IActionResult> Profile(UserProfileSchema schema)
+        public IActionResult UpdateProfile()
+        {
+            var userDetail = _accountService.GetProfileAsync(Request.Cookies);
+            if (userDetail == null)
+            {
+                _authService.Logout(Request.Cookies, Response.Cookies);
+                return RedirectToAction("Login", "Auth");
+            }
+
+            return View(new UserUpdateSchema
+            {
+                AvatarUrl = userDetail.AvatarUrl,
+                FullName = userDetail.FullName,
+                PhoneNumber = userDetail.PhoneNumber,
+                Gender = userDetail.Profile.Gender,
+                DateOfBirth = userDetail.Profile.DateOfBirth,
+                CurrentRank = userDetail.Profile.CurrentRank,
+                Address = userDetail.Profile.Address,
+                JoinDate = userDetail.Profile.JoinDate
+            });
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile(UserUpdateSchema schema)
         {
             var response = await _accountService.UpdateProfileAsync(schema, ModelState, Request.Cookies);
             if (!response) return View(schema);
 
-            return RedirectToAction("Profile", "Account");
+            TempData["SuccessMessage"] = "Cập nhật thành công!";
+
+            return RedirectToAction("UpdateProfile", "Account");
         }
 
-        [HttpPut]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+        
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordSchema schema)
         {
             var response = await _accountService.ChangePasswordAsync(schema, ModelState, Request.Cookies);
             if (!response) return View(schema);
 
-            return RedirectToAction("Profile", "Account");
+            TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+
+            return RedirectToAction("ChangePassword", "Account");
         }
     }
 }

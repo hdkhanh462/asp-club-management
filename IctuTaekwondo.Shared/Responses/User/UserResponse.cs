@@ -16,7 +16,7 @@ namespace IctuTaekwondo.Shared.Responses.User
         public string? PhoneNumber { get; set; }
 
         [Display(Name = "Họ và tên")]
-        public string? FullName { get; set; }
+        public string FullName { get; set; }
 
         [Display(Name = "Ảnh đại diện")]
         public string? AvatarUrl { get; set; }

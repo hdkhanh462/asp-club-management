@@ -5,8 +5,10 @@ namespace IctuTaekwondo.Shared.Enums
 {
     public static class EnumExtensions
     {
-        public static string GetDisplayName(this Enum enumValue)
+        public static string GetDisplayName(this Enum? enumValue)
         {
+            if (enumValue == null) return string.Empty;
+
             var attribute = enumValue.GetType()
                                      .GetField(enumValue.ToString())
                                      ?.GetCustomAttribute<DisplayAttribute>();

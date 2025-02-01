@@ -12,7 +12,7 @@ namespace IctuTaekwondo.WebClient.Services
     {
         UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies);
         UserResponse? GetUserAsync(IRequestCookieCollection requestCookies);
-        Task<bool> UpdateProfileAsync(UserProfileSchema schema,
+        Task<bool> UpdateProfileAsync(UserUpdateSchema schema,
             ModelStateDictionary modelState, 
             IRequestCookieCollection requestCookies);
         Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
@@ -55,7 +55,7 @@ namespace IctuTaekwondo.WebClient.Services
             return _apiHelper.GetAsync<UserResponse>("api/account/me").Result.Data;
         }
 
-        public async Task<bool> UpdateProfileAsync(UserProfileSchema schema, 
+        public async Task<bool> UpdateProfileAsync(UserUpdateSchema schema, 
             ModelStateDictionary modelState, 
             IRequestCookieCollection requestCookies)
         {

@@ -10,11 +10,12 @@
 	<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.3.0/dist/js/datepicker-full.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/locales/vi.js"></script>
+	<script src="~/js/datepicker.js"></script>
 
 </head>
 <body>
-	@await Html.PartialAsync("~/Views/Shared/Partials/_NavbarPartial.cshtml")
-	@await Html.PartialAsync("~/Views/Shared/Partials/_SidebarPartial.cshtml")
+	@await Html.PartialAsync("Partials/_NavbarPartial.cshtml")
+	@await Html.PartialAsync("Partials/_SidebarPartial.cshtml")
 
 	<div class="sm:ml-64">
 		<div class="p-4">
@@ -24,9 +25,10 @@
 				</main>
 			</div>
 		</div>
-		@await Html.PartialAsync("~/Views/Shared/Partials/_FooterPartial.cshtml")
+		@await Html.PartialAsync("Partials/_FooterPartial.cshtml")
 	</div>
 
 	@await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync("Modals", required: false)
 </body>
 </html>
