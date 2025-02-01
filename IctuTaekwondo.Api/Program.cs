@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using IctuTaekwondo.Api.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,9 +83,18 @@ builder.Services.AddAuthentication(options =>
 
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddScoped<IUploadFileService , UploadFileService>();
 builder.Services.AddScoped<IAuthService ,AuthService>();
 builder.Services.AddScoped<IAccountService ,AccountService>();
 builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
@@ -96,6 +106,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+var uploadPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+
+if (!Directory.Exists(uploadPath)) Directory.CreateDirectory(uploadPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadPath),
+    RequestPath = "/static"
+});
+
+app.UseCors();
 
 app.UseAuthorization();
 

@@ -21,12 +21,14 @@ namespace IctuTaekwondo.Api.Services
         private readonly ILogger<IAccountService> _logger;
         private readonly UserManager<User> _userManager;
         private readonly ApiDbContext _context;
+        private readonly IUploadFileService _fileService;
 
-        public AccountService(ILogger<IAccountService> logger, UserManager<User> userManager, ApiDbContext context)
+        public AccountService(ILogger<IAccountService> logger, UserManager<User> userManager, ApiDbContext context, IUploadFileService fileService)
         {
             _logger = logger;
             _userManager = userManager;
             _context = context;
+            _fileService = fileService;
         }
 
         public async Task<UserResponse?> GetUserAsync(string userId)
@@ -74,8 +76,41 @@ namespace IctuTaekwondo.Api.Services
                 });
             }
 
+            if (schema.Avatar != null)
+            {
+                var avatarUrl = user.AvatarUrl?.Split("static/")[1];
+
+                try
+                {
+                    string fileName = await _fileService.SaveFileAsync(schema.Avatar);
+                    user.AvatarUrl = fileName;
+
+                    if (avatarUrl != null && avatarUrl != string.Empty) _fileService.DeleteFile(avatarUrl);
+                }
+                catch (FileNotFoundException)
+                {
+                    _logger.LogError($"DeleteFileFailed: {avatarUrl}");
+
+                    //return IdentityResult.Failed(new IdentityError
+                    //{
+                    //    Code = "DeleteFileFailed",
+                    //    Description = ex.Message
+                    //});
+                }
+                catch (ArgumentException ex)
+                {
+                    _logger.LogError("InvalidFileExtension");
+
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Code = "InvalidFileExtension",
+                        Description = ex.Message
+                    });
+                }
+            }
+
+
             user.FullName = schema.FullName;
-            user.AvatarUrl = schema.AvatarUrl;
             user.PhoneNumber = schema.PhoneNumber;
 
             if (user.UserProfile == null)

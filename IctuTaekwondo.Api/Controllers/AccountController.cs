@@ -77,7 +77,7 @@ namespace IctuTaekwondo.Api.Controllers
 
         [HttpPut("profile")]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateSchema schema)
+        public async Task<IActionResult> UpdateProfile([FromForm] UserUpdateSchema schema)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized(new ApiResponse<object>
