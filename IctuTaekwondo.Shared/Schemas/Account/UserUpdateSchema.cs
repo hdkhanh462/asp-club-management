@@ -40,6 +40,24 @@ namespace IctuTaekwondo.Shared.Schemas.Account
         [FileUpload(MaxFileSizeMb = 2)]
         public IFormFile? Avatar { get; set; }
         public string? AvatarUrl { get; set; }
+
+        public Dictionary<string, object> ToDictionary()
+        {
+            var dict = new Dictionary<string, object>
+            {
+                { "FullName", FullName },
+            };
+
+            if (PhoneNumber != null) dict["PhoneNumber"] = PhoneNumber;
+            if (Avatar != null) dict["Avatar"] = Avatar;
+            if (Gender != null) dict["Gender"] = Gender;
+            if (DateOfBirth != null) dict["DateOfBirth"] = DateOfBirth;
+            if (Address != null) dict["Address"] = Address;
+            if (CurrentRank != null) dict["CurrentRank"] = CurrentRank;
+            if (JoinDate != null) dict["JoinDate"] = JoinDate;
+
+            return dict;
+        }
     }
 
     public class AdminUserUpdateSchema : UserUpdateSchema

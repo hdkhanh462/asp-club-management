@@ -42,11 +42,12 @@ namespace IctuTaekwondo.Api.Services
             if (!allowedFileExtentions.Contains(fileExtention))
             {
                 throw new ArgumentException($"Định dạng '{fileExtention}' không cho phép. " +
-                    $"Định dạng cho phép là: {string.Join(", ", allowedFileExtentions)}");
+                    $"Vui lòng sử dụng các định dạng file cho phép sau: {string.Join(" | ", allowedFileExtentions)}");
             }
 
-            var fileName = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}{fileExtention}";
+            var fileName = $"{file.Name.Substring(0, 5)}_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}{fileExtention}";
             var fileNameWithPath = Path.Combine(path, fileName);
+
             using var steam = new FileStream(fileNameWithPath, FileMode.Create);
             await file.CopyToAsync(steam);
 

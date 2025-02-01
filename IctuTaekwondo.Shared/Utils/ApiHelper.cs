@@ -3,6 +3,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using IctuTaekwondo.Shared.Responses;
+using Microsoft.AspNetCore.Http;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IctuTaekwondo.Shared.Utils;
 
@@ -11,7 +13,7 @@ public class ApiHelper
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public ApiHelper(HttpClient httpClient, JsonSerializerOptions? jsonSerializerOptions =null)
+    public ApiHelper(HttpClient httpClient, JsonSerializerOptions? jsonSerializerOptions = null)
     {
         _httpClient = httpClient;
         _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions
@@ -23,17 +25,17 @@ public class ApiHelper
     public Task<ApiResponse<T>> GetAsync<T>(string endpoint) =>
         ExecuteApiRequest<T>(() => _httpClient.GetAsync(endpoint));
 
-    public Task<ApiResponse<T>> PostAsync<T>(string endpoint, object data) =>
+    public Task<ApiResponse<T>> PostAsync<T>(string endpoint, object data, string mediaType = "application/json") =>
         ExecuteApiRequest<T>(() =>
         {
-            var content = CreateJsonContent(data);
+            var content = CreateContent(data, mediaType);
             return _httpClient.PostAsync(endpoint, content);
         });
 
-    public Task<ApiResponse<T>> PutAsync<T>(string endpoint, object data) =>
+    public Task<ApiResponse<T>> PutAsync<T>(string endpoint, object data, string mediaType = "application/json") =>
         ExecuteApiRequest<T>(() =>
         {
-            var content = CreateJsonContent(data);
+            var content = CreateContent(data, mediaType);
             return _httpClient.PutAsync(endpoint, content);
         });
 
@@ -51,8 +53,53 @@ public class ApiHelper
         }
     }
 
-    private static StringContent CreateJsonContent(object data) =>
-        new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+    private static HttpContent CreateContent(object data, string mediaType)
+    {
+        if (mediaType == "application/json")
+        {
+            return new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, mediaType);
+        }
+        else if (mediaType == "application/x-www-form-urlencoded")
+        {
+            var formData = data as Dictionary<string, string> ?? throw new ArgumentException("Data must be a Dictionary<string, string> for form-urlencoded media type.");
+            return new FormUrlEncodedContent(formData);
+        }
+        else if (mediaType.StartsWith("text/"))
+        {
+            return new StringContent(data.ToString() ?? string.Empty, Encoding.UTF8, mediaType);
+        }
+        else if (mediaType == "multipart/form-data")
+        {
+            var multipartContent = new MultipartFormDataContent();
+            if (data is Dictionary<string, object> formData)
+            {
+                foreach (var (key, value) in formData)
+                {
+                    if (value is IFormFile file)
+                    {
+                        using var memoryStream = new MemoryStream();
+                        file.CopyTo(memoryStream);
+
+                        var byteArrayContent = new ByteArrayContent(memoryStream.ToArray());
+                        multipartContent.Add(byteArrayContent, file.Name, file.FileName);
+                    }
+                    else
+                    {
+                        multipartContent.Add(new StringContent(value.ToString() ?? string.Empty), key);
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Data must be a Dictionary<string, object> for multipart/form-data media type.");
+            }
+            return multipartContent;
+        }
+        else
+        {
+            throw new NotSupportedException($"Media type {mediaType} is not supported.");
+        }
+    }
 
     private async Task<ApiResponse<T>> ExecuteApiRequest<T>(Func<Task<HttpResponseMessage>> request)
     {

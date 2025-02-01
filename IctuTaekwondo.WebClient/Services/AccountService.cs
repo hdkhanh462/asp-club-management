@@ -70,7 +70,7 @@ namespace IctuTaekwondo.WebClient.Services
                 ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
             });
 
-            var response = await _apiHelper.PutAsync<object>("api/account/profile", schema);
+            var response = await _apiHelper.PutAsync<object>("api/account/profile", schema.ToDictionary(), "multipart/form-data");
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 HandleErrors<object>(response, modelState);

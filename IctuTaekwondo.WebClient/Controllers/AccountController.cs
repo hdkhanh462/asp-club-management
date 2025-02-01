@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using IctuTaekwondo.WebClient.Services;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
@@ -55,8 +56,10 @@ namespace IctuTaekwondo.WebClient.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile(UserUpdateSchema schema)
+        public async Task<IActionResult> UpdateProfile([FromForm] UserUpdateSchema schema)
         {
+            if (!ModelState.IsValid) return View(schema);
+
             var response = await _accountService.UpdateProfileAsync(schema, ModelState, Request.Cookies);
             if (!response) return View(schema);
 
@@ -75,6 +78,8 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordSchema schema)
         {
+            if (!ModelState.IsValid) return View(schema);
+
             var response = await _accountService.ChangePasswordAsync(schema, ModelState, Request.Cookies);
             if (!response) return View(schema);
 
