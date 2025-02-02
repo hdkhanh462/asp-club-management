@@ -54,24 +54,33 @@ namespace IctuTaekwondo.api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginSchema schema)
         {
-            var result = await _authService.LoginAsync(schema);
-            if (result == null)
+            try
             {
-                return Unauthorized(new ApiResponse<object>
+                var result = await _authService.LoginAsync(schema);
+                if (result == null)
                 {
-                    StatusCode = HttpStatusCode.Unauthorized,
-                    Message = "Email hoặc mật khẩu không chính xác",
+                    return Unauthorized(new ApiResponse<object>
+                    {
+                        StatusCode = HttpStatusCode.Unauthorized,
+                        Message = "Email hoặc mật khẩu không chính xác",
+                    });
+                }
+
+                return Ok(new ApiResponse<JwtResponse>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Đăng nhập thành công",
+                    Data = result
                 });
             }
-
-            return Ok(new ApiResponse<JwtResponse>
+            catch (Exception ex)
             {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Đăng nhập thành công",
-                Data = result
-            });
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Message = ex.Message,
+                });
+            }
         }
-
-        
     }
 }
