@@ -92,7 +92,7 @@ namespace IctuTaekwondo.WebClient.Services
                 }
             });
 
-            var response = await _apiHelper.PostAsync<object>("api/auth/register", model);
+            var response = await _apiHelper.PostAsync<object>("api/auth/register", model.ToDictionary(), "multipart/form-data");
             if (response.StatusCode != HttpStatusCode.Created)
             {
                 HandleErrors<object>(response, modelState);

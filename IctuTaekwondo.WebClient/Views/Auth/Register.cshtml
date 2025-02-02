@@ -8,7 +8,7 @@
 }
 
 <div class="mx-auto w-full max-w-md py-16">
-	<form asp-action="Register" method="post" class="rounded-lg border border-gray-200 bg-white p-6 shadow dark:bg-gray-800 dark:border-gray-700">
+	<form asp-action="Register" method="post" enctype="multipart/form-data" class="rounded-lg border border-gray-200 bg-white p-6 shadow dark:bg-gray-800 dark:border-gray-700">
 		<h2 class="mb-5 text-2xl font-semibold text-gray-900 dark:text-white">Đăng ký hội viên</h2>
 
 		@if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
@@ -42,6 +42,44 @@
 		}
 
 		<div class="mb-5">
+			<div class="flex justify-center">
+				<label id="Avatar_Label" asp-for="@Model.Avatar" class="flex size-32 items-center justify-center overflow-hidden rounded-lg border bg-gray-100 hover:cursor-pointer dark:bg-gray-600">
+					<svg id="Avatar_Icon" class="size-32 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+				</label>
+			</div>
+			<input asp-for="@Model.Avatar" class="hidden" type="file">
+			<p class="mt-2 text-center text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="@Model.Avatar"></span>
+			</p>
+			<script>
+				$("#Avatar").change(function (event) {
+					var file = event.target.files[0];
+
+					if (file) {
+						var reader = new FileReader();
+						reader.onload = function (e) {
+							let $preview = $("#Avatar_Preview");
+							let $icon = $("#Avatar_Icon");
+
+							if ($preview.length === 0) {
+								$preview = $("<img>", {
+									id: "Avatar_Preview",
+									class: "h-full w-full object-cover"
+								});
+								$("#Avatar_Label").append($preview);
+							}
+
+							$preview.attr("src", e.target.result);
+							$icon.hide();
+						};
+
+						reader.readAsDataURL(file);
+					}
+				});
+			</script>
+		</div>
+
+		<div class="mb-5">
 			<label asp-for="FullName" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input asp-for="FullName" autofocus class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Nguyễn Văn A" />
 			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
@@ -49,19 +87,36 @@
 			</p>
 		</div>
 		<div class="mb-5">
-			<label asp-for="Role" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
-			<select asp-for="Role" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-				<option value="@Role.Member">Hội viên</option>
-				<option value="@Role.Manager">Người quản lý</option>
-				<option value="@Role.Admin">Quản trị viên</option>
+			<label asp-for="Roles" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<select asp-for="Roles" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+				<option disabled>Chọn vai trò (có thể chọn nhiều)</option>
+				@foreach (Role role in Enum.GetValues(typeof(Role)))
+				{
+					if (Model?.Roles != null && Model.Roles.Contains(role))
+					{
+						<option value="@role" selected>@role.GetDisplayName()</option>
+					}
+					else
+					{
+						<option value="@role">@role.GetDisplayName()</option>
+					}
+				}
 			</select>
 			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
-				<span asp-validation-for="Role"></span>
+				<span asp-validation-for="Roles"></span>
+			</p>
+		</div>
+		<div class="mb-5">
+			<label asp-for="PhoneNumber" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<input asp-for="PhoneNumber" placeholder="0987654321" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+
+			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="PhoneNumber"></span>
 			</p>
 		</div>
 		<div class="mb-5">
 			<label asp-for="Email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
-			<input asp-for="Email" autocomplete="new-password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="email@example.com" />
+			<input asp-for="Email" placeholder="email@example.com" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 
 			@if (!ViewData.ModelState.IsValid && ViewData.ModelState["Email"]?.Errors.Count > 0)
 			{
@@ -83,7 +138,7 @@
 		<div class="mb-5">
 			<label asp-for="ConfirmPassword" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input asp-for="ConfirmPassword" autocomplete="new-password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-			
+
 			@if (!ViewData.ModelState.IsValid && ViewData.ModelState["ConfirmPassword"]?.Errors.Count > 0)
 			{
 				<ul class="mt-2 list-inside list-disc text-sm text-red-600 dark:text-red-500">

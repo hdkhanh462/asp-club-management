@@ -50,7 +50,7 @@ namespace IctuTaekwondo.WebClient.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register(
-            RegisterViewModel model,
+            [FromForm] RegisterViewModel model,
             [FromQuery] string? next)
         {
             if (!ModelState.IsValid) return View(model);

@@ -4,7 +4,7 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IUploadFileService
     {
-        Task<string> SaveFileAsync(IFormFile file, string[] allowedFileExtentions = null);
+        Task<string> SaveFileAsync(IFormFile file);
         void DeleteFile(string fileName);
     }
 
@@ -29,23 +29,16 @@ namespace IctuTaekwondo.Api.Services
             File.Delete(path);
         }
 
-        public async Task<string> SaveFileAsync(IFormFile file, string[]? allowedFileExtentions = null)
+        public async Task<string> SaveFileAsync(IFormFile file)
         {
-            allowedFileExtentions ??= [".jpg", ".png", ".jpeg"]; 
-
             var contentPath = _webHostEnvironment.ContentRootPath;
             var path = Path.Combine(contentPath, "Uploads");
 
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
             var fileExtention = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!allowedFileExtentions.Contains(fileExtention))
-            {
-                throw new ArgumentException($"Định dạng '{fileExtention}' không cho phép. " +
-                    $"Vui lòng sử dụng các định dạng file cho phép sau: {string.Join(" | ", allowedFileExtentions)}");
-            }
 
-            var fileName = $"{file.Name.Substring(0, 5)}_{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}{fileExtention}";
+            var fileName = $"{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}_{Guid.NewGuid().ToString("N")}{fileExtention}";
             var fileNameWithPath = Path.Combine(path, fileName);
 
             using var steam = new FileStream(fileNameWithPath, FileMode.Create);

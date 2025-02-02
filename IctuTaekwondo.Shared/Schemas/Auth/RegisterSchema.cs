@@ -1,13 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using IctuTaekwondo.Shared.DataAnnotations;
 using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Schemas.Account;
+using Microsoft.AspNetCore.Http;
 
 namespace IctuTaekwondo.Shared.Schemas.Auth
 {
     public class RegisterSchema : UserProfileSchema
     {
-        [DataType(DataType.ImageUrl, ErrorMessage = "Định dạng địa chỉ avatar không chính xác")]
-        public string? AvatarUrl { get; set; }
+        [Display(Name = "Ảnh đại diện")]
+        [FileUpload(MaxFileSizeMb = 2)]
+        public IFormFile? Avatar { get; set; }
 
         [Display(Name = "Họ và tên")]
         [Required(ErrorMessage = "Trường bắt buộc")]
@@ -18,6 +21,10 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         [Required(ErrorMessage = "Trường bắt buộc")]
         [EmailAddress(ErrorMessage = "Sai định dạng email")]
         public string Email { get; set; } = null!;
+
+        [Display(Name = "Số điện thoại")]
+        [RegularExpression(@"^0\d{9,10}$", ErrorMessage = "Số điện thoại không hợp lệ.")]
+        public string? PhoneNumber { get; set; }
 
         [Display(Name = "Mật khẩu")]
         [Required(ErrorMessage = "Trường bắt buộc")]
@@ -36,7 +43,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
     {
         [Display(Name = "Vai trò")]
         [Required(ErrorMessage = "Trường bắt buộc")]
-        [EnumDataType(typeof(Role), ErrorMessage = "Vai trò không hợp lệ.")]
-        public Role Role { get; set; }
+        [ValidEnumList(EnumType = typeof(Role), ErrorMessage = "Vai trò không hợp lệ.")]
+        public List<Role> Roles { get; set; } = new List<Role>();
     }
 }

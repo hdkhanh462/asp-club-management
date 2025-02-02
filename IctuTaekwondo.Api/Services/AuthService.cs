@@ -22,24 +22,50 @@ namespace IctuTaekwondo.Api.Services
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
         private readonly ApiDbContext _context;
+        private readonly IUploadFileService _fileService;
 
-        public AuthService(ILogger<AuthService> logger, IConfiguration configuration, UserManager<User> userManager, ApiDbContext context)
+        public AuthService(ILogger<AuthService> logger,
+            IConfiguration configuration,
+            UserManager<User> userManager,
+            ApiDbContext context,
+            IUploadFileService fileService)
         {
             _logger = logger;
             _configuration = configuration;
             _userManager = userManager;
             _context = context;
+            _fileService = fileService;
         }
 
         public async Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema)
         {
             var newUser = new User
             {
-                AvatarUrl = schema.AvatarUrl,
                 FullName = schema.FullName,
                 Email = schema.Email,
+                PhoneNumber = schema.PhoneNumber,
                 UserName = schema.Email
             };
+
+            if (schema.Avatar != null)
+            {
+                try
+                {
+                    var avatarUrl = await _fileService.SaveFileAsync(schema.Avatar);
+                    newUser.AvatarUrl = avatarUrl;
+
+                }
+                catch (ArgumentException ex)
+                {
+                    _logger.LogError("InvalidFileExtension");
+
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Code = "InvalidFileExtension",
+                        Description = ex.Message
+                    });
+                }
+            }
 
             var createUserResult = await _userManager.CreateAsync(newUser, schema.Password);
             if (!createUserResult.Succeeded)
@@ -47,8 +73,8 @@ namespace IctuTaekwondo.Api.Services
                 _logger.LogError("Create user failed: {0}", createUserResult.Errors);
                 return createUserResult;
             }
-
-            var addRoleResult = await _userManager.AddToRoleAsync(newUser, schema.Role.ToString());
+            var rolesString = schema.Roles.Select(r => r.ToString());
+            var addRoleResult = await _userManager.AddToRolesAsync(newUser, rolesString);
             if (!addRoleResult.Succeeded)
             {
                 _logger.LogError("Add role failed: {0}", addRoleResult.Errors);

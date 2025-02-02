@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -85,7 +86,17 @@ public class ApiHelper
                     }
                     else
                     {
-                        multipartContent.Add(new StringContent(value.ToString() ?? string.Empty), key);
+                        if (value is IEnumerable values && value is not string)
+                        {
+                            foreach(var v in values)
+                            {
+                                multipartContent.Add(new StringContent(v.ToString() ?? string.Empty), key);
+                            }
+                        }
+                        else
+                        {
+                            multipartContent.Add(new StringContent(value.ToString() ?? string.Empty), key);
+                        }
                     }
                 }
             }
