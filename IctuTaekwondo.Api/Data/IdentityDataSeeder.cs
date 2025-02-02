@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Enums;
 
 namespace IctuTaekwondo.Api.Data

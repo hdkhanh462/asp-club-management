@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Shared.Filters;
-using IctuTaekwondo.Shared.Models;
-using IctuTaekwondo.Shared.Services;
+using IctuTaekwondo.Api.Filters;
+using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Api.Services;
 using IctuTaekwondo.Shared.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using IctuTaekwondo.Api.Services;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +23,7 @@ builder.Services.AddControllers(options =>
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-    options.SuppressModelStateInvalidFilter = true; // Tắt xử lý lỗi tự động
+    options.SuppressModelStateInvalidFilter = true;
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -45,7 +44,7 @@ builder.Services.AddSwaggerGen(options =>
 // Add DbContext
 builder.Services.AddDbContext<ApiDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 // Add Identity
@@ -98,7 +97,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
     app.UseSwagger();

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
-namespace IctuTaekwondo.Shared.Filters;
+namespace IctuTaekwondo.Api.Filters;
 
 public class ValidationFilter : IActionFilter
 {

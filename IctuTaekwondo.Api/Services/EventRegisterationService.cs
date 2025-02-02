@@ -1,8 +1,8 @@
 ﻿using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace IctuTaekwondo.Shared.Services
+namespace IctuTaekwondo.Api.Services
 {
     // Enum đại diện cho các kết quả có thể có của một thao tác đăng ký sự kiện  
     public enum EventRegisterationResult

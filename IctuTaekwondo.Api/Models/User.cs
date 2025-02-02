@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
-namespace IctuTaekwondo.Shared.Models
+namespace IctuTaekwondo.Api.Models
 {
     public class User : IdentityUser
     {

@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using IctuTaekwondo.Shared.Mappers;
-using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Api.Mappers;
+using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Responses.Event;
 using IctuTaekwondo.Shared.Schemas.Event;
 using IctuTaekwondo.Api.Data;
 
-namespace IctuTaekwondo.Shared.Controllers.Api
+namespace IctuTaekwondo.Api.Controllers.Api
 {
     [Route("api/events")]
     [ApiController]

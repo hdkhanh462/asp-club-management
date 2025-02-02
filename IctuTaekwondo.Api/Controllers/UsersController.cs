@@ -1,12 +1,12 @@
-﻿using IctuTaekwondo.Shared.Mappers;
-using IctuTaekwondo.Shared.Models;
+﻿using IctuTaekwondo.Api.Mappers;
+using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace IctuTaekwondo.Shared.Controllers
+namespace IctuTaekwondo.Api.Controllers
 {
     [Route("api/users")]
     [ApiController]

@@ -1,7 +1,7 @@
 ﻿using IctuTaekwondo.Shared.Responses.User;
-using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Api.Models;
 
-namespace IctuTaekwondo.Shared.Mappers
+namespace IctuTaekwondo.Api.Mappers
 {
     public static class UserMapper
     {

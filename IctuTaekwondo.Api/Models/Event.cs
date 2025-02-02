@@ -2,14 +2,14 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using IctuTaekwondo.Shared.Schemas.Event;
 
-namespace IctuTaekwondo.Shared.Models
+namespace IctuTaekwondo.Api.Models
 {
     public class Event : TEventWithStartEndDate
     {
         [Key]
         public int Id { get; set; }
 
-        [MaxLength(100)]
+        [StringLength(100)]
         public string Name { get; set; } = null!;
 
         public string Location { get; set; } = null!;
@@ -20,7 +20,7 @@ namespace IctuTaekwondo.Shared.Models
 
         public int? MaxParticipants { get; set; }
 
-        [Column(TypeName = "timestamp without time zone")]
+        //[Column(TypeName = "timestamp without time zone")]
         public DateTime? CreatedAt { get; set; }
 
         [InverseProperty("Event")]

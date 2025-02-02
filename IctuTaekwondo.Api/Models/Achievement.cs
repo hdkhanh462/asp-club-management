@@ -2,25 +2,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace IctuTaekwondo.Shared.Models
+namespace IctuTaekwondo.Api.Models
 {
     public class Achievement
     {
         [Key]
         public int Id { get; set; }
 
-        [DisplayName("Tên thành tích")]
-        [MaxLength(100)]
+        [StringLength(100)]
         public string Name { get; set; } = null!;
 
-        [DisplayName("Ngày đạt")]
         public DateOnly DateAchieved { get; set; }
 
-        [DisplayName("Mô tả")]
         public string? Description { get; set; } 
 
-        [DisplayName("Ngày tạo")]
-        [Column(TypeName = "timestamp without time zone")]
+        //[Column(TypeName = "timestamp without time zone")]
         public DateTime? CreatedAt { get; set; }
 
         public string UserId { get; set; } = null!;

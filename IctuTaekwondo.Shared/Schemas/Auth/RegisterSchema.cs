@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using IctuTaekwondo.Shared.DataAnnotations;
 using IctuTaekwondo.Shared.Enums;
-using IctuTaekwondo.Shared.Schemas.Account;
 using Microsoft.AspNetCore.Http;
 
 namespace IctuTaekwondo.Shared.Schemas.Auth
 {
-    public class RegisterSchema : UserProfileSchema
+    public class RegisterSchema
     {
         [Display(Name = "Ảnh đại diện")]
         [FileUpload(MaxFileSizeMb = 2)]
@@ -23,8 +22,9 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         public string Email { get; set; } = null!;
 
         [Display(Name = "Số điện thoại")]
+        [Required(ErrorMessage = "Trường bắt buộc")]
         [RegularExpression(@"^0\d{9,10}$", ErrorMessage = "Số điện thoại không hợp lệ.")]
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = null!;
 
         [Display(Name = "Mật khẩu")]
         [Required(ErrorMessage = "Trường bắt buộc")]

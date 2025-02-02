@@ -5,7 +5,7 @@ using System.Xml.Linq;
 using IctuTaekwondo.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace IctuTaekwondo.Shared.Models
+namespace IctuTaekwondo.Api.Models
 {
     [Index("UserId", Name = "UserProfiles_UserId_Key", IsUnique = true)]
     public class UserProfile

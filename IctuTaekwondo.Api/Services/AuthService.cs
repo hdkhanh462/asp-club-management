@@ -1,7 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using IctuTaekwondo.Shared.Models;
+using IctuTaekwondo.Api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Schemas.Auth;
@@ -84,11 +84,6 @@ namespace IctuTaekwondo.Api.Services
             _context.Add(new UserProfile
             {
                 User = newUser,
-                Gender = schema.Gender,
-                DateOfBirth = schema.DateOfBirth,
-                Address = schema.Address,
-                CurrentRank = schema.CurrentRank,
-                JoinDate = schema.JoinDate
             });
 
             var saveResult = await _context.SaveChangesAsync();

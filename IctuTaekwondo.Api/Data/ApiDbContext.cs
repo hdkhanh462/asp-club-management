@@ -1,4 +1,4 @@
-﻿using IctuTaekwondo.Shared.Models;
+﻿using IctuTaekwondo.Api.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,9 +22,9 @@ namespace IctuTaekwondo.Api.Data
 
             modelBuilder.Entity<UserProfile>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("UserProfiles_PKey");
+                //entity.HasKey(e => e.Id).HasName("UserProfiles_PKey");
 
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
                 entity.Property(u => u.Gender).HasConversion<string>();
                 entity.Property(u => u.CurrentRank).HasConversion<string>();
 
@@ -36,18 +36,18 @@ namespace IctuTaekwondo.Api.Data
 
             modelBuilder.Entity<Event>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("Events_PKey");
+                //entity.HasKey(e => e.Id).HasName("Events_PKey");
 
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+                //entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });
 
             modelBuilder.Entity<EventRegistration>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("EventRegistrations_PKey");
+                //entity.HasKey(e => e.Id).HasName("EventRegistrations_PKey");
 
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+                //entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(d => d.Event)
                     .WithMany(p => p.EventRegistrations)
@@ -60,10 +60,10 @@ namespace IctuTaekwondo.Api.Data
 
             modelBuilder.Entity<Achievement>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("Achievements_PKey");
+                //entity.HasKey(e => e.Id).HasName("Achievements_PKey");
 
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+                //entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entity.HasOne(d => d.Event)
                     .WithMany(p => p.Achievements)
@@ -77,10 +77,10 @@ namespace IctuTaekwondo.Api.Data
 
             modelBuilder.Entity<Finance>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("Finances_PKey");
+                //entity.HasKey(e => e.Id).HasName("Finances_PKey");
 
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                //entity.Property(e => e.Id).UseIdentityAlwaysColumn();
+                //entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 entity.Property(u => u.Type).HasConversion<string>();
             });
         }

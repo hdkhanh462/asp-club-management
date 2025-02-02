@@ -1,6 +1,6 @@
 ﻿using IctuTaekwondo.Api.Data;
-using IctuTaekwondo.Shared.Models;
-using IctuTaekwondo.Shared.Mappers;
+using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Api.Mappers;
 using IctuTaekwondo.Shared.Responses.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
