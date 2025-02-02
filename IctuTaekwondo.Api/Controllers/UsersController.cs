@@ -1,10 +1,10 @@
-﻿using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Models;
+﻿using System.Net;
+using IctuTaekwondo.Api.Services;
+using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.User;
+using IctuTaekwondo.Shared.Schemas.Account;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace IctuTaekwondo.Api.Controllers
 {
@@ -12,39 +12,112 @@ namespace IctuTaekwondo.Api.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
-        public UsersController( UserManager<User> userManager)
+        public UsersController(IUserService userService)
         {
-            _userManager = userManager;
+            _userService = userService;
         }
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<List<UserResponse>>> GetUsers(
+        public async Task<IActionResult> GetUsers(
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
         {
-            var users = await _userManager.Users
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var users = await _userService.GetAllAsync(page, size);
 
-            return Ok(users.Select(u => u.ToUserResponse()).ToList());
+            return Ok(new ApiResponse<List<UserResponse>>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = users
+            });
         }
 
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<UserFullDetailResponse>> GetUserById(string id)
+        public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null) return NotFound();
+            var user = await _userService.GetProfileByIdAsync(id);
+            if (user == null) return NotFound(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.NotFound,
+            });
 
-            var roles = await _userManager.GetRolesAsync(user);
-            var userDetail = user.ToUserFullDetailResponse();
-            userDetail.Roles = roles;
+            return Ok(new ApiResponse<UserFullDetailResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = user
+            });
+        }
 
-            return Ok(user.ToUserResponse());
+        [HttpPut("{id}/profile")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateUserProfile(string id, [FromForm] UserUpdateSchema schema)
+        {
+            var result = await _userService.UpdateProfileAsync(id, schema);
+
+            if (!result.Succeeded) return BadRequest(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Message = "Cập nhật hồ sơ thất bại",
+                Errors = result.Errors.ToDictionary(
+                        kvp => kvp.Code,
+                        kvp => new[] { kvp.Description }
+                )
+            });
+
+            return Ok(new ApiResponse<UserResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = "Cập nhật hồ sơ thành công"
+            });
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteUserProfile(string id)
+        {
+            var result = await _userService.DeleteAsync(id);
+
+            if (!result.Succeeded) return BadRequest(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Message = "Xoá người dùng thất bại",
+                Errors = result.Errors.ToDictionary(
+                        kvp => kvp.Code,
+                        kvp => new[] { kvp.Description }
+                )
+            });
+
+            return Ok(new ApiResponse<UserResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = "Xoá người dùng thành công"
+            });
+        }
+
+        [HttpPut("{id}/set-password")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SetUserPassword(string id, [FromBody] SetPasswordSchema schema)
+        {
+            var result = await _userService.SetPasswordAsync(id, schema);
+
+            if (!result.Succeeded) return BadRequest(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                Message = "Đặt mật khẩu thất bại",
+                Errors = result.Errors.ToDictionary(
+                        kvp => kvp.Code,
+                        kvp => new[] { kvp.Description }
+                )
+            });
+
+            return Ok(new ApiResponse<UserResponse>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = "Đặt mật khẩu thành công"
+            });
         }
     }
 }

@@ -119,12 +119,13 @@ namespace IctuTaekwondo.Api.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
-                {
-                    new(ClaimTypes.NameIdentifier, user.Id),
-                    new(ClaimTypes.Name, user.FullName),
-                    new(ClaimTypes.Email, user.Email!),
-                    new(ClaimTypes.Role, string.Join(",", roles))
-                };
+            {
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Name, user.FullName),
+                new(ClaimTypes.Email, user.Email!),
+            };
+
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             return GenerateJwt(claims);
         }

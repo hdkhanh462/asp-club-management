@@ -79,6 +79,7 @@ namespace IctuTaekwondo.Api.Services
             {
                 EventId = id,
                 UserId = userId!,
+                CreatedAt = DateTime.UtcNow,
             };
 
             // Thêm đăng ký mới vào ngữ cảnh  

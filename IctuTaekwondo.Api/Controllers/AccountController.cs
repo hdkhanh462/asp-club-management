@@ -13,11 +13,11 @@ namespace IctuTaekwondo.Api.Controllers
     [ApiController]
     public class AccountController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IUserService userService)
         {
-            _accountService = accountService;
+            _userService = userService;
         }
 
         [HttpGet("me")]
@@ -30,7 +30,7 @@ namespace IctuTaekwondo.Api.Controllers
                 StatusCode = HttpStatusCode.Unauthorized,
                 Message = "Không tìm thấy thông tin người dùng",
             });
-            var userDetail = await _accountService.GetUserAsync(userId);
+            var userDetail = await _userService.GetByIdAsync(userId);
             if (userDetail == null)
             {
                 return NotFound(new ApiResponse<object>
@@ -58,7 +58,7 @@ namespace IctuTaekwondo.Api.Controllers
                 Message = "Không tìm thấy thông tin người dùng",
             });
 
-            var userDetail = await _accountService.GetProfileAsync(userId);
+            var userDetail = await _userService.GetProfileByIdAsync(userId);
             if (userDetail == null)
             {
                 return NotFound(new ApiResponse<object>
@@ -86,7 +86,7 @@ namespace IctuTaekwondo.Api.Controllers
                 Message = "Không tìm thấy thông tin người dùng",
             });
 
-            var result = await _accountService.UpdateProfileAsync(userId, schema);
+            var result = await _userService.UpdateProfileAsync(userId, schema);
             if (!result.Succeeded)
             {
                 return BadRequest(new ApiResponse<object>
@@ -117,7 +117,7 @@ namespace IctuTaekwondo.Api.Controllers
                 Message = "Không tìm thấy thông tin người dùng",
             });
 
-            var result = await _accountService.ChangePasswordAsync(userId, schema);
+            var result = await _userService.ChangePasswordAsync(userId, schema);
             if (!result.Succeeded)
             {
                 return BadRequest(new ApiResponse<object>

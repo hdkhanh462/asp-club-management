@@ -3,9 +3,11 @@
 		<div>
 			<button type="button" class="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
 				<span class="sr-only">Open user menu</span>
-				@if (Model.AvatarUrl != null && Model.AvatarUrl != string.Empty)
+				@if (!string.IsNullOrEmpty(Model.AvatarUrl))
 				{
-					<img class="size-8 rounded-full" src="@Model.AvatarUrl" alt="avatar">
+					<div class="size-8 overflow-hidden rounded-full">
+						<img class="w-full" src="@Model.AvatarUrl" alt="avatar" />
+					</div>
 				}
 				else
 				{

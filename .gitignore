@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 IctuTaekwondo.Api/Uploads/
+
+appsettings.json
+appsettings.Production.json

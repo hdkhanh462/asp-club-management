@@ -1,0 +1,119 @@
+﻿using IctuTaekwondo.Api.Data;
+using IctuTaekwondo.Api.Mappers;
+using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Shared.Responses.Event;
+using IctuTaekwondo.Shared.Schemas.Event;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace IctuTaekwondo.Api.Services
+{
+    public interface IEventService
+    {
+        Task<bool> CreateAsync(EventCreateSchema schema);
+        Task<bool> UpdateAsync(int id, EventUpdateSchema schema);
+        Task<bool> DeleteAsync(int id);
+        Task<List<EventResponse>> GetAllAsync(int page, int size);
+        Task<EventFullDetailResponse?> GetByIdAsync(int id);
+    }
+
+    public class EventService: IEventService
+    {
+        private readonly ILogger<EventService> _logger;
+        private readonly ApiDbContext _context;
+
+        public EventService(ILogger<EventService> logger, ApiDbContext context)
+        {
+            _logger = logger;
+            _context = context;
+        }
+
+        public async Task<bool> CreateAsync(EventCreateSchema schema)
+        {
+            var newEvent = new Event
+            {
+                Name = schema.Name,
+                StartDate = schema.StartDate,
+                EndDate = schema.EndDate,
+                Location = schema.Location,
+                Fee = schema.Fee,
+                MaxParticipants = schema.MaxParticipants,
+                Description = schema.Description,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            _context.Events.Add(newEvent);
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var @event = _context.Events.FirstOrDefault(e => e.Id == id);
+            if (@event == null)
+            {
+                _logger.LogError("Event not found: {0}", id);
+                throw new Exception("Sự kiện không tồn tại");
+            }
+
+            _context.Events.Remove(@event);
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
+        }
+
+        public async Task<List<EventResponse>> GetAllAsync(int page, int size)
+        {
+            var events = await _context.Events
+                .Skip((page - 1) * size)
+                .Take(size)
+                .ToListAsync();
+
+            return events.Select(e => e.ToEventResponse()).ToList();
+        }
+
+        public async Task<EventFullDetailResponse?> GetByIdAsync(int id)
+        {
+            var @event = await _context.Events
+                .Include(e => e.EventRegistrations)
+                .ThenInclude(er => er.User)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null) 
+            {
+                _logger.LogError("Event not found: {0}", id);
+                return null;
+            }
+
+            return @event.ToEventFullDetailResponse();
+        }
+
+        public async Task<bool> UpdateAsync(int id, EventUpdateSchema schema)
+        {
+            var @event = await _context.Events
+                .Include(e => e.EventRegistrations)
+                .ThenInclude(er => er.User)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                _logger.LogError("Event not found: {0}", id);
+                throw new Exception("Sự kiện không tồn tại");
+            }
+
+            @event.Name = schema.Name;
+            @event.StartDate = schema.StartDate;
+            @event.EndDate = schema.EndDate;
+            @event.Location = schema.Location;
+            @event.Fee = schema.Fee;
+            @event.MaxParticipants = schema.MaxParticipants;
+            @event.Description = schema.Description;
+
+            _context.Entry(@event).State = EntityState.Modified;
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
+        }
+    }
+}

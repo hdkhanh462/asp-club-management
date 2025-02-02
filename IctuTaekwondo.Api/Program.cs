@@ -84,7 +84,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IUploadFileService , UploadFileService>();
 builder.Services.AddScoped<IAuthService ,AuthService>();
-builder.Services.AddScoped<IAccountService ,AccountService>();
+builder.Services.AddScoped<IUserService , UserService>();
+builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
 
 builder.Services.AddCors(options =>

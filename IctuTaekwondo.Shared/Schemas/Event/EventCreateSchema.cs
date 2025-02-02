@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using IctuTaekwondo.Shared.DataAnnotations;
 
 namespace IctuTaekwondo.Shared.Schemas.Event
 {
@@ -15,24 +15,11 @@ namespace IctuTaekwondo.Shared.Schemas.Event
         public DateTime? EndDate { get; set; }
     }
 
-    public class EndDateGreaterThanStartDateAttribute : ValidationAttribute
-    {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            var eventObj = (TEventWithStartEndDate)validationContext.ObjectInstance;
-            if (eventObj.EndDate.HasValue && eventObj.EndDate <= eventObj.StartDate)
-            {
-                return new ValidationResult("Thời điểm kết thúc phải lớn hơn thời điểm bắt đầu.");
-            }
-            return ValidationResult.Success!;
-        }
-    }
-
     public class EventCreateSchema : TEventWithStartEndDate
     {
         [Display(Name = "Tên sự kiện")]
         [Required(ErrorMessage = "Trường bắt buộc")]
-        [MaxLength(100)]
+        [StringLength(100)]
         public string Name { get; set; }
 
         [Display(Name = "Địa điểm")]
