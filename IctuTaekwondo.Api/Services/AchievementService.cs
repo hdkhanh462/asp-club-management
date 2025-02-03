@@ -43,19 +43,8 @@ namespace IctuTaekwondo.Api.Services
 
         public async Task<bool> CreateAsync(AchievementCreateSchema schema)
         {
-            var user = await _userManager.FindByIdAsync(schema.UserId);
-            if (user == null)
-            {
-                _logger.LogError("User not found: {0}", schema.UserId);
-                throw new Exception("Người dùng không tồn tại");
-            }
-
-            var @event = _context.Events.FirstOrDefault(e => e.Id == schema.EventId);
-            if (@event == null)
-            {
-                _logger.LogError("Event not found: {0}", schema.EventId);
-                throw new Exception("Sự kiện không tồn tại");
-            }
+            var isValid = await Validate(schema.UserId, schema.EventId);
+            if (!string.IsNullOrEmpty(isValid)) throw new ArgumentException(isValid);
 
             var newAchievement = new Achievement
             {
@@ -63,8 +52,8 @@ namespace IctuTaekwondo.Api.Services
                 DateAchieved = schema.DateAchieved,
                 Description = schema.Description,
                 CreatedAt = DateTime.UtcNow,
-                UserId = user.Id,
-                EventId = @event.Id,
+                UserId = schema.UserId,
+                EventId = schema.EventId,
             };
 
             _context.Achievements.Add(newAchievement);
@@ -91,8 +80,8 @@ namespace IctuTaekwondo.Api.Services
         public async Task<PaginationResponse<AchievementResponse>> GetAllAsync(int page, int size)
         {
             var achievements = await _context.Achievements
-                .Include(e=> e.User)
-                .Include(e=> e.Event)
+                .Include(e => e.User)
+                .Include(e => e.Event)
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync();
@@ -105,10 +94,10 @@ namespace IctuTaekwondo.Api.Services
         }
 
         public async Task<PaginationResponse<AchievementResponse>> GetAllWithFilterAsync(
-            int page, 
-            int size, 
-            string? name = null, 
-            string? userId = null, 
+            int page,
+            int size,
+            string? name = null,
+            string? userId = null,
             int? eventId = null,
             DateOnly? startDate = null,
             DateOnly? endDate = null)
@@ -126,6 +115,8 @@ namespace IctuTaekwondo.Api.Services
             if (endDate.HasValue) query = query.Where(f => f.DateAchieved <= endDate.Value);
 
             var achievements = await query
+                .Include(e => e.User)
+                .Include(e => e.Event)
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync();
@@ -165,30 +156,40 @@ namespace IctuTaekwondo.Api.Services
                 throw new Exception("Thành tích không tồn tại");
             }
 
-            var user = await _userManager.FindByIdAsync(schema.UserId);
-            if (user == null)
-            {
-                _logger.LogError("User not found: {0}", schema.UserId);
-                throw new Exception("Người dùng không tồn tại");
-            }
-
-            var @event = _context.Events.FirstOrDefault(e => e.Id == schema.EventId);
-            if (@event == null)
-            {
-                _logger.LogError("Event not found: {0}", schema.EventId);
-                throw new Exception("Sự kiện không tồn tại");
-            }
+            var isValid = await Validate(schema.UserId, schema.EventId);
+            if (!string.IsNullOrEmpty(isValid)) throw new ArgumentException(isValid);
 
             achievement.Name = schema.Name;
             achievement.DateAchieved = schema.DateAchieved;
             achievement.Description = schema.Description;
-            achievement.UserId = user.Id;
-            achievement.EventId = @event.Id;
+            achievement.UserId = schema.UserId;
+            achievement.EventId = schema.EventId;
 
             _context.Entry(achievement).State = EntityState.Modified;
             var result = await _context.SaveChangesAsync();
 
             return result > 0;
+        }
+
+        private async Task<string?> Validate(string userId, int? eventId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return "Người dùng không tồn tại";
+
+            if (eventId.HasValue)
+            {
+                var @event = _context.Events
+                    .Include(e => e.EventRegistrations)
+                    .FirstOrDefault(e => e.Id == eventId);
+                if (@event == null) return "Sự kiện không tồn tại";
+
+                if (!@event.EventRegistrations.Any(er => er.UserId == userId))
+                {
+                    return "Người dùng chưa đăng ký tham gia sự kiện này";
+                }
+            }
+
+            return null;
         }
     }
 }

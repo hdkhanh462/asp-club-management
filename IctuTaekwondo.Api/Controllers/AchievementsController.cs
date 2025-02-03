@@ -38,7 +38,7 @@ namespace IctuTaekwondo.Api.Controllers
         
         // GET: api/achievements
         // Lấy danh sách thành tích với phân trang
-        [HttpGet]
+        [HttpGet("/filter")]
         [Authorize]
         public async Task<IActionResult> GetAchievementsWithFilter(
             [FromQuery] int page = 1,
@@ -103,6 +103,14 @@ namespace IctuTaekwondo.Api.Controllers
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Message = "Cập nhật thành tích thất bại"
+                });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = ex.Message
                 });
             }
             catch (Exception ex)
