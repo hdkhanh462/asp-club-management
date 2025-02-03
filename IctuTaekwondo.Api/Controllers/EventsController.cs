@@ -5,6 +5,7 @@ using IctuTaekwondo.Shared.Schemas.Event;
 using IctuTaekwondo.Api.Services;
 using IctuTaekwondo.Shared.Responses;
 using System.Net;
+using IctuTaekwondo.Shared.Enums;
 
 namespace IctuTaekwondo.Api.Controllers.Api
 {
@@ -19,7 +20,7 @@ namespace IctuTaekwondo.Api.Controllers.Api
             _eventService = eventService;
         }
 
-        // GET: api/events
+        // GET: api/events?page=1&size=10
         // Lấy danh sách sự kiện với phân trang
         [HttpGet]
         [Authorize]
@@ -29,7 +30,26 @@ namespace IctuTaekwondo.Api.Controllers.Api
         {
             var events = await _eventService.GetAllAsync(page, size);
 
-            return Ok(new ApiResponse<List<EventResponse>>
+            return Ok(new ApiResponse<PaginationResponse<EventResponse>>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = events
+            });
+        }
+        
+        // GET: api/events/filter?page=1&size=10&name=abc&status=1
+        // Lọc danh sách sự kiện với phân trang
+        [HttpGet("filter")]
+        [Authorize]
+        public async Task<IActionResult> GetEventsWithFilter(
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10, 
+            [FromQuery] string? name = null,
+            [FromQuery] EventStatus? status = null)
+        {
+            var events = await _eventService.GetAllWithFilterAsync(page, size, name, status);
+
+            return Ok(new ApiResponse<PaginationResponse<EventResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = events

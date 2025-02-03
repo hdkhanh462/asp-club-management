@@ -1,4 +1,5 @@
-﻿using IctuTaekwondo.Api.Data;
+﻿using System.Buffers;
+using IctuTaekwondo.Api.Data;
 using IctuTaekwondo.Api.Mappers;
 using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Enums;
@@ -104,7 +105,7 @@ namespace IctuTaekwondo.Api.Services
         {
             var query = _context.Achievements.AsQueryable();
 
-            if (!string.IsNullOrEmpty(name)) query = query.Where(f => f.Name == name);
+            if (!string.IsNullOrEmpty(name)) query = query.Where(p => EF.Functions.Like(p.Name, $"%{name}%"));
 
             if (!string.IsNullOrEmpty(userId)) query = query.Where(f => f.UserId == userId);
 

@@ -1,6 +1,11 @@
-﻿using IctuTaekwondo.Api.Data;
+﻿using System.Net;
+using IctuTaekwondo.Api.Data;
+using IctuTaekwondo.Api.Mappers;
 using IctuTaekwondo.Api.Models;
+using IctuTaekwondo.Shared.Responses;
+using IctuTaekwondo.Shared.Responses.Event;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IctuTaekwondo.Api.Services
 {
@@ -40,9 +45,10 @@ namespace IctuTaekwondo.Api.Services
 
     public interface IEventRegisterationService
     {
-        Task<EventRegisterationResult> RegisterEvent(int id, string? userId, bool isCheckValid = false);
-        Task<EventRegisterationResult> UnregisterEvent(int id, string? userId);
-        Task<Event?> GetEventWithRegisterationAsync(int id);
+        Task<EventRegisterationResult> RegisterAsync(int id, string? userId, bool isCheckValid = false);
+        Task<EventRegisterationResult> UnregisterAsync(int id, string? userId);
+        Task<Event?> GetAllAsync(int id);
+        public PaginationResponse<UserResgiteredEventResponse> GetAllRegisteration(Event @event, int page, int size);
     }
 
     // Lớp dịch vụ để xử lý các thao tác đăng ký sự kiện  
@@ -57,10 +63,10 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức để đăng ký người dùng cho một sự kiện  
-        public async Task<EventRegisterationResult> RegisterEvent(int id, string? userId, bool isCheckValid = false)
+        public async Task<EventRegisterationResult> RegisterAsync(int id, string? userId, bool isCheckValid = false)
         {
             // Lấy sự kiện cùng với các đăng ký của nó  
-            var @event = await GetEventWithRegisterationAsync(id);
+            var @event = await GetAllAsync(id);
             if (@event == null) return EventRegisterationResult.EventNotFound;
 
             // Kiểm tra xem sự kiện có hợp lệ để đăng ký không  
@@ -93,10 +99,10 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức để hủy đăng ký người dùng khỏi một sự kiện  
-        public async Task<EventRegisterationResult> UnregisterEvent(int id, string? userId)
+        public async Task<EventRegisterationResult> UnregisterAsync(int id, string? userId)
         {
             // Lấy sự kiện cùng với các đăng ký của nó  
-            var @event = await GetEventWithRegisterationAsync(id);
+            var @event = await GetAllAsync(id);
             if (@event == null) return EventRegisterationResult.EventNotFound;
 
             // Tìm đăng ký của người dùng  
@@ -114,7 +120,7 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức để lấy một sự kiện cùng với các đăng ký của nó theo ID sự kiện  
-        public async Task<Event?> GetEventWithRegisterationAsync(int id)
+        public async Task<Event?> GetAllAsync(int id)
         {
             return await _context.Events
                 .Include(e => e.EventRegistrations)
@@ -141,6 +147,27 @@ namespace IctuTaekwondo.Api.Services
             }
 
             return EventRegisterationResult.Success;
+        }
+
+        // Phương thức lấy tất cả người dùng đã đăng ký của sự kiện
+        public PaginationResponse<UserResgiteredEventResponse> GetAllRegisteration(Event @event, int page, int size)
+        {
+            var registrations = @event.EventRegistrations
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Select(er =>
+                {
+                    var user = er.User.ToUserResgiteredEventResponse();
+                    user.RegisteredAt = er.CreatedAt;
+                    return user;
+                })
+                .ToList();
+
+            return new PaginationResponse<UserResgiteredEventResponse>(registrations.Count, size)
+            {
+                CurrentPage = page,
+                Items = registrations
+            };
         }
     }
 }

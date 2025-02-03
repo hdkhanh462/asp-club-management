@@ -19,7 +19,7 @@ namespace IctuTaekwondo.Api.Controllers
             _achievementService = achievementService;
         }
 
-        // GET: api/achievements
+        // GET: api/achievements?page=1&size=10
         // Lấy danh sách thành tích với phân trang
         [HttpGet]
         [Authorize]
@@ -35,9 +35,9 @@ namespace IctuTaekwondo.Api.Controllers
                 Data = achievements
             });
         }
-        
-        // GET: api/achievements
-        // Lấy danh sách thành tích với phân trang
+
+        // GET: api/achievements?page=1&size=10&name=abc&userId=abc123&eventId=123&start=2025-01-01&end=2025-01-31
+        // Lọc danh sách thành tích với phân trang
         [HttpGet("/filter")]
         [Authorize]
         public async Task<IActionResult> GetAchievementsWithFilter(

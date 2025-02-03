@@ -64,4 +64,16 @@ namespace IctuTaekwondo.Shared.Enums
         [Display(Name = "Quản trị viên hệ thống")]
         Admin,
     }
+
+    public enum EventStatus
+    {
+        [Display(Name = "Chưa diễn ra")]
+        NotStarted,
+
+        [Display(Name = "Đã bắt đầu")]
+        Started,
+        
+        [Display(Name = "Đã kết thúc")]
+        Ended,
+    }
 }

@@ -28,7 +28,7 @@ namespace IctuTaekwondo.Api.Controllers
         public async Task<IActionResult> RegisterEvent(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var result = await _service.RegisterEvent(id, userId, true);
+            var result = await _service.RegisterAsync(id, userId, true);
 
             if (result != EventRegisterationResult.Success) return BadRequest(new ApiResponse<object>
             {
@@ -50,7 +50,7 @@ namespace IctuTaekwondo.Api.Controllers
         public async Task<IActionResult> UnregisterEvent(int id)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var result = await _service.UnregisterEvent(id, userId);
+            var result = await _service.UnregisterAsync(id, userId);
 
             if (result != EventRegisterationResult.Success) return BadRequest(new ApiResponse<object>
             {
@@ -65,8 +65,8 @@ namespace IctuTaekwondo.Api.Controllers
             });
         }
 
-        // GET : api/events/5/registrations
-        // Lấy danh sách người đăng ký tham gia sự kiện
+        // GET : api/events/5/registrations?page=1&size=10
+        // Lấy danh sách người đăng ký tham gia sự kiện với phân trang
         [HttpGet("{id}/registrations")]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetEventRegistrations(
@@ -74,28 +74,19 @@ namespace IctuTaekwondo.Api.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
         {
-            var @event = await _service.GetEventWithRegisterationAsync(id);
+            var @event = await _service.GetAllAsync(id);
             if (@event == null) return NotFound(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Sự kiện không tồn tại"
             });
 
-            var registrations = @event.EventRegistrations
-                .Skip((page - 1) * size)
-                .Take(size)
-                .Select(er =>
-                {
-                    var user = er.User.ToUserResgiteredEventResponse();
-                    user.RegisteredAt = er.CreatedAt;
-                    return user;
-                })
-                .ToList();
+            var paginator = _service.GetAllRegisteration(@event, page, size);
 
-            return Ok(new ApiResponse<object>
+            return Ok(new ApiResponse<PaginationResponse<UserResgiteredEventResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
-                Data = registrations
+                Data = paginator
             });
         }
 
@@ -107,7 +98,7 @@ namespace IctuTaekwondo.Api.Controllers
             int id,
             [FromQuery] string userId)
         {
-            var result = await _service.RegisterEvent(id, userId);
+            var result = await _service.RegisterAsync(id, userId);
             if (result != EventRegisterationResult.Success) return BadRequest(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.BadRequest,
@@ -129,7 +120,7 @@ namespace IctuTaekwondo.Api.Controllers
             int id,
             string userId)
         {
-            var result = await _service.UnregisterEvent(id, userId);
+            var result = await _service.UnregisterAsync(id, userId);
             if (result != EventRegisterationResult.Success) return BadRequest(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.BadRequest,
