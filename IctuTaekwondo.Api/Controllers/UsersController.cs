@@ -25,12 +25,32 @@ namespace IctuTaekwondo.Api.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
         {
-            var users = await _userService.GetAllAsync(page, size);
+            var paginator = await _userService.GetAllAsync(page, size);
 
-            return Ok(new ApiResponse<List<UserResponse>>
+            return Ok(new ApiResponse<PaginationResponse<UserResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
-                Data = users
+                Data = paginator
+            });
+        }
+        
+        [HttpGet("filter")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUsersWithFilter(
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10,
+            [FromQuery] string? fullname = null,
+            [FromQuery] string? email = null,
+            [FromQuery] string? username = null,
+            [FromQuery] string? phone = null)
+        {
+            var paginator = await _userService
+                .GetAllWithFilterAsync(page, size, fullname, email, username, phone);
+
+            return Ok(new ApiResponse<PaginationResponse<UserResponse>>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = paginator
             });
         }
 
