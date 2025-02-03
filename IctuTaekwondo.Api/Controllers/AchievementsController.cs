@@ -29,7 +29,36 @@ namespace IctuTaekwondo.Api.Controllers
         {
             var achievements = await _achievementService.GetAllAsync(page, size);
 
-            return Ok(new ApiResponse<List<AchievementResponse>>
+            return Ok(new ApiResponse<PaginationResponse<AchievementResponse>>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Data = achievements
+            });
+        }
+        
+        // GET: api/achievements
+        // Lấy danh sách thành tích với phân trang
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAchievementsWithFilter(
+            [FromQuery] int page = 1,
+            [FromQuery] int size = 10, 
+            [FromQuery] string? name = null,
+            [FromQuery] string? userId = null,
+            [FromQuery] int? eventId = null,
+            [FromQuery] DateOnly? start = null,
+            [FromQuery] DateOnly? end = null)
+        {
+            if (end <= start) return BadRequest(new ApiResponse<object>
+            {
+                StatusCode  = HttpStatusCode.BadRequest,
+                Message = "Ngày bắt đầu phải lớn hơn Ngày kết thúc"
+            });
+
+            var achievements = await _achievementService
+                .GetAllWithFilterAsync(page, size, name, userId, eventId, start, end);
+
+            return Ok(new ApiResponse<PaginationResponse<AchievementResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = achievements

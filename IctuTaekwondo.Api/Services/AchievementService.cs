@@ -117,6 +117,10 @@ namespace IctuTaekwondo.Api.Services
 
             if (!string.IsNullOrEmpty(name)) query = query.Where(f => f.Name == name);
 
+            if (!string.IsNullOrEmpty(userId)) query = query.Where(f => f.UserId == userId);
+
+            if (eventId.HasValue) query = query.Where(f => f.EventId == eventId.Value);
+
             if (startDate.HasValue) query = query.Where(f => f.DateAchieved >= startDate.Value);
 
             if (endDate.HasValue) query = query.Where(f => f.DateAchieved <= endDate.Value);
