@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace IctuTaekwondo.Shared.DataAnnotations
 {
-    public class FileUpload : ValidationAttribute
+    public class FileUploadAttribute : ValidationAttribute
     {
         public int MaxFileSizeMb { get; set; } = 1;
         public string[] AllowedFileExtentions { get; set; } = [".jpg", ".jpeg", ".png",];

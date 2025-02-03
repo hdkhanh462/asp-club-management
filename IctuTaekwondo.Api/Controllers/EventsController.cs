@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using IctuTaekwondo.Api.Mappers;
-using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Responses.Event;
 using IctuTaekwondo.Shared.Schemas.Event;
-using IctuTaekwondo.Api.Data;
 using IctuTaekwondo.Api.Services;
 using IctuTaekwondo.Shared.Responses;
 using System.Net;
-using Microsoft.Extensions.Logging;
 
 namespace IctuTaekwondo.Api.Controllers.Api
 {
@@ -27,6 +22,7 @@ namespace IctuTaekwondo.Api.Controllers.Api
         // GET: api/events
         // Lấy danh sách sự kiện với phân trang
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetEvents(
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
@@ -43,6 +39,7 @@ namespace IctuTaekwondo.Api.Controllers.Api
         // GET: api/events/5
         // Lấy thông tin chi tiết sự kiện theo id
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetEvent(int id)
         {
             var @event = await _eventService.GetByIdAsync(id);

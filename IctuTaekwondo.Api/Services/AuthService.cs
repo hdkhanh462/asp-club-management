@@ -130,7 +130,9 @@ namespace IctuTaekwondo.Api.Services
             return GenerateJwt(claims);
         }
 
-        public JwtResponse GenerateJwt(List<Claim> claims, DateTime? expires = null, string? algorithm = SecurityAlgorithms.HmacSha256)
+        public JwtResponse GenerateJwt(List<Claim> claims, 
+            DateTime? expires = null, 
+            string algorithm = SecurityAlgorithms.HmacSha256)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var signingCredentials = new SigningCredentials(key, algorithm);

@@ -5,12 +5,12 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
     public class LoginSchema
     {
         [Display(Name = "Địa chỉ email")]
-        [Required(ErrorMessage = "Trường bắt buộc")]
+        [Required(ErrorMessage = "Địa chỉ email không được để trống")]
         [EmailAddress(ErrorMessage = "Định dạng email không chính xác")]
         public string Email { get; set; }
 
         [Display(Name = "Mật khẩu")]
-        [Required(ErrorMessage = "Trường bắt buộc")]
+        [Required(ErrorMessage = "Mật khẩu không được để trống")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
     }

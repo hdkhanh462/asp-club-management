@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Xml.Linq;
 using IctuTaekwondo.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,18 +11,14 @@ namespace IctuTaekwondo.Api.Models
         [Key]
         public int Id { get; set; }
 
-        [StringLength(10)]
-        public Gender? Gender { get; set; } = null!;
-
+        [StringLength(20)]
+        public Gender? Gender { get; set; } 
         public DateOnly? DateOfBirth { get; set; } 
-
-        public string? Address { get; set; } 
-
-        [StringLength(50)]
-        public RankName? CurrentRank { get; set; } = null!;
-
+        public string? Address { get; set; }
+        
+        [StringLength(20)]
+        public RankName? CurrentRank { get; set; } 
         public DateOnly? JoinDate { get; set; } 
-
         public string UserId { get; set; } = null!;
 
         [ForeignKey("UserId")]

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
@@ -7,11 +6,8 @@ namespace IctuTaekwondo.Api.Models
 {
     public class User : IdentityUser
     {
-        [DisplayName("Họ và tên")]
-        [MaxLength(50)]
+        [StringLength(50, MinimumLength = 6)]
         public string FullName { get; set; } = null!;
-
-        [DisplayName("Địa chỉ avatar")]
         public string? AvatarUrl { get; set; } 
 
         [InverseProperty("User")]

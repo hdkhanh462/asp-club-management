@@ -7,12 +7,12 @@ namespace IctuTaekwondo.Shared.Schemas.Account
     public class UserUpdateSchema : UserProfileSchema
     {
         [Display(Name = "Số điện thoại")]
-        [RegularExpression(@"^0\d{9,10}$", ErrorMessage = "Số điện thoại không hợp lệ.")]
+        [RegularExpression(@"^0\d{9,10}$", ErrorMessage = "Số điện thoại không hợp lệ")]
         public string? PhoneNumber { get; set; }
 
         [Display(Name = "Họ và tên")]
-        [Required(ErrorMessage = "Họ và tên không được để trống.")]
-        [StringLength(50, MinimumLength = 6, ErrorMessage = "Họ và tên phải có độ dài từ 6 đến 50 ký tự.")]
+        [Required(ErrorMessage = "Họ và tên không được để trống")]
+        [StringLength(50, MinimumLength = 6, ErrorMessage = "Họ và tên phải có độ dài từ 6 đến 50 ký tự")]
         public string FullName { get; set; }
 
         [Display(Name = "Ảnh đại diện")]
@@ -42,8 +42,8 @@ namespace IctuTaekwondo.Shared.Schemas.Account
     public class AdminUserUpdateSchema : UserUpdateSchema
     {
         [Display(Name = "Địa chỉ email")]
-        [Required(ErrorMessage = "Địa chỉ email không được để trống.")]
-        [EmailAddress(ErrorMessage = "Địa chỉ email không hợp lệ.")]
+        [Required(ErrorMessage = "Địa chỉ email không được để trống")]
+        [EmailAddress(ErrorMessage = "Địa chỉ email không hợp lệ")]
         public string Email { get; set; }
     }
 }

@@ -8,20 +8,16 @@ namespace IctuTaekwondo.Api.Models
         [Key]
         public int Id { get; set; }
 
-        [StringLength(10)]
+        [StringLength(20)]
         public TransactionType Type { get; set; }
 
-        [StringLength(50)]
-        public string Category { get; set; } = null!;
+        [StringLength(50, MinimumLength = 2)]
+        public string? Category { get; set; }
 
-        public int Amount { get; set; }
-
-        //[Column(TypeName = "timestamp without time zone")]
+        [Range(1000, long.MaxValue)]
+        public long Amount { get; set; }
         public DateTime TransactionDate { get; set; }
-
-        public string? Description { get; set; } 
-
-        //[Column(TypeName = "timestamp without time zone")]
+        public string? Description { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 }

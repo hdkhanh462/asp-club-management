@@ -7,7 +7,6 @@ namespace IctuTaekwondo.Shared.Responses.Event
     {
         public int Id { get; set; }
 
-        [Display(Name = "Ngày đăng ký")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime RegistrationDate { get; set; }
 

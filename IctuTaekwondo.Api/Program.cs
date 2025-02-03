@@ -87,6 +87,8 @@ builder.Services.AddScoped<IAuthService ,AuthService>();
 builder.Services.AddScoped<IUserService , UserService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
+builder.Services.AddScoped<IAchievementService, AchievementService>();
+builder.Services.AddScoped<IFinanceService, FinanceService>();
 
 builder.Services.AddCors(options =>
 {

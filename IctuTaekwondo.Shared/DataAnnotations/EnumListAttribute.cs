@@ -3,9 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IctuTaekwondo.Shared.DataAnnotations
 {
-    public class ValidEnumList : ValidationAttribute
+    public class EnumListAttribute : ValidationAttribute
     {
-        public Type EnumType { get; set; } = null!;
+        private readonly Type _enumType;
+
+        public EnumListAttribute(Type enumType)
+        {
+            _enumType = enumType;
+        }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
@@ -14,7 +19,7 @@ namespace IctuTaekwondo.Shared.DataAnnotations
                 return new ValidationResult(ErrorMessage);
             }
 
-            var validValues = Enum.GetValues(EnumType).Cast<object>().ToHashSet();
+            var validValues = Enum.GetValues(_enumType).Cast<object>().ToHashSet();
 
             foreach (var item in enumerable)
             {
