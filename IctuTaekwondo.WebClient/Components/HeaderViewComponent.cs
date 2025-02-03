@@ -16,7 +16,7 @@ namespace IctuTaekwondo.WebClient.Components
         {
             if (User?.Identity?.IsAuthenticated == false) return View("LoggedOutNavButton");
 
-            var user = _authService.GetUserAsync(Request.Cookies);
+            var user = _authService.GetUser(Request.Cookies);
             if (user == null) return View("LoggedOutNavButton");
 
             return View("LoggedInNavButton", user);

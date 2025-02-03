@@ -16,7 +16,7 @@
 </head>
 <body>
 	@await Html.PartialAsync("Partials/_NavbarPartial.cshtml")
-	@await Html.PartialAsync("Partials/_SidebarPartial.cshtml")
+	@await Component.InvokeAsync("Sidebar")
 
 	<div class="sm:ml-64">
 		<div class="p-4">

@@ -20,7 +20,7 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize]
         public IActionResult Profile()
         {
-            var userDetail = _accountService.GetProfileAsync(Request.Cookies);
+            var userDetail = _accountService.GetProfile(Request.Cookies);
             if (userDetail == null)
             {
                 _authService.Logout(Request.Cookies, Response.Cookies);
@@ -33,7 +33,7 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize]
         public IActionResult UpdateProfile()
         {
-            var userDetail = _accountService.GetProfileAsync(Request.Cookies);
+            var userDetail = _accountService.GetProfile(Request.Cookies);
             if (userDetail == null)
             {
                 _authService.Logout(Request.Cookies, Response.Cookies);

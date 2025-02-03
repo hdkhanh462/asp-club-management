@@ -10,8 +10,8 @@ namespace IctuTaekwondo.WebClient.Services
 {
     public interface IAccountService : ICallApiService
     {
-        UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies);
-        UserResponse? GetUserAsync(IRequestCookieCollection requestCookies);
+        UserFullDetailResponse? GetProfile(IRequestCookieCollection requestCookies);
+        UserResponse? GetUser(IRequestCookieCollection requestCookies);
         Task<bool> UpdateProfileAsync(UserUpdateSchema schema,
             ModelStateDictionary modelState, 
             IRequestCookieCollection requestCookies);
@@ -31,7 +31,7 @@ namespace IctuTaekwondo.WebClient.Services
             _apiHelper = apiHelper;
         }
 
-        public UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies)
+        public UserFullDetailResponse? GetProfile(IRequestCookieCollection requestCookies)
         {
             if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
 
@@ -43,7 +43,7 @@ namespace IctuTaekwondo.WebClient.Services
             return _apiHelper.GetAsync<UserFullDetailResponse>("api/account/profile").Result.Data;
         }
 
-        public UserResponse? GetUserAsync(IRequestCookieCollection requestCookies)
+        public UserResponse? GetUser(IRequestCookieCollection requestCookies)
         {
             if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
 
