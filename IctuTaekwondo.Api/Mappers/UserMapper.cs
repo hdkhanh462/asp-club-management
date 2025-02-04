@@ -15,6 +15,7 @@ namespace IctuTaekwondo.Api.Mappers
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
                 AvatarUrl = user.AvatarUrl,
+                CreatedAt = user.CreatedAt,
             };
         }
 
@@ -41,6 +42,7 @@ namespace IctuTaekwondo.Api.Mappers
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
                 AvatarUrl = user.AvatarUrl,
+                CreatedAt = user.CreatedAt,
                 Profile = user.UserProfile != null ? ToUserProfileResponse(user.UserProfile) : new UserProfileResponse(),
             };
         }

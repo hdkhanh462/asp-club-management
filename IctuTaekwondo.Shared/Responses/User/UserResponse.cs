@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace IctuTaekwondo.Shared.Responses.User
 {
@@ -19,5 +20,8 @@ namespace IctuTaekwondo.Shared.Responses.User
         public string FullName { get; set; }
 
         public string? AvatarUrl { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? CreatedAt { get; set; }
     }
 }

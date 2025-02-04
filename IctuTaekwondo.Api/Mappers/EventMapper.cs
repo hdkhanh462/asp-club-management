@@ -30,7 +30,7 @@ namespace IctuTaekwondo.Api.Mappers
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
-                AvatarUrl = user.AvatarUrl
+                AvatarUrl = user.AvatarUrl,
             };
         }
 

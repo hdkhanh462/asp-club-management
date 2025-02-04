@@ -36,7 +36,8 @@ namespace IctuTaekwondo.Api.Data
                     FullName = "Admin",
                     UserName = adminEmail,
                     Email = adminEmail,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 var result = await userManager.CreateAsync(adminUser, adminPassword);

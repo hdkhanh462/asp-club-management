@@ -12,6 +12,12 @@ namespace IctuTaekwondo.WebClient.Services
         public Task<PaginationResponse<UserResponse>?> GetAllAsync(
             int page, 
             int size,
+            List<string> search,
+            List<string> order,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies);
+        public Task<bool> DeleteAsnyc(
+            int  id, 
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
     }
@@ -27,9 +33,8 @@ namespace IctuTaekwondo.WebClient.Services
             _apiHelper = apiHelper;
         }
 
-        public async Task<PaginationResponse<UserResponse>?> GetAllAsync(
-            int page,
-            int size,
+        public async Task<bool> DeleteAsnyc(
+            int id, 
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies)
         {
@@ -41,7 +46,38 @@ namespace IctuTaekwondo.WebClient.Services
                 }
             });
 
-            var response = await _apiHelper.GetAsync<PaginationResponse<UserResponse>>($"api/users?page={page}&size={size}");
+            var response = await _apiHelper.DeleteAsync<bool>($"api/users/delete/{id}");
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<bool>(response, modelState);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<PaginationResponse<UserResponse>?> GetAllAsync(
+            int page,
+            int size,
+            List<string> search,
+            List<string> order,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies)
+        {
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                {
+                    GlobalConst.ApiAuthorizationKey,
+                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}"
+                }
+            });
+
+            var response = await _apiHelper
+                .GetAsync<PaginationResponse<UserResponse>>($"api/users/filter?" +
+                $"page={page}&" +
+                $"size={size}&" +
+                $"search={string.Join("&search=", search)}&" +
+                $"order={string.Join("&order=", order)}");
+
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 HandleErrors<PaginationResponse<UserResponse>>(response, modelState);

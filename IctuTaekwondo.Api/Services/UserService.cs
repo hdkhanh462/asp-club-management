@@ -2,12 +2,11 @@
 using IctuTaekwondo.Api.Mappers;
 using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Responses;
-using IctuTaekwondo.Shared.Responses.Achievement;
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Schemas.Account;
+using IctuTaekwondo.Shared.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace IctuTaekwondo.Api.Services
 {
@@ -23,28 +22,34 @@ namespace IctuTaekwondo.Api.Services
         Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
             int page,
             int size,
-            string? fullName = null,
-            string? email = null,
-            string? userName = null,
-            string? phoneNumber = null);
+            List<string> search,
+            List<string> order);
     }
 
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
         private readonly IUploadFileService _fileService;
         private readonly UserManager<User> _userManager;
         private readonly ApiDbContext _context;
+        private readonly List<string> _orderable;
 
-        public UserService(ILogger<UserService> logger, 
-            IUploadFileService fileService, 
-            UserManager<User> userManager, 
+        public UserService(ILogger<UserService> logger,
+            IUploadFileService fileService,
+            UserManager<User> userManager,
             ApiDbContext context)
         {
             _logger = logger;
             _fileService = fileService;
             _userManager = userManager;
             _context = context;
+            _orderable = new List<string>()
+            {
+                nameof(User.FullName),
+                $"-{nameof(User.FullName)}",
+                nameof(User.CreatedAt),
+                $"-{nameof(User.CreatedAt)}",
+            };
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(string id, ChangePasswordSchema schema)
@@ -91,22 +96,28 @@ namespace IctuTaekwondo.Api.Services
         }
 
         public async Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
-            int page, 
-            int size, 
-            string? fullName = null, 
-            string? email = null, 
-            string? userName = null, 
-            string? phoneNumber = null)
+            int page,
+            int size,
+            List<string> search,
+            List<string> order)
         {
             var query = _context.Users.AsQueryable();
 
-            if (!string.IsNullOrEmpty(fullName)) query = query.Where(p => EF.Functions.Like(p.FullName, $"%{fullName}%"));
+            foreach (var item in search)
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    query = query.Where(p =>
+                        EF.Functions.Like(p.FullName, $"%{item}%") ||
+                        EF.Functions.Like(p.PhoneNumber, $"%{item}%") ||
+                        EF.Functions.Like(p.Email, $"%{item}%"));
+                }
+            }
 
-            if (!string.IsNullOrEmpty(email)) query = query.Where(p => EF.Functions.Like(p.Email, $"%{email}%"));
-
-            if (!string.IsNullOrEmpty(userName)) query = query.Where(p => EF.Functions.Like(p.UserName, $"%{userName}%"));
-
-            if (!string.IsNullOrEmpty(phoneNumber)) query = query.Where(p => EF.Functions.Like(p.PhoneNumber, $"%{phoneNumber}%"));
+            if (order.Any(s => !string.IsNullOrEmpty(s)))
+                query = OrderHelper.OrderByMultiple<User>(query, order, _orderable);
+            else
+                query = query.OrderByDescending(u => u.CreatedAt);
 
             var users = await query.ToListAsync();
 
