@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.Json;
 using IctuTaekwondo.Shared.Responses;
 using Microsoft.AspNetCore.Http;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IctuTaekwondo.Shared.Utils;
 
@@ -19,6 +18,7 @@ public class ApiHelper
         _httpClient = httpClient;
         _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions
         {
+            IncludeFields = true,
             PropertyNameCaseInsensitive = true
         };
     }
@@ -138,12 +138,12 @@ public class ApiHelper
             var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(responseContent, _jsonSerializerOptions);
             return apiResponse ?? CreateDefaultResponse<T>(response);
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
             return new ApiResponse<T>
             {
                 StatusCode = HttpStatusCode.InternalServerError,
-                Message = $"Invalid JSON: {responseContent}"
+                Message = $"Invalid JSON: {ex.Message}"
             };
         }
     }

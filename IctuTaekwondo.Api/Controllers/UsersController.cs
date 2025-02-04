@@ -26,7 +26,6 @@ namespace IctuTaekwondo.Api.Controllers
             [FromQuery] int size = 10)
         {
             var paginator = await _userService.GetAllAsync(page, size);
-
             return Ok(new ApiResponse<PaginationResponse<UserResponse>>
             {
                 StatusCode = HttpStatusCode.OK,

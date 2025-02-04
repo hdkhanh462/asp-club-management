@@ -83,15 +83,13 @@ namespace IctuTaekwondo.Api.Services
             var achievements = await _context.Achievements
                 .Include(e => e.User)
                 .Include(e => e.Event)
-                .Skip((page - 1) * size)
-                .Take(size)
                 .ToListAsync();
 
-            return new PaginationResponse<AchievementResponse>(achievements.Count, size)
-            {
-                CurrentPage = page,
-                Items = achievements.Select(e => e.ToAchievementResponse()).ToList()
-            };
+            return new PaginationResponse<AchievementResponse>(
+                page, size, 
+                achievements.Count,
+                achievements.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToAchievementResponse()).ToList());
         }
 
         public async Task<PaginationResponse<AchievementResponse>> GetAllWithFilterAsync(
@@ -118,15 +116,13 @@ namespace IctuTaekwondo.Api.Services
             var achievements = await query
                 .Include(e => e.User)
                 .Include(e => e.Event)
-                .Skip((page - 1) * size)
-                .Take(size)
                 .ToListAsync();
 
-            return new PaginationResponse<AchievementResponse>(achievements.Count, size)
-            {
-                CurrentPage = page,
-                Items = achievements.Select(e => e.ToAchievementResponse()).ToList()
-            };
+            return new PaginationResponse<AchievementResponse>(
+                page, size,
+                achievements.Count,
+                achievements.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToAchievementResponse()).ToList());
         }
 
         public async Task<AchievementResponse?> GetByIdAsync(int id)

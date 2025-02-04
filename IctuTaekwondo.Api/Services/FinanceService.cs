@@ -8,6 +8,7 @@ using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.Finance;
 using IctuTaekwondo.Shared.Schemas.Finance;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IctuTaekwondo.Api.Services
 {
@@ -71,9 +72,7 @@ namespace IctuTaekwondo.Api.Services
             TransactionType? type,
             string[]? categories,
             DateTime? startDate,
-            DateTime? endDate,
-            int? page = null,
-            int? size = null)
+            DateTime? endDate)
         {
             var query = _context.Finances.AsQueryable();
 
@@ -85,13 +84,6 @@ namespace IctuTaekwondo.Api.Services
 
             if (endDate.HasValue) query = query.Where(f => f.TransactionDate <= endDate.Value);
 
-            if (page.HasValue && size.HasValue)
-            {
-                return await query
-                .Skip((page.Value - 1) * size.Value)
-                .Take(size.Value)
-                .ToListAsync();
-            }
             return await query.ToListAsync();
         }
 
@@ -136,26 +128,22 @@ namespace IctuTaekwondo.Api.Services
             DateTime? startDate = null,
             DateTime? endDate = null)
         {
-            var finances = await FilterAsync(type, categories, startDate, endDate, page, size);
-            return new PaginationResponse<FinanceResponse>(finances.Count, size)
-            {
-                CurrentPage = page,
-                Items = finances.Select(e => e.ToFinanceResponse()).ToList()
-            };
+            var finances = await FilterAsync(type, categories, startDate, endDate);
+            return new PaginationResponse<FinanceResponse>(
+                page, size,
+                finances.Count,
+                finances.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToFinanceResponse()).ToList());
         }
 
         public async Task<PaginationResponse<FinanceResponse>> GetAllAsync(int page, int size)
         {
-            var finances = await _context.Finances
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var finances = await _context.Finances.ToListAsync();
 
-            return new PaginationResponse<FinanceResponse>(finances.Count, size)
-            {
-                CurrentPage = page,
-                Items = finances.Select(e => e.ToFinanceResponse()).ToList()
-            };
+            return new PaginationResponse<FinanceResponse>(
+                page, size,
+                finances.Count,
+                finances.Skip((page - 1) * size).Take(size).Select(e => e.ToFinanceResponse()).ToList());
         }
 
         public async Task<FinanceResponse?> GetByIdAsync(int id)

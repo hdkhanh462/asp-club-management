@@ -1,0 +1,211 @@
+﻿@using IctuTaekwondo.Shared.Responses
+@using IctuTaekwondo.Shared.Responses.User
+@model PaginationResponse<UserResponse>
+@{
+	ViewData["Title"] = "Quản lý người dùng";
+	Layout = "_DashboardLayout";
+}
+
+<section class="bg-white py-4 antialiased dark:bg-gray-900">
+	<div class="mx-auto max-w-screen-lg px-4">
+
+		<nav class="mb-4 flex" aria-label="Breadcrumb">
+			<ol class="inline-flex items-center space-x-1 rtl:space-x-reverse md:space-x-2">
+				<li class="inline-flex items-center">
+					<a href="/" class="inline-flex items-center text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 dark:hover:text-white">
+						<svg class="me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+						</svg>
+						Trang chủ
+					</a>
+				</li>
+				<li>
+					<div class="flex items-center">
+						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+						</svg>
+						<a asp-controller="Users" asp-action="Index" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
+							Quản lý người dùng
+						</a>
+					</div>
+				</li>
+				<li aria-current="page">
+					<div class="flex items-center">
+						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+						</svg>
+						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Danh sách người dùng</span>
+					</div>
+				</li>
+			</ol>
+		</nav>
+
+		<h2 class="border-b border-gray-200 pb-4 text-xl font-semibold text-gray-900 dark:text-white dark:border-gray-700 sm:text-2xl">
+			Quản lý người dùng
+		</h2>
+
+		<div class="pt-6">
+			@if (Model?.Items != null)
+			{
+				<div class="relative border bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 sm:rounded-lg">
+					<div class="flex flex-col space-y-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
+						<div class="w-full md:w-1/2">
+							<form asp-action="Filter" method="get" class="flex items-center">
+								<div class="relative w-full">
+									<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+										<svg aria-hidden="true" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+											<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+										</svg>
+									</div>
+									<input name="search" type="text" id="search" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Tìm kiếm" required="">
+								</div>
+							</form>
+						</div>
+						<div class="flex-shrink-0 flex flex-col space-y-3 md:flex-row md:items-center md:space-y-0 md:space-x-3 lg:justify-end">
+							<button type="button" class="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+								<svg class="mr-2 size-4" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+									<path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+								</svg>
+								Thêm mới
+							</button>
+							<button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown" class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 md:w-auto dark:focus:ring-gray-700 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+								<svg class="-ml-1 mr-1.5 h-5 w-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+									<path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+								</svg>
+								Hành động
+							</button>
+							<div id="actionsDropdown" class="z-10 hidden w-44 divide-y divide-gray-100 rounded bg-white shadow dark:bg-gray-700 dark:divide-gray-600">
+								<div class="py-1">
+									<button type="submit" id="delete-action" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Xoá người dùng</button>
+								</div>
+							</div>
+							<a asp-controller="Users" asp-action="Filter" class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 md:w-auto dark:focus:ring-gray-700 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+								<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-2 size-4 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
+									<path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+								</svg>
+								Lọc
+							</a>
+						</div>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+							<thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+								<tr>
+									<th scope="col" class="p-4">
+										<div class="flex items-center">
+											<input id="checkbox-all" type="checkbox" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+											<label for="checkbox-all" class="sr-only">checkbox</label>
+										</div>
+									</th>
+									<th scope="col" class="px-4 py-3">Người dùng</th>
+									<th scope="col" class="px-4 py-3">Địa chỉ email</th>
+									<th scope="col" class="px-4 py-3">Số điện thoại</th>
+									<th scope="col" class="px-4 py-3">
+										<span class="sr-only">Actions</span>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var user in Model.Items)
+								{
+									<tr class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+										<td class="w-4 px-4 py-3">
+											<div class="flex items-center">
+												<input id="checkbox-table-@user.Id" value="@user.Id" table-checkbox type="checkbox" onclick="event.stopPropagation()" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+												<label for="checkbox-table-@user.Id" class="sr-only">checkbox</label>
+											</div>
+										</td>
+										<th scope="row" class="flex items-center whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+											@if (!string.IsNullOrEmpty(@user.AvatarUrl))
+											{
+												<div class="mr-3 size-8 overflow-hidden rounded-lg border">
+													<img class="w-full" src="@user.AvatarUrl" alt="@user.FullName" />
+												</div>
+											}
+											else
+											{
+												<div class="mr-3 flex size-8 items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-600">
+													<svg class="size-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+												</div>
+											}
+											<a asp-action="Detail" asp-route-id="@user.Id" class="font-medium hover:underline">@user.FullName</a>
+										</th>
+										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+											@user.Email
+										</td>
+										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+											@user.PhoneNumber
+										</td>
+										<td class="flex items-center justify-end px-4 py-3">
+											<button id="-dropdown-button-@user.Id" data-dropdown-toggle="dropdown-@user.Id" class="inline-flex items-center rounded-lg p-0.5 text-center text-sm font-medium text-gray-500 hover:text-gray-800 focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+												<svg class="h-5 w-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+													<path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+												</svg>
+											</button>
+											<div id="dropdown-@user.Id" class="z-10 hidden w-44 divide-y divide-gray-100 rounded bg-white shadow dark:bg-gray-700 dark:divide-gray-600">
+												<ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+													<li>
+														<a asp-action="Detail" asp-route-id="@user.Id" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi tiết</a>
+													</li>
+													<li>
+														<a asp-action="Edit" asp-route-id="@user.Id" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Cập nhật</a>
+													</li>
+												</ul>
+												<div class="py-1">
+													<a asp-action="Delete" asp-route-id="@user.Id" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Xoá</a>
+												</div>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+
+						<script>
+							$(document).ready(function() {
+								$('#checkbox-all').click(function() {
+									$('input[table-checkbox]').prop('checked', this.checked);
+								});
+								$('#delete-action').click(function() {
+									var selected = [];
+									$('input[table-checkbox]:checked').each(function() {
+										selected.push($(this).val());
+									});
+
+									$.ajax({
+										url: '/Users/Delete',
+										method: 'POST',
+										contentType: 'application/json',
+										data: JSON.stringify({ selectedIds: selected }),
+										success: function(response) {
+											// alert('Data submitted successfully!');
+											console.log(response);
+										},
+										error: function(error) {
+											// alert('Error submitting data!');
+											console.log(error);
+									}
+								});
+							});
+							});
+						</script>
+					</div>
+
+					<!-- Table Footer -->
+					@await Html.PartialAsync("Partials/_TableFooterPartial", new TableFooterViewModel
+					{
+						CurrentPage = Model.CurrentPage,
+						PageSize = Model.PageSize,
+						PageCount = Model.PageCount,
+						TotalItemCount = Model.TotalItemCount,
+						CurrentItemCount = Model.Items.Count,
+						HasPrevious = Model.HasPrevious,
+						HasNext = Model.HasNext,
+						ItemRange = Model.GetItemRange(),
+						DisplayPageRange = Model.GetDisplayPageRange(),
+					})
+				</div>
+			}
+		</div>
+	</div>
+</section>

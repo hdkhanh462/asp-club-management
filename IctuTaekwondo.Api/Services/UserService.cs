@@ -81,16 +81,13 @@ namespace IctuTaekwondo.Api.Services
 
         public async Task<PaginationResponse<UserResponse>> GetAllAsync(int page, int size)
         {
-            var users = await _userManager.Users
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
 
-            return new PaginationResponse<UserResponse>(users.Count, size)
-            {
-                CurrentPage = page,
-                Items = users.Select(u => u.ToUserResponse()).ToList()
-            };
+            return new PaginationResponse<UserResponse>(
+                page, size,
+                users.Count,
+                users.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToUserResponse()).ToList());
         }
 
         public async Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
@@ -111,16 +108,13 @@ namespace IctuTaekwondo.Api.Services
 
             if (!string.IsNullOrEmpty(phoneNumber)) query = query.Where(p => EF.Functions.Like(p.PhoneNumber, $"%{phoneNumber}%"));
 
-            var users = await query
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var users = await query.ToListAsync();
 
-            return new PaginationResponse<UserResponse>(users.Count, size)
-            {
-                CurrentPage = page,
-                Items = users.Select(u => u.ToUserResponse()).ToList()
-            };
+            return new PaginationResponse<UserResponse>(
+                page, size,
+                users.Count,
+                users.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToUserResponse()).ToList());
         }
 
         public async Task<UserResponse?> GetByIdAsync(string id)
