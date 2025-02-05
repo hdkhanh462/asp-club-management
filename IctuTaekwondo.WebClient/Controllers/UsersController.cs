@@ -1,4 +1,6 @@
-﻿using Htmx;
+﻿using System.Drawing;
+using System.Security.Claims;
+using Htmx;
 using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.WebClient.Models;
@@ -40,16 +42,19 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detail(string id)
         {
-            ViewData["Id"] = id;
-
             var user = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
             if (user == null) return NotFound();
 
-            return View(new UserUpdateSchema
+            var curentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (user.Id == curentUserId) return RedirectToAction("Profile", "Account");
+
+            return View(new AdminUserUpdateSchema
             {
+                Id = user.Id,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 AvatarUrl = user.AvatarUrl,
                 FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
                 Gender = user.Profile.Gender,
                 DateOfBirth = user.Profile.DateOfBirth,
                 Address = user.Profile.Address,
@@ -58,28 +63,12 @@ namespace IctuTaekwondo.WebClient.Controllers
             });
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Detail(string id, UserUpdateSchema schema)
-        {
-            ViewData["Id"] = id;
-            if (!ModelState.IsValid) return View(schema);
-
-            var isSucsess = await _userService.UpdateAsync(id, schema, ModelState, Request.Cookies);
-            if (!isSucsess) return View(schema);
-
-            TempData["SuccessMessage"] = "Cập nhật thành công";
-
-            return RedirectToAction("Detail");
-        }
-
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(string id, UserUpdateSchema schema)
+        public async Task<IActionResult> Update(string id, AdminUserUpdateSchema schema)
         {
             if (!Request.IsHtmx()) return BadRequest();
 
-            ViewData["Id"] = id;
             if (!ModelState.IsValid) return PartialView("_UpdateFormPartial", schema);
 
             var isSucsess = await _userService.UpdateAsync(id, schema, ModelState, Request.Cookies);
@@ -88,12 +77,19 @@ namespace IctuTaekwondo.WebClient.Controllers
             var userDetail = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
             if (userDetail == null) return PartialView("_UpdateFormPartial", schema);
 
-            TempData["SuccessMessage"] = "Cập nhật thành công";
-            return PartialView("_UpdateFormPartial", new UserUpdateSchema
+            Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
             {
+                icon = "success",
+                title = "Cập nhật thành công",
+            }));
+
+            return PartialView("_UpdateFormPartial", new AdminUserUpdateSchema
+            {
+                Id = userDetail.Id,
+                Email = userDetail.Email,
+                PhoneNumber = userDetail.PhoneNumber,
                 AvatarUrl = userDetail.AvatarUrl,
                 FullName = userDetail.FullName,
-                PhoneNumber = userDetail.PhoneNumber,
                 Gender = userDetail.Profile.Gender,
                 DateOfBirth = userDetail.Profile.DateOfBirth,
                 CurrentRank = userDetail.Profile.CurrentRank,
@@ -111,51 +107,42 @@ namespace IctuTaekwondo.WebClient.Controllers
             if (!Request.IsHtmx()) return BadRequest();
 
             var result = await _userService.DeleteAsnyc(id, ModelState, Request.Cookies);
-            await Task.Delay(TimeSpan.FromSeconds(15));
-            var toast = new ToastMessageModelView
-            {
-                Id = Guid.NewGuid().ToString(),
-            };
+            await Task.Delay(TimeSpan.FromSeconds(3));
 
             if (ModelState[string.Empty] == null)
             {
-                toast.Type = ToastType.Success;
-                toast.Message = "Xoá người dùng thành công";
                 Response.Htmx(h =>
                 {
                     if (!string.IsNullOrEmpty(next) && allowedRedirectUrl.Contains(next.ToLower()))
-                        h.WithTrigger("add-toast", new
+                        h.WithTrigger("add-sweetalert2-toast", new
                         {
-                            toastId = toast.GetHtmlId(),
-                            toastLifeTime = 3000,
-                            redirectUrl = next,
-                        },
-                        timing: HtmxTriggerTiming.AfterSwap);
+                            icon = "success",
+                            title = "Xoá người dùng thành công",
+                            redirectUrl = next
+                        });
                     else
-                        h.WithTrigger("add-toast", new
+                        h.WithTrigger("add-sweetalert2-toast", new
                         {
-                            toastId = toast.GetHtmlId(),
-                        },
-                        timing: HtmxTriggerTiming.AfterSwap)
-                        .WithTrigger("delete-elm", $"Row-{id}", timing: HtmxTriggerTiming.AfterSwap);
+                            icon = "success",
+                            title = "Xoá người dùng thành công",
+                        })
+                        .WithTrigger("delete-elm", $"Row-{id}");
                 });
 
-                return PartialView("Partials/_ToastMessagePartial", toast);
+                return NoContent();
             }
 
-            toast.Type = ToastType.Error;
-            toast.Message = "Xoá người dùng thất bại";
-            toast.Errors = ModelState[string.Empty]!.Errors;
             Response.Htmx(h =>
             {
-                h.WithTrigger("add-toast", new
+                h.WithTrigger("add-sweetalert2-toast", new
                 {
-                    toastId = toast.GetHtmlId()
-                },
-                timing: HtmxTriggerTiming.AfterSwap);
+                    icon = "error",
+                    title = "Xoá người dùng thất bại",
+                    errors = ModelState[string.Empty]!.Errors.Select(e => e.ErrorMessage).ToList()
+                });
             });
 
-            return PartialView("Partials/_ToastMessagePartial", toast);
+            return NoContent();
         }
     }
 }

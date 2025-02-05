@@ -1,5 +1,5 @@
 ﻿@using IctuTaekwondo.Shared.Enums
-@model IctuTaekwondo.Shared.Schemas.Account.UserUpdateSchema
+@model IctuTaekwondo.Shared.Schemas.Account.AdminUserUpdateSchema
 
 <div id="state-message" hx-swap-oob="true" class="col-span-1 lg:col-span-5">
 	@if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
@@ -19,25 +19,13 @@
 			</div>
 		</div>
 	}
-
-	@if (TempData["SuccessMessage"] != null)
-	{
-		<div class="mb-4 flex items-center rounded-lg bg-green-50 p-4 text-sm text-green-800 dark:bg-gray-800 dark:text-green-400" role="alert">
-			<svg class="shrink-0 me-3 inline h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-				<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
-			</svg>
-			<div class="font-medium">
-				@TempData["SuccessMessage"]
-			</div>
-		</div>
-	}
 </div>
 
 <form _="on htmx:beforeRequest set #update-user-btn.disabled to true end 
 		 on htmx:afterRequest set #update-user-btn.disabled to false"
 	  hx-put
 	  hx-action="Update"
-	  hx-route-id="@ViewData["Id"]"
+	  hx-route-id="@Model.Id"
 	  hx-trigger="update-user from:body"
 	  hx-swap="outerHTML"
 	  hx-indicator="#update-form-indicator"
@@ -45,6 +33,9 @@
 	  enctype="multipart/form-data"
 	  class="col-span-1 lg:col-span-4">
 	<div class="grid-cols-1 grid gap-4 sm:grid-cols-2">
+		<input asp-for="@Model.Id" value="@Model.Id" class="hidden" />
+		<input asp-for="@Model.Email" value="@Model.Email" class="hidden" />
+
 		<div class="col-span-2">
 			<div class="flex justify-center">
 				<label id="Avatar_Label" asp-for="@Model.Avatar" class="flex size-32 items-center justify-center overflow-hidden rounded-lg border bg-gray-100 hover:cursor-pointer dark:bg-gray-600">
@@ -58,8 +49,8 @@
 					}
 				</label>
 			</div>
-			<input asp-for="@Model.Avatar" class="hidden" type="file">
-			<input asp-for="@Model.AvatarUrl" class="hidden">
+			<input asp-for="@Model.Avatar" class="hidden" type="file" />
+			<input asp-for="@Model.AvatarUrl" class="hidden" />
 			<p class="mt-2 text-center text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.Avatar"></span>
 			</p>

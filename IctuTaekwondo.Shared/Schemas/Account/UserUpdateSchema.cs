@@ -41,9 +41,11 @@ namespace IctuTaekwondo.Shared.Schemas.Account
 
     public class AdminUserUpdateSchema : UserUpdateSchema
     {
+        public string Id { get; set; }
+
         [Display(Name = "Địa chỉ email")]
         [Required(ErrorMessage = "Địa chỉ email không được để trống")]
         [EmailAddress(ErrorMessage = "Địa chỉ email không hợp lệ")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }
