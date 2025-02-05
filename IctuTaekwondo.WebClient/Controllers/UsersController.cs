@@ -1,6 +1,10 @@
-﻿using IctuTaekwondo.WebClient.Services;
+﻿using Htmx;
+using IctuTaekwondo.Shared.Enums;
+using IctuTaekwondo.WebClient.Models;
+using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
@@ -32,11 +36,44 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             return View();
         }
-        
-        public async Task<IActionResult> Delete(int id)
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete(string id)
         {
+            if (!Request.IsHtmx()) return BadRequest();
+
             var result = await _userService.DeleteAsnyc(id, ModelState, Request.Cookies);
-            return View(result);
+            var toast = new ToastMessageModelView
+            {
+                Id = Guid.NewGuid().ToString(),
+            };
+
+            if (ModelState[string.Empty] == null)
+            {
+                toast.Type = ToastType.Success;
+                toast.Message = "Xoá người dùng thành công";
+                Response.Htmx(h =>
+                {
+                    h.WithTrigger("init-dismisses",
+                        new { toDismissId = toast.GetHtmlId() },
+                        timing: HtmxTriggerTiming.AfterSwap)
+                    .WithTrigger("delete-elm", $"row-{id}", timing: HtmxTriggerTiming.AfterSwap);
+                });
+
+                return PartialView("Partials/_ToastMessagePartial", toast);
+            }
+
+            toast.Type = ToastType.Error;
+            toast.Message = "Xoá người dùng thất bại";
+            toast.Errors = ModelState[string.Empty]!.Errors;
+            Response.Htmx(h =>
+            {
+                h.WithTrigger("init-dismisses",
+                        new { toDismissId = toast.GetHtmlId() },
+                        timing: HtmxTriggerTiming.AfterSwap);
+            });
+
+            return PartialView("Partials/_ToastMessagePartial", toast);
         }
     }
 }

@@ -61,7 +61,7 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
                 });
             }
 
@@ -77,7 +77,16 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
+                });
+            }
+
+            if (user.Email == IdentityDataSeeder.DefaultAdminUser.Email)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DeleteDefaultAdmin",
+                    Description = "Không thể xoá tài khoản Admin mặc định"
                 });
             }
 
@@ -167,7 +176,7 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
                 });
             }
 
@@ -193,7 +202,7 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
                 });
             }
 

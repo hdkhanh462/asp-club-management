@@ -120,7 +120,7 @@
 							<tbody>
 								@foreach (var user in Model.Items)
 								{
-									<tr class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+									<tr id="row-@user.Id" class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
 										<td class="w-4 px-4 py-3">
 											<div class="flex items-center">
 												<input id="checkbox-table-@user.Id" value="@user.Id" table-checkbox type="checkbox" onclick="event.stopPropagation()" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
@@ -167,7 +167,7 @@
 													</li>
 												</ul>
 												<div class="py-1">
-													<a asp-action="Delete" asp-route-id="@user.Id" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Xoá</a>
+													<div hx-delete hx-action="Delete" hx-route-id="@user.Id" hx-target="#toast-list" hx-swap="beforeend" class="block w-full select-none px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">Xoá</div>
 												</div>
 											</div>
 										</td>

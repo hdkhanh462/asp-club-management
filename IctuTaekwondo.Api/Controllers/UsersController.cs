@@ -92,7 +92,7 @@ namespace IctuTaekwondo.Api.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteUserProfile(string id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             var result = await _userService.DeleteAsync(id);
 

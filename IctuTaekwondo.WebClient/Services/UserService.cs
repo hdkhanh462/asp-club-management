@@ -16,8 +16,8 @@ namespace IctuTaekwondo.WebClient.Services
             List<string> order,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
-        public Task<bool> DeleteAsnyc(
-            int  id, 
+        public Task<string?> DeleteAsnyc(
+            string  id, 
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
     }
@@ -33,8 +33,8 @@ namespace IctuTaekwondo.WebClient.Services
             _apiHelper = apiHelper;
         }
 
-        public async Task<bool> DeleteAsnyc(
-            int id, 
+        public async Task<string?> DeleteAsnyc(
+            string id, 
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies)
         {
@@ -46,13 +46,12 @@ namespace IctuTaekwondo.WebClient.Services
                 }
             });
 
-            var response = await _apiHelper.DeleteAsync<bool>($"api/users/delete/{id}");
+            var response = await _apiHelper.DeleteAsync<string>($"api/users/{id}");
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                HandleErrors<bool>(response, modelState);
-                return false;
+                HandleErrors<string>(response, modelState);
             }
-            return true;
+            return response.Data;
         }
 
         public async Task<PaginationResponse<UserResponse>?> GetAllAsync(

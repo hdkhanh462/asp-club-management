@@ -4,6 +4,7 @@ module.exports = {
     content: [
         "./Pages/**/*.{html,cshtml,razor,js}",
         "./Views/**/*.{html,cshtml,razor,js}",
+        "./node_modules/flowbite/**/*.js",
     ],
     theme: {
         extend: {
