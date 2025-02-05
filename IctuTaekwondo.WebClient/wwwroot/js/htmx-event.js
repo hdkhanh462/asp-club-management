@@ -1,9 +1,20 @@
 ﻿$(document).ready(function () {
+    function isString(value) {
+        return typeof value !== 'string' || value.trim() === ''
+    }
+    function isValidUrlPath(path) {
+        const pattern = /^\/[a-zA-Z0-9_\-\/]*$/;
+
+        return pattern.test(path);
+    }
+
+    function isValidToastLifeTime(value) {
+        return typeof value === "number" && value >= 1000 && value <= 30000
+    }
+
     function getElement(id) {
-        if (typeof id !== 'string' || id.trim() === '') {
-            //console.error('Invalid ID:', id);
+        if (isString(id)) 
             return null;
-        }
 
         var elm = $(`#${id}`);
 
@@ -11,7 +22,6 @@
             console.warn(`No element found with ID ${id}.`);
             return null;
         }
-
         return elm;
     }
 
@@ -23,22 +33,27 @@
         }
     });
 
-    $(document.body).on("init-dismisses", function (evt) {
+    $(document.body).on("add-toast", function (evt) {
         initDismisses()
         console.log("Reinitialize all Dismisses.");
 
-        var toDismissElm = getElement(evt.detail.toDismissId)
+        var toDismissElm = getElement(evt.detail.toastId)
+        var toastLifeTime = isValidToastLifeTime(evt.detail.toastLifeTime)
+            ? evt.detail.toastLifeTime
+            : 5000
+                
         if (toDismissElm) {
             var dismissButton = toDismissElm.find("button[data-dismiss-target]")
             if (dismissButton.length) {
                 setTimeout(function () {
                     dismissButton.click();
-                    console.log(`Element with ID ${evt.detail.toDismissId} dismissed.`);
                     setTimeout(function () {
                         toDismissElm.remove();
-                        console.log(`Element with ID ${evt.detail.toDismissId} removed.`);
+                        if (isValidUrlPath(evt.detail.redirectUrl))
+                            window.location.href = evt.detail.redirectUrl;
+                        console.log(`Element with ID ${evt.detail.toastId} removed.`);
                     }, 400)
-                }, 5000)
+                }, toastLifeTime)
             }
         }
     });

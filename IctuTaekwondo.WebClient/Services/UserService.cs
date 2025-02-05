@@ -1,23 +1,35 @@
-﻿using System.Net;
+﻿using System.Drawing;
+using System.Net;
 using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.User;
+using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.Shared.Utils;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace IctuTaekwondo.WebClient.Services
 {
     public interface IUserService : ICallApiService
     {
         public Task<PaginationResponse<UserResponse>?> GetAllAsync(
-            int page, 
+            int page,
             int size,
             List<string> search,
             List<string> order,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
+        public Task<UserFullDetailResponse?> GetFullDetailAsync(
+            string id,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies);
+        public Task<bool> UpdateAsync(
+            string id,
+            UserUpdateSchema schema,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies);
         public Task<string?> DeleteAsnyc(
-            string  id, 
+            string id,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
     }
@@ -34,7 +46,7 @@ namespace IctuTaekwondo.WebClient.Services
         }
 
         public async Task<string?> DeleteAsnyc(
-            string id, 
+            string id,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies)
         {
@@ -85,6 +97,27 @@ namespace IctuTaekwondo.WebClient.Services
             return response.Data;
         }
 
+        public async Task<UserFullDetailResponse?> GetFullDetailAsync(
+            string id,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies)
+        {
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                {
+                    GlobalConst.ApiAuthorizationKey,
+                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}"
+                }
+            });
+
+            var response = await _apiHelper.GetAsync<UserFullDetailResponse>($"api/users/{id}");
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<UserFullDetailResponse>(response, modelState);
+            }
+            return response.Data;
+        }
+
         public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState)
         {
             if (response.Message != null && response.Errors == null) modelState.AddModelError(string.Empty, response.Message);
@@ -101,6 +134,29 @@ namespace IctuTaekwondo.WebClient.Services
                 }
             }
             _logger.LogError("Status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
+        }
+
+        public async Task<bool> UpdateAsync(
+            string id,
+            UserUpdateSchema schema,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies)
+        {
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                {
+                    GlobalConst.ApiAuthorizationKey,
+                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}"
+                }
+            });
+
+            var response = await _apiHelper.PutAsync<object>($"api/users/{id}/profile", schema.ToDictionary(), "multipart/form-data");
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<object>(response, modelState);
+                return false;
+            }
+            return true;
         }
     }
 }

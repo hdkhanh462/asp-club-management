@@ -18,7 +18,7 @@
 	@await Html.PartialAsync("Partials/_NavbarPartial.cshtml")
 	@await Component.InvokeAsync("Sidebar")
 
-	<div class="sm:ml-64">
+	<div class="sm:ml-56">
 		<div class="p-4">
 			<div class="mt-14">
 				<main class="min-h-screen">
@@ -32,6 +32,7 @@
 	<div id="toast-list" class="fixed bottom-5 right-5 flex w-full max-w-xs flex-col gap-3 bg-transparent">
 	</div>
 
+	<script src="~/lib/_hyperscript.min.js"></script>
 	<script src="~/lib/htmx.min.js"></script>
 	<script src="~/js/htmx-event.js"></script>
 
