@@ -13,7 +13,7 @@ namespace IctuTaekwondo.Shared.Responses.User
         [DisplayName("Địa chỉ email")]
         public string? Email { get; set; }
         
-        [DisplayName("Só điện thoại")]
+        [DisplayName("Số điện thoại")]
         public string? PhoneNumber { get; set; }
         
         [DisplayName("Họ và tên")]

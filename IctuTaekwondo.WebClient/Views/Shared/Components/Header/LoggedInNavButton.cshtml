@@ -6,7 +6,7 @@
 				@if (!string.IsNullOrEmpty(Model.AvatarUrl))
 				{
 					<div class="size-8 overflow-hidden rounded-full">
-						<img class="w-full" src="@Model.AvatarUrl" alt="avatar" />
+						<img class="h-full w-full object-cover" src="@Model.AvatarUrl" alt="avatar" />
 					</div>
 				}
 				else

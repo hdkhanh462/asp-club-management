@@ -1,7 +1,7 @@
 ﻿@using IctuTaekwondo.Shared.Enums
 @model IctuTaekwondo.Shared.Schemas.Account.UserUpdateSchema
 
-<div id="state-message" hx-swap-oob="true" class="col-span-1">
+<div id="state-message" hx-swap-oob="true" class="col-span-1 lg:col-span-5">
 	@if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
 	{
 		<div class="mb-4 flex rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-gray-800 dark:text-red-400" role="alert">
@@ -33,14 +33,18 @@
 	}
 </div>
 
-<form hx-put
+<form _="on htmx:beforeRequest set #update-user-btn.disabled to true end 
+		 on htmx:afterRequest set #update-user-btn.disabled to false"
+	  hx-put
 	  hx-action="Update"
 	  hx-route-id="@ViewData["Id"]"
+	  hx-trigger="update-user from:body"
+	  hx-swap="outerHTML"
+	  hx-indicator="#update-form-indicator"
 	  id="update-profile-form"
-	  method="post"
 	  enctype="multipart/form-data"
-	  class="col-span-1 md:col-span-4">
-	<div class="grid-cols-1 mb-4 grid gap-4 sm:grid-cols-2">
+	  class="col-span-1 lg:col-span-4">
+	<div class="grid-cols-1 grid gap-4 sm:grid-cols-2">
 		<div class="col-span-2">
 			<div class="flex justify-center">
 				<label id="Avatar_Label" asp-for="@Model.Avatar" class="flex size-32 items-center justify-center overflow-hidden rounded-lg border bg-gray-100 hover:cursor-pointer dark:bg-gray-600">
@@ -87,24 +91,24 @@
 			</script>
 		</div>
 
-		<div class="col-span-2 sm:col-span-1">
-			<label asp-for="@Model.FullName" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="col-span-2 space-y-2 sm:col-span-1">
+			<label asp-for="@Model.FullName" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input placeholder="Ví dụ: Nguyễn Văn A" asp-for="@Model.FullName" value="@Model.FullName" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.FullName"></span>
 			</p>
 		</div>
 
-		<div class="col-span-2 sm:col-span-1">
-			<label asp-for="@Model.PhoneNumber" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="col-span-2 space-y-2 sm:col-span-1">
+			<label asp-for="@Model.PhoneNumber" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input placeholder="Ví dụ: 0987654321" asp-for="@Model.PhoneNumber" value="@Model.PhoneNumber" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.PhoneNumber"></span>
 			</p>
 		</div>
 
-		<div class="col-span-2 sm:col-span-1">
-			<div class="mb-2 flex items-center gap-2">
+		<div class="col-span-2 space-y-2 sm:col-span-1">
+			<div class="flex items-center gap-2">
 				<label asp-for="@Model.Gender" value="@Model.Gender" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			</div>
 			<select asp-for="@Model.Gender" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
@@ -112,13 +116,13 @@
 				<option value="@Gender.Male">@Gender.Male.GetDisplayName()</option>
 				<option value="@Gender.Female">@Gender.Female.GetDisplayName()</option>
 			</select>
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.Gender"></span>
 			</p>
 		</div>
 
-		<div class="col-span-2 sm:col-span-1">
-			<div class="mb-2 flex items-center gap-2">
+		<div class="col-span-2 space-y-2 sm:col-span-1">
+			<div class="flex items-center gap-2">
 				<label asp-for="@Model.CurrentRank" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			</div>
 			<select asp-for="@Model.CurrentRank" value="@Model.CurrentRank" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
@@ -143,15 +147,15 @@
 					}
 				}
 			</select>
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.CurrentRank"></span>
 			</p>
 		</div>
 
-		<div class="col-span-2 sm:col-span-1" data-datepicker-id="DateOfBirth">
-			<label asp-for="@Model.DateOfBirth" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="col-span-2 space-y-2 sm:col-span-1" data-datepicker-id="DateOfBirth">
+			<label asp-for="@Model.DateOfBirth" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input placeholder="dd/mm/yyyy" type="text" asp-for="@Model.DateOfBirth" value="@Model.DateOfBirth" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.DateOfBirth"></span>
 			</p>
 			<script>
@@ -164,10 +168,10 @@
 			</script>
 		</div>
 
-		<div class="col-span-2 sm:col-span-1" data-datepicker-id="JoinDate">
-			<label asp-for="@Model.JoinDate" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="col-span-2 space-y-2 sm:col-span-1" data-datepicker-id="JoinDate">
+			<label asp-for="@Model.JoinDate" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<input placeholder="dd/mm/yyyy" type="text" asp-for="@Model.JoinDate" value="@Model.JoinDate" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.JoinDate"></span>
 			</p>
 			<script>
@@ -185,10 +189,10 @@
 			</script>
 		</div>
 
-		<div class="col-span-2">
-			<label asp-for="@Model.Address" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="col-span-2 space-y-2">
+			<label asp-for="@Model.Address" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
 			<textarea placeholder="Ví dụ: Hà Nội" asp-for="@Model.Address" value="@Model.Address" rows=" 2" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></textarea>
-			<p class="mt-2 text-sm text-red-600 dark:text-red-500">
+			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.Address"></span>
 			</p>
 		</div>

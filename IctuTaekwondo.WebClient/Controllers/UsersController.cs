@@ -77,15 +77,29 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(string id, UserUpdateSchema schema)
         {
-            @ViewData["Id"] = id;
-            if (!ModelState.IsValid) return View(schema);
+            if (!Request.IsHtmx()) return BadRequest();
+
+            ViewData["Id"] = id;
+            if (!ModelState.IsValid) return PartialView("_UpdateFormPartial", schema);
 
             var isSucsess = await _userService.UpdateAsync(id, schema, ModelState, Request.Cookies);
-            if (!isSucsess) return View(schema);
+            if (!isSucsess) return PartialView("_UpdateFormPartial", schema);
+
+            var userDetail = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
+            if (userDetail == null) return PartialView("_UpdateFormPartial", schema);
 
             TempData["SuccessMessage"] = "Cập nhật thành công";
-
-            return RedirectToAction("Detail");
+            return PartialView("_UpdateFormPartial", new UserUpdateSchema
+            {
+                AvatarUrl = userDetail.AvatarUrl,
+                FullName = userDetail.FullName,
+                PhoneNumber = userDetail.PhoneNumber,
+                Gender = userDetail.Profile.Gender,
+                DateOfBirth = userDetail.Profile.DateOfBirth,
+                CurrentRank = userDetail.Profile.CurrentRank,
+                Address = userDetail.Profile.Address,
+                JoinDate = userDetail.Profile.JoinDate
+            });
         }
 
         [HttpDelete]
