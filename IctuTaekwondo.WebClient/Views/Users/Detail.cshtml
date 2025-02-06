@@ -1,5 +1,5 @@
 ﻿@using IctuTaekwondo.Shared.Enums
-@model IctuTaekwondo.Shared.Schemas.Account.AdminUserUpdateSchema
+@model UpdateUserViewModel
 @{
 	ViewData["Title"] = "Thông tin người dùng";
 	Layout = "_DashboardLayout";
@@ -45,7 +45,7 @@
 		</h2>
 
 		<div class="grid-cols-1 grid gap-3 pt-6 lg:grid-cols-5">
-			@await Html.PartialAsync("_UpdateFormPartial", Model)
+			@await Html.PartialAsync("Users/_UpdateUserFormPartial", Model)
 
 			<div class="col-span-1 lg:col-span-1">
 				<div class="flex gap-2 gap-x-2 gap-y-4 lg:flex-col">

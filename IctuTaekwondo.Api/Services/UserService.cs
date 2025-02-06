@@ -12,7 +12,7 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IUserService
     {
-        Task<IdentityResult> UpdateProfileAsync(string id, UserUpdateSchema schema);
+        Task<UserFullDetailResponse?> UpdateProfileAsync(string id, UserUpdateSchema schema);
         Task<IdentityResult> DeleteAsync(string id);
         Task<UserResponse?> GetByIdAsync(string id);
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string id);
@@ -190,7 +190,7 @@ namespace IctuTaekwondo.Api.Services
             return await _userManager.AddPasswordAsync(user, schema.NewPassword);
         }
 
-        public async Task<IdentityResult> UpdateProfileAsync(string id, UserUpdateSchema schema)
+        public async Task<UserFullDetailResponse?> UpdateProfileAsync(string id, UserUpdateSchema schema)
         {
             var user = _context.Users
                 .Include(u => u.UserProfile)
@@ -199,17 +199,12 @@ namespace IctuTaekwondo.Api.Services
             if (user == null)
             {
                 _logger.LogError("User not found: {0}", id);
-                return IdentityResult.Failed(new IdentityError
-                {
-                    Code = "UserNotFound",
-                    Description = "Người dùng không tồn tại"
-                });
+                throw new ArgumentNullException("Người dùng không tồn tại");
             }
 
             if (schema.Avatar != null)
             {
                 var avatarUrl = user.AvatarUrl?.Split("static/")[1];
-
                 try
                 {
                     string fileName = await _fileService.SaveFileAsync(schema.Avatar);
@@ -240,7 +235,17 @@ namespace IctuTaekwondo.Api.Services
             user.UserProfile.Address = schema.Address;
             user.UserProfile.JoinDate = schema.JoinDate;
 
-            return await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var userDetail = user.ToUserFullDetailResponse();
+                userDetail.Roles = roles;
+
+                return userDetail;
+            }
+
+            return null;
         }
     }
 }

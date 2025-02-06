@@ -23,7 +23,7 @@ namespace IctuTaekwondo.WebClient.Services
             string id,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
-        public Task<bool> UpdateAsync(
+        public Task<UserFullDetailResponse?> UpdateAsync(
             string id,
             UserUpdateSchema schema,
             ModelStateDictionary modelState,
@@ -136,7 +136,7 @@ namespace IctuTaekwondo.WebClient.Services
             _logger.LogError("Status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
         }
 
-        public async Task<bool> UpdateAsync(
+        public async Task<UserFullDetailResponse?> UpdateAsync(
             string id,
             UserUpdateSchema schema,
             ModelStateDictionary modelState,
@@ -150,13 +150,13 @@ namespace IctuTaekwondo.WebClient.Services
                 }
             });
 
-            var response = await _apiHelper.PutAsync<object>($"api/users/{id}/profile", schema.ToDictionary(), "multipart/form-data");
+            var response = await _apiHelper.PutAsync<UserFullDetailResponse>($"api/users/{id}/profile", schema.ToDictionary(), "multipart/form-data");
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                HandleErrors<object>(response, modelState);
-                return false;
+                HandleErrors<UserFullDetailResponse>(response, modelState);
+                return null;
             }
-            return true;
+            return response.Data;
         }
     }
 }

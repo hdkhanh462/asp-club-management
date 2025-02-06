@@ -1,8 +1,5 @@
-﻿using System.Drawing;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Htmx;
-using IctuTaekwondo.Shared.Enums;
-using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.WebClient.Models;
 using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -42,60 +39,62 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detail(string id)
         {
-            var user = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
-            if (user == null) return NotFound();
+            var userDetail = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
+            if (userDetail == null) return NotFound();
 
             var curentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (user.Id == curentUserId) return RedirectToAction("Profile", "Account");
+            if (userDetail.Id == curentUserId) return RedirectToAction("Profile", "Account");
 
-            return View(new AdminUserUpdateSchema
-            {
-                Id = user.Id,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                AvatarUrl = user.AvatarUrl,
-                FullName = user.FullName,
-                Gender = user.Profile.Gender,
-                DateOfBirth = user.Profile.DateOfBirth,
-                Address = user.Profile.Address,
-                CurrentRank = user.Profile.CurrentRank,
-                JoinDate = user.Profile.JoinDate,
-            });
-        }
-
-        [HttpPut]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(string id, AdminUserUpdateSchema schema)
-        {
-            if (!Request.IsHtmx()) return BadRequest();
-
-            if (!ModelState.IsValid) return PartialView("_UpdateFormPartial", schema);
-
-            var isSucsess = await _userService.UpdateAsync(id, schema, ModelState, Request.Cookies);
-            if (!isSucsess) return PartialView("_UpdateFormPartial", schema);
-
-            var userDetail = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
-            if (userDetail == null) return PartialView("_UpdateFormPartial", schema);
-
-            Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
-            {
-                icon = "success",
-                title = "Cập nhật thành công",
-            }));
-
-            return PartialView("_UpdateFormPartial", new AdminUserUpdateSchema
+            return View(new UpdateUserViewModel
             {
                 Id = userDetail.Id,
                 Email = userDetail.Email,
+                Roles = userDetail.Roles,
                 PhoneNumber = userDetail.PhoneNumber,
                 AvatarUrl = userDetail.AvatarUrl,
                 FullName = userDetail.FullName,
                 Gender = userDetail.Profile.Gender,
                 DateOfBirth = userDetail.Profile.DateOfBirth,
-                CurrentRank = userDetail.Profile.CurrentRank,
                 Address = userDetail.Profile.Address,
-                JoinDate = userDetail.Profile.JoinDate
+                CurrentRank = userDetail.Profile.CurrentRank,
+                JoinDate = userDetail.Profile.JoinDate,
             });
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(string id, [FromForm] UpdateUserViewModel schema)
+        {
+            if (!Request.IsHtmx()) return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                var userDetail = await _userService.UpdateAsync(id, schema, ModelState, Request.Cookies);
+                if (userDetail != null)
+                {
+                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                    {
+                        icon = "success",
+                        title = "Cập nhật thành công",
+                    }));
+                    return PartialView("Users/_UpdateUserFormPartial", new UpdateUserViewModel
+                    {
+                        Id = userDetail.Id,
+                        Email = userDetail.Email,
+                        Roles = userDetail.Roles,
+                        AvatarUrl = userDetail.AvatarUrl,
+                        PhoneNumber = userDetail.PhoneNumber,
+                        FullName = userDetail.FullName,
+                        Gender = userDetail.Profile.Gender,
+                        DateOfBirth = userDetail.Profile.DateOfBirth,
+                        Address = userDetail.Profile.Address,
+                        CurrentRank = userDetail.Profile.CurrentRank,
+                        JoinDate = userDetail.Profile.JoinDate,
+                    });
+                }
+            }
+
+            return PartialView("Users/_UpdateUserFormPartial", schema);
         }
 
         [HttpDelete]

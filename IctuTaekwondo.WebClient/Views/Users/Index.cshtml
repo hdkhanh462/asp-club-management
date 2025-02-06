@@ -88,11 +88,11 @@
 							</button>
 							<div id="order-dropdown" class="z-10 hidden w-fit divide-y divide-gray-100 rounded bg-white shadow dark:bg-gray-700 dark:divide-gray-600">
 								<div class="py-1">
-									<a asp-all-route-data="queryDict" asp-route-order="CreatedAt" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-										Theo ngày tạo tăng dần
-									</a>
 									<a asp-all-route-data="queryDict" asp-route-order="-CreatedAt" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
-										Theo ngày tạo giảm dần
+										Theo ngày tạo mới nhất
+									</a>
+									<a asp-all-route-data="queryDict" asp-route-order="CreatedAt" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+										Theo ngày tạo cũ nhất
 									</a>
 								</div>
 							</div>
@@ -164,9 +164,6 @@
 													<ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
 														<li>
 															<a asp-action="Detail" asp-route-id="@user.Id" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Chi tiết</a>
-														</li>
-														<li>
-															<a asp-action="Edit" asp-route-id="@user.Id" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Cập nhật</a>
 														</li>
 													</ul>
 													<div class="py-1">

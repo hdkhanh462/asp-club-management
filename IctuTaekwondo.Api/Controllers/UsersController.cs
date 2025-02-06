@@ -71,23 +71,30 @@ namespace IctuTaekwondo.Api.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserProfile(string id, [FromForm] UserUpdateSchema schema)
         {
-            var result = await _userService.UpdateProfileAsync(id, schema);
-
-            if (!result.Succeeded) return BadRequest(new ApiResponse<object>
+            try
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Message = "Cập nhật hồ sơ thất bại",
-                Errors = result.Errors.ToDictionary(
-                        kvp => kvp.Code,
-                        kvp => new[] { kvp.Description }
-                )
-            });
+                var result = await _userService.UpdateProfileAsync(id, schema);
+                if (result == null) return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Cập nhật hồ sơ thất bại",
+                });
 
-            return Ok(new ApiResponse<UserResponse>
+                return Ok(new ApiResponse<UserFullDetailResponse>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Cập nhật hồ sơ thành công",
+                    Data = result
+                });
+            }
+            catch (ArgumentNullException ex)
             {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Cập nhật hồ sơ thành công"
-            });
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = ex.Message,
+                });
+            }
         }
 
         [HttpDelete("{id}")]
