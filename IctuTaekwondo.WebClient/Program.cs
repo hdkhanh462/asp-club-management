@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Htmx;
 using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.WebClient.Services;
@@ -45,10 +46,21 @@ builder.Services.AddHttpClient<ApiHelper>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "Htmx", policy =>
+    {
+        policy.WithOrigins("http://localhost:5000")
+                .WithHeaders(HtmxRequestHeaders.Keys.All)
+                .WithExposedHeaders(HtmxResponseHeaders.Keys.All);
+    });
+});
+
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

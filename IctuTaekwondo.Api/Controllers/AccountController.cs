@@ -86,24 +86,33 @@ namespace IctuTaekwondo.Api.Controllers
                 Message = "Không tìm thấy thông tin người dùng",
             });
 
-            var result = await _userService.UpdateProfileAsync(userId, schema);
-            if (!result.Succeeded)
+            try
             {
-                return BadRequest(new ApiResponse<object>
+                var result = await _userService.UpdateProfileAsync(userId, schema);
+                if (result == null)
                 {
-                    StatusCode = HttpStatusCode.BadRequest,
-                    Message = "Cập nhật thông tin không thành công",
-                    Errors = result.Errors.ToDictionary(
-                        kvp => kvp.Code,
-                        kvp => new[] { kvp.Description }
-                    ),
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Message = "Cập nhật thông tin không thành công",
+                    });
+                }
+
+                return Ok(new ApiResponse<UserFullDetailResponse>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Cập nhật thông tin thành công",
+                    Data = result
                 });
             }
-            return Ok(new ApiResponse<object>
+            catch (ArgumentNullException ex)
             {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Cập nhật thông tin thành công",
-            });
+                return NotFound(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = ex.Message,
+                });
+            }
         }
 
         [HttpPut("change-password")]

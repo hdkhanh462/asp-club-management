@@ -129,7 +129,7 @@ namespace IctuTaekwondo.WebClient.Services
                     }
                 }
             }
-            _logger.LogError("Register failed with status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
+            _logger.LogError("Status code: {StatusCode}, Message: {Message}", response.StatusCode, response.Message);
         }
 
     }

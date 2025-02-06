@@ -2,18 +2,17 @@
 using IctuTaekwondo.Api.Mappers;
 using IctuTaekwondo.Api.Models;
 using IctuTaekwondo.Shared.Responses;
-using IctuTaekwondo.Shared.Responses.Achievement;
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Schemas.Account;
+using IctuTaekwondo.Shared.Utils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace IctuTaekwondo.Api.Services
 {
     public interface IUserService
     {
-        Task<IdentityResult> UpdateProfileAsync(string id, UserUpdateSchema schema);
+        Task<UserFullDetailResponse?> UpdateProfileAsync(string id, UserUpdateSchema schema);
         Task<IdentityResult> DeleteAsync(string id);
         Task<UserResponse?> GetByIdAsync(string id);
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string id);
@@ -23,28 +22,34 @@ namespace IctuTaekwondo.Api.Services
         Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
             int page,
             int size,
-            string? fullName = null,
-            string? email = null,
-            string? userName = null,
-            string? phoneNumber = null);
+            List<string> search,
+            List<string> order);
     }
 
-    public class UserService: IUserService
+    public class UserService : IUserService
     {
         private readonly ILogger<UserService> _logger;
         private readonly IUploadFileService _fileService;
         private readonly UserManager<User> _userManager;
         private readonly ApiDbContext _context;
+        private readonly List<string> _orderable;
 
-        public UserService(ILogger<UserService> logger, 
-            IUploadFileService fileService, 
-            UserManager<User> userManager, 
+        public UserService(ILogger<UserService> logger,
+            IUploadFileService fileService,
+            UserManager<User> userManager,
             ApiDbContext context)
         {
             _logger = logger;
             _fileService = fileService;
             _userManager = userManager;
             _context = context;
+            _orderable = new List<string>()
+            {
+                nameof(User.FullName),
+                $"-{nameof(User.FullName)}",
+                nameof(User.CreatedAt),
+                $"-{nameof(User.CreatedAt)}",
+            };
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(string id, ChangePasswordSchema schema)
@@ -56,7 +61,7 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
                 });
             }
 
@@ -72,7 +77,16 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
+                });
+            }
+
+            if (user.Email == IdentityDataSeeder.DefaultAdminUser.Email)
+            {
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DeleteDefaultAdmin",
+                    Description = "Không thể xoá tài khoản Admin mặc định"
                 });
             }
 
@@ -81,46 +95,46 @@ namespace IctuTaekwondo.Api.Services
 
         public async Task<PaginationResponse<UserResponse>> GetAllAsync(int page, int size)
         {
-            var users = await _userManager.Users
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var users = await _userManager.Users.ToListAsync();
 
-            return new PaginationResponse<UserResponse>(users.Count, size)
-            {
-                CurrentPage = page,
-                Items = users.Select(u => u.ToUserResponse()).ToList()
-            };
+            return new PaginationResponse<UserResponse>(
+                page, size,
+                users.Count,
+                users.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToUserResponse()).ToList());
         }
 
         public async Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
-            int page, 
-            int size, 
-            string? fullName = null, 
-            string? email = null, 
-            string? userName = null, 
-            string? phoneNumber = null)
+            int page,
+            int size,
+            List<string> search,
+            List<string> order)
         {
             var query = _context.Users.AsQueryable();
 
-            if (!string.IsNullOrEmpty(fullName)) query = query.Where(p => EF.Functions.Like(p.FullName, $"%{fullName}%"));
-
-            if (!string.IsNullOrEmpty(email)) query = query.Where(p => EF.Functions.Like(p.Email, $"%{email}%"));
-
-            if (!string.IsNullOrEmpty(userName)) query = query.Where(p => EF.Functions.Like(p.UserName, $"%{userName}%"));
-
-            if (!string.IsNullOrEmpty(phoneNumber)) query = query.Where(p => EF.Functions.Like(p.PhoneNumber, $"%{phoneNumber}%"));
-
-            var users = await query
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
-
-            return new PaginationResponse<UserResponse>(users.Count, size)
+            foreach (var item in search)
             {
-                CurrentPage = page,
-                Items = users.Select(u => u.ToUserResponse()).ToList()
-            };
+                if (!string.IsNullOrEmpty(item))
+                {
+                    query = query.Where(p =>
+                        EF.Functions.Like(p.FullName, $"%{item}%") ||
+                        EF.Functions.Like(p.PhoneNumber, $"%{item}%") ||
+                        EF.Functions.Like(p.Email, $"%{item}%"));
+                }
+            }
+
+            if (order.Any(s => !string.IsNullOrEmpty(s)))
+                query = OrderHelper.OrderByMultiple<User>(query, order, _orderable);
+            else
+                query = query.OrderByDescending(u => u.CreatedAt);
+
+            var users = await query.ToListAsync();
+
+            return new PaginationResponse<UserResponse>(
+                page, size,
+                users.Count,
+                users.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToUserResponse()).ToList());
         }
 
         public async Task<UserResponse?> GetByIdAsync(string id)
@@ -162,7 +176,7 @@ namespace IctuTaekwondo.Api.Services
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
-                    Description = "User not found"
+                    Description = "Người dùng không tồn tại"
                 });
             }
 
@@ -176,7 +190,7 @@ namespace IctuTaekwondo.Api.Services
             return await _userManager.AddPasswordAsync(user, schema.NewPassword);
         }
 
-        public async Task<IdentityResult> UpdateProfileAsync(string id, UserUpdateSchema schema)
+        public async Task<UserFullDetailResponse?> UpdateProfileAsync(string id, UserUpdateSchema schema)
         {
             var user = _context.Users
                 .Include(u => u.UserProfile)
@@ -185,17 +199,12 @@ namespace IctuTaekwondo.Api.Services
             if (user == null)
             {
                 _logger.LogError("User not found: {0}", id);
-                return IdentityResult.Failed(new IdentityError
-                {
-                    Code = "UserNotFound",
-                    Description = "User not found"
-                });
+                throw new ArgumentNullException("Người dùng không tồn tại");
             }
 
             if (schema.Avatar != null)
             {
                 var avatarUrl = user.AvatarUrl?.Split("static/")[1];
-
                 try
                 {
                     string fileName = await _fileService.SaveFileAsync(schema.Avatar);
@@ -226,7 +235,17 @@ namespace IctuTaekwondo.Api.Services
             user.UserProfile.Address = schema.Address;
             user.UserProfile.JoinDate = schema.JoinDate;
 
-            return await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var userDetail = user.ToUserFullDetailResponse();
+                userDetail.Roles = roles;
+
+                return userDetail;
+            }
+
+            return null;
         }
     }
 }

@@ -62,7 +62,8 @@ namespace IctuTaekwondo.WebClient.Controllers
 
             if (!result) return View(model);
 
-            if (next != null && allowedRedirectUrl.Contains(next)) return Redirect(next);
+            if (!string.IsNullOrEmpty(next) && allowedRedirectUrl.Contains(next.ToLower())) 
+                return Redirect(next);
 
             ModelState.Clear();
 

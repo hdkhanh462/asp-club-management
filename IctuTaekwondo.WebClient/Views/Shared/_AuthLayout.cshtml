@@ -5,11 +5,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>@ViewData["Title"] - IctuTaekwondo</title>
 
-	<link rel="stylesheet" href="~/lib/tailwindcss/styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/site.output.css" asp-append-version="true" />
 
 	<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.3.0/dist/js/datepicker-full.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/locales/vi.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 
 </head>
@@ -25,6 +27,14 @@
 	</div>
 	@await Html.PartialAsync("~/Views/Shared/Partials/_FooterPartial.cshtml")
 
+	<div id="toast-list" class="fixed bottom-5 right-5 flex w-full max-w-xs flex-col gap-3 bg-transparent"></div>
+
+	<script src="~/lib/_hyperscript.min.js"></script>
+	<script src="~/lib/htmx.min.js"></script>
+	<script src="~/js/htmx-event.js"></script>
+
 	@await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync("Modals", required: false)
+
 </body>
 </html>

@@ -10,9 +10,9 @@ namespace IctuTaekwondo.WebClient.Services
 {
     public interface IAccountService : ICallApiService
     {
-        UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies);
-        UserResponse? GetUserAsync(IRequestCookieCollection requestCookies);
-        Task<bool> UpdateProfileAsync(UserUpdateSchema schema,
+        UserFullDetailResponse? GetProfile(IRequestCookieCollection requestCookies);
+        UserResponse? GetUser(IRequestCookieCollection requestCookies);
+        Task<UserFullDetailResponse?> UpdateProfileAsync(UserUpdateSchema schema,
             ModelStateDictionary modelState, 
             IRequestCookieCollection requestCookies);
         Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
@@ -31,7 +31,7 @@ namespace IctuTaekwondo.WebClient.Services
             _apiHelper = apiHelper;
         }
 
-        public UserFullDetailResponse? GetProfileAsync(IRequestCookieCollection requestCookies)
+        public UserFullDetailResponse? GetProfile(IRequestCookieCollection requestCookies)
         {
             if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
 
@@ -43,7 +43,7 @@ namespace IctuTaekwondo.WebClient.Services
             return _apiHelper.GetAsync<UserFullDetailResponse>("api/account/profile").Result.Data;
         }
 
-        public UserResponse? GetUserAsync(IRequestCookieCollection requestCookies)
+        public UserResponse? GetUser(IRequestCookieCollection requestCookies)
         {
             if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
 
@@ -55,14 +55,14 @@ namespace IctuTaekwondo.WebClient.Services
             return _apiHelper.GetAsync<UserResponse>("api/account/me").Result.Data;
         }
 
-        public async Task<bool> UpdateProfileAsync(UserUpdateSchema schema, 
+        public async Task<UserFullDetailResponse?> UpdateProfileAsync(UserUpdateSchema schema, 
             ModelStateDictionary modelState, 
             IRequestCookieCollection requestCookies)
         {
             if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
             {
                 modelState.AddModelError(string.Empty, "Không tìm thấy thông tin người dùng");
-                return false;
+                return null;
             };
 
             _apiHelper.AddHeaders(new Dictionary<string, string>
@@ -70,14 +70,14 @@ namespace IctuTaekwondo.WebClient.Services
                 ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
             });
 
-            var response = await _apiHelper.PutAsync<object>("api/account/profile", schema.ToDictionary(), "multipart/form-data");
+            var response = await _apiHelper.PutAsync<UserFullDetailResponse>("api/account/profile", schema.ToDictionary(), "multipart/form-data");
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                HandleErrors<object>(response, modelState);
-                return false;
+                HandleErrors<UserFullDetailResponse>(response, modelState);
+                return null;
             };
 
-            return true;
+            return response.Data;
         }
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
@@ -112,9 +112,12 @@ namespace IctuTaekwondo.WebClient.Services
             {
                 foreach (var (key, value) in response.Errors)
                 {
+                    var keyName = string.Empty;
+                    if (key.Contains("Password") && !key.Equals("PasswordMismatch")) keyName = "ConfirmNewPassword";
+
                     foreach (var error in value)
                     {
-                        modelState.AddModelError(string.Empty, error);
+                        modelState.AddModelError(keyName, error);
                     }
                 }
             }

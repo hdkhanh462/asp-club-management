@@ -1,0 +1,43 @@
+﻿<thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+	<tr>
+		<th scope="col" class="p-4">
+			<div class="flex items-center">
+				<input id="checkbox-all" type="checkbox" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+				<label for="checkbox-all" class="sr-only">checkbox</label>
+			</div>
+		</th>
+		<th sortable scope="col" class="px-4 py-3 font-medium hover:cursor-pointer">
+			<form method="get" class="flex gap-1">
+				Người dùng
+				<svg icon-sort class="size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+				</svg>
+				<svg icon-asc class="hidden size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m16 17-4-4-4 4m8-6-4-4-4 4" />
+				</svg>
+				<svg icon-desc class="hidden size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m8 7 4 4 4-4m-8 6 4 4 4-4" />
+				</svg>
+				<input type="text" name="order" value="ASC" class="hidden" />
+				<input type="text" name="by" value="FullName" class="hidden" />
+			</form>
+		</th>
+		<th scope="col" class="px-4 py-3 font-medium">
+			<div class="flex gap-1">
+				Địa chỉ email
+				<svg class="size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+				</svg>
+			</div>
+		</th>
+		<th scope="col" class="px-4 py-3 font-medium">
+			<div class="flex gap-1">
+				Số điện thoại
+				<svg class="size-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+					<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 15 4 4 4-4m0-6-4-4-4 4" />
+				</svg>
+			</div>
+		</th>
+		<th scope="col" class="px-4 py-3 font-medium"></th>
+	</tr>
+</thead>

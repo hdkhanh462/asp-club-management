@@ -163,11 +163,10 @@ namespace IctuTaekwondo.Api.Services
                 })
                 .ToList();
 
-            return new PaginationResponse<UserResgiteredEventResponse>(registrations.Count, size)
-            {
-                CurrentPage = page,
-                Items = registrations
-            };
+            return new PaginationResponse<UserResgiteredEventResponse>(
+                page, size,
+                registrations.Count,
+                registrations);
         }
     }
 }

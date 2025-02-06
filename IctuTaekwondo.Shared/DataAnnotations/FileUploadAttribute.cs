@@ -21,8 +21,7 @@ namespace IctuTaekwondo.Shared.DataAnnotations
 
             if (file.Length > maxFileSizeByte)
             {
-                return new ValidationResult($"Kích thước tệp không được vượt quá {MaxFileSizeMb}Mb. " +
-                    $"Kích thước hiện tại: {Math.Round((decimal)fileSize, 2)}Mb");
+                return new ValidationResult($"Kích thước tệp không được vượt quá {MaxFileSizeMb}Mb.");
             }
 
             if (!AllowedFileExtentions.Contains(fileExtention))

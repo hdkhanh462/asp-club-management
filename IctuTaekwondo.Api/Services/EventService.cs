@@ -25,7 +25,7 @@ namespace IctuTaekwondo.Api.Services
             EventStatus? status = null);
     }
 
-    public class EventService: IEventService
+    public class EventService : IEventService
     {
         private readonly ILogger<EventService> _logger;
         private readonly ApiDbContext _context;
@@ -73,21 +73,18 @@ namespace IctuTaekwondo.Api.Services
 
         public async Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size)
         {
-            var events = await _context.Events
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var events = await _context.Events.ToListAsync();
 
-            return new PaginationResponse<EventResponse>(events.Count, size)
-            {
-                CurrentPage = page,
-                Items = events.Select(e => e.ToEventResponse()).ToList()
-            };
+            return new PaginationResponse<EventResponse>(
+                page, size,
+                events.Count,
+                events.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToEventResponse()).ToList());
         }
 
         public async Task<PaginationResponse<EventResponse>> GetAllWithFilterAsync(
-            int page, 
-            int size, 
+            int page,
+            int size,
             string? name = null,
             EventStatus? status = null)
         {
@@ -97,26 +94,23 @@ namespace IctuTaekwondo.Api.Services
 
             if (status.HasValue)
             {
-                if (status.Value == EventStatus.NotStarted) 
+                if (status.Value == EventStatus.NotStarted)
                     query = query.Where(p => p.StartDate > DateTime.UtcNow);
-                
-                else if (status.Value == EventStatus.Started) 
+
+                else if (status.Value == EventStatus.Started)
                     query = query.Where(p => p.StartDate <= DateTime.UtcNow && p.EndDate > DateTime.UtcNow);
 
-                else if (status.Value == EventStatus.Ended) 
+                else if (status.Value == EventStatus.Ended)
                     query = query.Where(p => p.EndDate.HasValue && p.EndDate.Value <= DateTime.UtcNow);
             }
 
-            var events = await query
-                .Skip((page - 1) * size)
-                .Take(size)
-                .ToListAsync();
+            var events = await query.ToListAsync();
 
-            return new PaginationResponse<EventResponse>(events.Count, size)
-            {
-                CurrentPage = page,
-                Items = events.Select(e => e.ToEventResponse()).ToList()
-            };
+            return new PaginationResponse<EventResponse>(
+                page, size,
+                events.Count,
+                events.Skip((page - 1) * size).Take(size)
+                .Select(e => e.ToEventResponse()).ToList());
         }
 
         public async Task<EventFullDetailResponse?> GetByIdAsync(int id)
@@ -126,7 +120,7 @@ namespace IctuTaekwondo.Api.Services
                 .ThenInclude(er => er.User)
                 .FirstOrDefaultAsync(e => e.Id == id);
 
-            if (@event == null) 
+            if (@event == null)
             {
                 _logger.LogError("Event not found: {0}", id);
                 return null;

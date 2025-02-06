@@ -44,7 +44,8 @@ namespace IctuTaekwondo.Api.Services
                 FullName = schema.FullName,
                 Email = schema.Email,
                 PhoneNumber = schema.PhoneNumber,
-                UserName = schema.Email
+                UserName = schema.Email,
+                CreatedAt = DateTime.UtcNow,
             };
 
             if (schema.Avatar != null)
