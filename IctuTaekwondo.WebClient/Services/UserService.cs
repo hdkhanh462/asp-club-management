@@ -5,6 +5,7 @@ using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.Shared.Utils;
+using IctuTaekwondo.WebClient.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -30,6 +31,18 @@ namespace IctuTaekwondo.WebClient.Services
             IRequestCookieCollection requestCookies);
         public Task<string?> DeleteAsnyc(
             string id,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies);
+        public Task<bool> SetPasswordAsync(
+            string currentUserId,
+            string userToSetId,
+            AdminSetPasswordSchema schema,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies);
+        public Task<bool> UpdateRolesAsync(
+            string currentId,
+            string targetId,
+            UpdateRolesSchema schema,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
     }
@@ -125,7 +138,9 @@ namespace IctuTaekwondo.WebClient.Services
             {
                 foreach (var (key, value) in response.Errors)
                 {
-                    var keyName = string.Empty;
+                    var keyName = key;
+                    if (key.Contains("Password")) keyName = "ConfirmNewPassword";
+                    if (key.Contains("YourPassword")) keyName = "YourPassword";
 
                     foreach (var error in value)
                     {
@@ -150,13 +165,66 @@ namespace IctuTaekwondo.WebClient.Services
                 }
             });
 
-            var response = await _apiHelper.PutAsync<UserFullDetailResponse>($"api/users/{id}/profile", schema.ToDictionary(), "multipart/form-data");
+            var response = await _apiHelper.PutAsync<UserFullDetailResponse>(
+                $"api/users/{id}/profile",
+                schema.ToDictionary(), 
+                "multipart/form-data");
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 HandleErrors<UserFullDetailResponse>(response, modelState);
                 return null;
             }
             return response.Data;
+        }
+
+        public async Task<bool> SetPasswordAsync(
+            string currentUserId,
+            string userToSetId,
+            AdminSetPasswordSchema schema,
+            ModelStateDictionary modelState,
+            IRequestCookieCollection requestCookies)
+        {
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                {
+                    GlobalConst.ApiAuthorizationKey,
+                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}"
+                }
+            });
+            var response = await _apiHelper.PutAsync<object>(
+                $"api/users/{userToSetId}/set-password",
+                schema);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<object>(response, modelState);
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<bool> UpdateRolesAsync(
+            string currentId, 
+            string targetId,
+            UpdateRolesSchema schema, 
+            ModelStateDictionary modelState, 
+            IRequestCookieCollection requestCookies)
+        {
+            _apiHelper.AddHeaders(new Dictionary<string, string>
+            {
+                {
+                    GlobalConst.ApiAuthorizationKey,
+                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}"
+                }
+            });
+            var response = await _apiHelper.PutAsync<object>(
+                $"api/users/{targetId}/roles",
+                schema);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                HandleErrors<object>(response, modelState);
+                return false;
+            }
+            return true;
         }
     }
 }

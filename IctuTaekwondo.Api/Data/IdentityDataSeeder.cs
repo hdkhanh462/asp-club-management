@@ -8,11 +8,13 @@ namespace IctuTaekwondo.Api.Data
     {
         public static readonly User DefaultAdminUser = new User
         {
-            FullName = "Admin",
-            UserName = "admin@example.com",
-            Email = "admin@example.com",
+            FullName = "Admin Default",
+            UserName = "admin@default.com",
+            Email = "admin@default.com",
             EmailConfirmed = true
         };
+
+        public static readonly List<string> DefaultRoles = ["Admin", "Manager", "Member"];
 
         public static async Task SeedRolesAndAdminUser(IServiceProvider serviceProvider)
         {
@@ -21,11 +23,8 @@ namespace IctuTaekwondo.Api.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var context = serviceProvider.GetRequiredService<ApiDbContext>();
 
-            // Danh sách các roles cần seed
-            var roles = new[] { "Admin", "Manager", "Member" };
-
             // Seed roles nếu chưa tồn tại
-            foreach (var role in roles)
+            foreach (var role in DefaultRoles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
@@ -44,7 +43,7 @@ namespace IctuTaekwondo.Api.Data
                 if (result.Succeeded)
                 {
                     // Gán role Admin cho tài khoản
-                    await userManager.AddToRoleAsync(DefaultAdminUser, "Admin");
+                    await userManager.AddToRolesAsync(DefaultAdminUser, DefaultRoles);
 
                     // Tạo UserProfile cho tài khoản Admin
                     var userProfile = new UserProfile

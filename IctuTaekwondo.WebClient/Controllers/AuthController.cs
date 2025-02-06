@@ -47,31 +47,6 @@ namespace IctuTaekwondo.WebClient.Controllers
             return View();
         }
 
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Register(
-            [FromForm] RegisterViewModel model,
-            [FromQuery] string? next)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var result = await _authService.RegisterAsync(model,
-                ModelState,
-                Request.Cookies,
-                Response.Cookies);
-
-            if (!result) return View(model);
-
-            if (!string.IsNullOrEmpty(next) && allowedRedirectUrl.Contains(next.ToLower())) 
-                return Redirect(next);
-
-            ModelState.Clear();
-
-            TempData["SuccessMessage"] = "Đăng ký thành công!";
-
-            return RedirectToAction("Register", "Auth");
-        }
-
         [HttpGet]
         [Authorize]
         public IActionResult Logout()

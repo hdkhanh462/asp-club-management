@@ -113,7 +113,8 @@ namespace IctuTaekwondo.WebClient.Services
                 foreach (var (key, value) in response.Errors)
                 {
                     var keyName = string.Empty;
-                    if (key.Contains("Password") && !key.Equals("PasswordMismatch")) keyName = "ConfirmNewPassword";
+                    if (key.Contains("Password")) keyName = "ConfirmNewPassword";
+                    if (key.Contains("PasswordMismatch")) keyName = "CurrentPassword";
 
                     foreach (var error in value)
                     {
