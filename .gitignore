@@ -366,3 +366,4 @@ IctuTaekwondo.Api/Uploads/
 
 appsettings.json
 appsettings.Production.json
+*.output.css

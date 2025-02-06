@@ -91,7 +91,7 @@
 						@foreach (var role in Model.Roles)
 						{
 							<span class="inline-block rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
-								@role
+								@role.GetDisplayName()
 							</span>
 							<input id="Role-@role" asp-for="@Model.Roles" value="@role" class="hidden" />
 						}

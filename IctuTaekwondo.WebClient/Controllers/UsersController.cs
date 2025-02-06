@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Htmx;
+using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.WebClient.Models;
 using IctuTaekwondo.WebClient.Services;
@@ -49,11 +50,17 @@ namespace IctuTaekwondo.WebClient.Controllers
             var curentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (userDetail.Id == curentUserId) return RedirectToAction("Profile", "Account");
 
+            var roles = userDetail.Roles
+                 .Select(roleString => Enum.TryParse(roleString, out Role role) ? (Role?)role : null)
+                 .Where(role => role.HasValue)
+                 .Select(role => role.Value)
+                 .ToList();
+
             return View(new UpdateUserViewModel
             {
                 Id = userDetail.Id,
                 Email = userDetail.Email,
-                Roles = userDetail.Roles,
+                Roles = roles,
                 PhoneNumber = userDetail.PhoneNumber,
                 AvatarUrl = userDetail.AvatarUrl,
                 FullName = userDetail.FullName,
@@ -106,11 +113,18 @@ namespace IctuTaekwondo.WebClient.Controllers
                         icon = "success",
                         title = "Cập nhật thành công",
                     }));
+
+                    var roles = userDetail.Roles
+                     .Select(roleString => Enum.TryParse(roleString, out Role role) ? (Role?)role : null)
+                     .Where(role => role.HasValue)
+                     .Select(role => role.Value)
+                     .ToList();
+
                     return PartialView("Users/_UpdateUserFormPartial", new UpdateUserViewModel
                     {
                         Id = userDetail.Id,
                         Email = userDetail.Email,
-                        Roles = userDetail.Roles,
+                        Roles = roles,
                         AvatarUrl = userDetail.AvatarUrl,
                         PhoneNumber = userDetail.PhoneNumber,
                         FullName = userDetail.FullName,
@@ -173,7 +187,7 @@ namespace IctuTaekwondo.WebClient.Controllers
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> SetPassword(string id, [FromForm] AdminSetPasswordSchema schema)
+        public async Task<IActionResult> SetPassword(string id, [FromForm] SetPasswordViewModel model)
         {
             if (!Request.IsHtmx()) return BadRequest();
 
@@ -184,7 +198,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             {
                 var isSuccess = await _userService.SetPasswordAsync(
                     currentUserId, id,
-                    schema,
+                    model,
                     ModelState,
                     Request.Cookies);
                 if (isSuccess)
@@ -193,11 +207,42 @@ namespace IctuTaekwondo.WebClient.Controllers
                     {
                         icon = "success",
                         title = "Đặt mật khẩu thành công",
-                    }));
+                    })
+                    .WithTrigger("close-modal", "Modal-Set-Password"));
                 }
             }
 
-            return PartialView("_SetPasswordFormPartial", schema);
+            return PartialView("_SetPasswordFormPartial", model);
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateRoles(string id, [FromForm] UpdateRolesViewModel model)
+        {
+            if (!Request.IsHtmx()) return BadRequest();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null) return Unauthorized();
+
+            if (ModelState.IsValid)
+            {
+                var isSuccess = await _userService.UpdateRolesAsync(
+                    currentUserId, id,
+                    model,
+                    ModelState,
+                    Request.Cookies);
+                if (isSuccess)
+                {
+                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                    {
+                        icon = "success",
+                        title = "Cập nhật vai trò thành công",
+                    })
+                    .WithTrigger("close-modal", "Modal-Update-Roles"));
+                }
+            }
+
+            return PartialView("_UpdateRolesFormPartial", model);
         }
     }
 }

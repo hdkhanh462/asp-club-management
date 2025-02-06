@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Schemas.Account;
 
 namespace IctuTaekwondo.WebClient.Models
@@ -9,6 +10,6 @@ namespace IctuTaekwondo.WebClient.Models
 
         [Display(Name = "Địa chỉ email")]
         public string? Email { get; set; }
-        public ICollection<string> Roles { get; set; } = [];
+        public List<Role> Roles { get; set; } = [];
     }
 }

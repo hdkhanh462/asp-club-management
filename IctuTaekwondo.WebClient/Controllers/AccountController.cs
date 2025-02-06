@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using IctuTaekwondo.WebClient.Services;
 using IctuTaekwondo.WebClient.Models;
 using Htmx;
+using IctuTaekwondo.Shared.Enums;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
@@ -22,12 +24,18 @@ namespace IctuTaekwondo.WebClient.Controllers
             var userDetail = _accountService.GetProfile(Request.Cookies);
             if (userDetail == null) return Unauthorized();
 
+            var roles = userDetail.Roles
+                         .Select(roleString => Enum.TryParse(roleString, out Role role) ? (Role?)role : null)
+                         .Where(role => role.HasValue)
+                         .Select(role => role.Value)
+                         .ToList();
+
             return View(new UpdateUserViewModel
             {
                 Id = userDetail.Id,
                 Email = userDetail.Email,
                 PhoneNumber = userDetail.PhoneNumber,
-                Roles = userDetail.Roles,
+                Roles = roles,
                 AvatarUrl = userDetail.AvatarUrl,
                 FullName = userDetail.FullName,
                 Gender = userDetail.Profile.Gender,
@@ -54,11 +62,17 @@ namespace IctuTaekwondo.WebClient.Controllers
                         icon = "success",
                         title = "Cập nhật thành công",
                     }));
+                    var roles = userDetail.Roles
+                         .Select(roleString => Enum.TryParse(roleString, out Role role) ? (Role?)role : null)
+                         .Where(role => role.HasValue)
+                         .Select(role => role.Value)
+                         .ToList();
+
                     return PartialView("Users/_UpdateUserFormPartial", new UpdateUserViewModel
                     {
                         Id = userDetail.Id,
                         Email = userDetail.Email,
-                        Roles = userDetail.Roles,
+                        Roles = roles,
                         PhoneNumber = userDetail.PhoneNumber,
                         AvatarUrl = userDetail.AvatarUrl,
                         FullName = userDetail.FullName,
