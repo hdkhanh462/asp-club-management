@@ -33,7 +33,7 @@
 	  enctype="multipart/form-data"
 	  class="col-span-1 lg:col-span-4">
 	<div class="grid-cols-1 grid gap-4 sm:grid-cols-2">
-		<input asp-for="@Model.Id" value="@Model.Id" class="hidden" />
+		<input id="Update-User-Id" asp-for="@Model.Id" value="@Model.Id" class="hidden" />
 
 		<div class="col-span-2 sm:col-span-1">
 			<div class="flex justify-center">
@@ -93,7 +93,7 @@
 							<span class="inline-block rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
 								@role
 							</span>
-							<input asp-for="@Model.Roles" value="@role" class="hidden" />
+							<input id="Role-@role" asp-for="@Model.Roles" value="@role" class="hidden" />
 						}
 					}
 					else

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Htmx;
+using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.WebClient.Models;
 using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -10,14 +11,17 @@ namespace IctuTaekwondo.WebClient.Controllers
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
+
         private readonly string[] allowedRedirectUrl =
         [
             "/users",
         ];
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IAuthService authService)
         {
             _userService = userService;
+            _authService = authService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -61,15 +65,40 @@ namespace IctuTaekwondo.WebClient.Controllers
             });
         }
 
-        [HttpPut]
+        [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(string id, [FromForm] UpdateUserViewModel schema)
+        public async Task<IActionResult> RegisterUser([FromForm] RegisterViewModel model)
         {
             if (!Request.IsHtmx()) return BadRequest();
 
             if (ModelState.IsValid)
             {
-                var userDetail = await _userService.UpdateAsync(id, schema, ModelState, Request.Cookies);
+                var isSuccess = await _authService.RegisterAsync(model,
+                    ModelState,
+                    Request.Cookies,
+                    Response.Cookies);
+                if (isSuccess)
+                {
+                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                    {
+                        icon = "success",
+                        title = "Đăng ký thành công",
+                    }));
+                    return PartialView("_RegisterUserFormPartial", new RegisterViewModel());
+                }
+            }
+            return PartialView("_RegisterUserFormPartial", model);
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(string id, [FromForm] UpdateUserViewModel model)
+        {
+            if (!Request.IsHtmx()) return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                var userDetail = await _userService.UpdateAsync(id, model, ModelState, Request.Cookies);
                 if (userDetail != null)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
@@ -94,14 +123,12 @@ namespace IctuTaekwondo.WebClient.Controllers
                 }
             }
 
-            return PartialView("Users/_UpdateUserFormPartial", schema);
+            return PartialView("Users/_UpdateUserFormPartial", model);
         }
 
         [HttpDelete]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(
-            string id,
-            [FromQuery] string? next)
+        public async Task<IActionResult> Delete(string id, [FromQuery] string? next)
         {
             if (!Request.IsHtmx()) return BadRequest();
 
@@ -142,6 +169,35 @@ namespace IctuTaekwondo.WebClient.Controllers
             });
 
             return NoContent();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SetPassword(string id, [FromForm] AdminSetPasswordSchema schema)
+        {
+            if (!Request.IsHtmx()) return BadRequest();
+
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (currentUserId == null) return Unauthorized();
+
+            if (ModelState.IsValid)
+            {
+                var isSuccess = await _userService.SetPasswordAsync(
+                    currentUserId, id,
+                    schema,
+                    ModelState,
+                    Request.Cookies);
+                if (isSuccess)
+                {
+                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                    {
+                        icon = "success",
+                        title = "Đặt mật khẩu thành công",
+                    }));
+                }
+            }
+
+            return PartialView("_SetPasswordFormPartial", schema);
         }
     }
 }

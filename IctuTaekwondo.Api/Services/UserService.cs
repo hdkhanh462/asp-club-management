@@ -18,7 +18,7 @@ namespace IctuTaekwondo.Api.Services
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string id);
         Task<PaginationResponse<UserResponse>> GetAllAsync(int page, int size);
         Task<IdentityResult> ChangePasswordAsync(string id, ChangePasswordSchema schema);
-        Task<IdentityResult> SetPasswordAsync(string id, SetPasswordSchema schema);
+        Task<IdentityResult> SetPasswordAsync(string currentUserId, string userToSetId, AdminSetPasswordSchema schema);
         Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
             int page,
             int size,
@@ -167,12 +167,34 @@ namespace IctuTaekwondo.Api.Services
             return userDetail;
         }
 
-        public async Task<IdentityResult> SetPasswordAsync(string id, SetPasswordSchema schema)
+        public async Task<IdentityResult> SetPasswordAsync(string currentUserId, string userToSetId, AdminSetPasswordSchema schema)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
+            var currentUser = await _userManager.FindByIdAsync(currentUserId);
+            if (currentUser == null)
             {
-                _logger.LogError("User not found: {0}", id);
+                _logger.LogError("Unauthorized: {0}", currentUserId);
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "Unauthorized",
+                    Description = "Unauthorized"
+                });
+            }
+
+            var isAuthorized = await _userManager.CheckPasswordAsync(currentUser, schema.YourPassword);
+            if (!isAuthorized)
+            {
+                _logger.LogError("Logged in user password not correct: {0}", currentUserId);
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "YourPasswordNotCorrect",
+                    Description = "Mật khẩu của bạn không chính xác"
+                });
+            }
+
+            var userToSet = await _userManager.FindByIdAsync(userToSetId);
+            if (userToSet == null)
+            {
+                _logger.LogError("User not found: {0}", userToSetId);
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = "UserNotFound",
@@ -180,14 +202,24 @@ namespace IctuTaekwondo.Api.Services
                 });
             }
 
-            var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+            if (userToSet.Email == IdentityDataSeeder.DefaultAdminUser.Email)
+            {
+                _logger.LogError("Set default admin password not allowed: {0}", userToSetId);
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = "SetDefaultAdminPassword",
+                    Description = "Không thể đặt mật khẩu cho tài khoản Admin mặc định"
+                });
+            }
+
+            var removePasswordResult = await _userManager.RemovePasswordAsync(userToSet);
             if (!removePasswordResult.Succeeded)
             {
-                _logger.LogError("Remove password failed: {0}", id);
+                _logger.LogError("Remove password failed: {0}", userToSetId);
                 return removePasswordResult;
             }
 
-            return await _userManager.AddPasswordAsync(user, schema.NewPassword);
+            return await _userManager.AddPasswordAsync(userToSet, schema.NewPassword);
         }
 
         public async Task<UserFullDetailResponse?> UpdateProfileAsync(string id, UserUpdateSchema schema)

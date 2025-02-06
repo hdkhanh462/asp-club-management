@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using IctuTaekwondo.Api.Services;
 using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.User;
@@ -122,10 +123,15 @@ namespace IctuTaekwondo.Api.Controllers
 
         [HttpPut("{id}/set-password")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> SetUserPassword(string id, [FromBody] SetPasswordSchema schema)
+        public async Task<IActionResult> SetUserPassword(string id, [FromBody] AdminSetPasswordSchema schema)
         {
-            var result = await _userService.SetPasswordAsync(id, schema);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(currentUserId)) return Unauthorized(new ApiResponse<object>
+            {
+                StatusCode = HttpStatusCode.Unauthorized,
+            });
 
+            var result = await _userService.SetPasswordAsync(currentUserId, id, schema);
             if (!result.Succeeded) return BadRequest(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.BadRequest,
@@ -136,7 +142,7 @@ namespace IctuTaekwondo.Api.Controllers
                 )
             });
 
-            return Ok(new ApiResponse<UserResponse>
+            return Ok(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.OK,
                 Message = "Đặt mật khẩu thành công"

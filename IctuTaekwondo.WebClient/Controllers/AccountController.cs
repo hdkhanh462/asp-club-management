@@ -42,6 +42,8 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize]
         public async Task<IActionResult> Update([FromForm] UpdateUserViewModel model)
         {
+            if (!Request.IsHtmx()) return BadRequest();
+
             if (ModelState.IsValid)
             {
                 var userDetail = await _accountService.UpdateProfileAsync(model, ModelState, Request.Cookies);
@@ -75,6 +77,8 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordSchema schema)
         {
+            if (!Request.IsHtmx()) return BadRequest();
+
             if (ModelState.IsValid)
             {
                 var response = await _accountService.ChangePasswordAsync(schema, ModelState, Request.Cookies);

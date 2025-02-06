@@ -24,6 +24,13 @@
 	<ItemGroup>
 	  <Folder Include="Views\Htmx\" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="Views\Users\_SetPasswordFormPartial.cshtml">
+	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+	    <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+	  </Content>
+	</ItemGroup>
 	
 </Project>
 
