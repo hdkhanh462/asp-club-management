@@ -8,5 +8,12 @@ namespace IctuTaekwondo.Shared.Responses
         public string? Message { get; set; }
         public Dictionary<string, string[]>? Errors { get; set; }
         public T? Data { get; set; }
+
+        public bool IsSuccess()
+        {
+            return StatusCode
+                .ToString()
+                .StartsWith(value: "2");
+        }
     }
 }

@@ -49,9 +49,8 @@ namespace IctuTaekwondo.WebClient.Services
                 HandleErrors<JwtResponse>(response, modelState);
                 return false;
             }
-
-            var jwtResponse = response.Data;
-            if (jwtResponse == null)
+            
+            if (response.Data == null)
             {
                 modelState.AddModelError(string.Empty, "Không thể đăng nhập vào hệ thống");
                 _logger.LogError("JWT response is null.");
@@ -66,12 +65,12 @@ namespace IctuTaekwondo.WebClient.Services
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                Expires = model.RememberMe ? jwtResponse.ExpiredAt : null,
+                //Secure = true,
+                Expires = model.RememberMe ? response.Data.ExpiredAt : null,
                 SameSite = SameSiteMode.Strict
             };
 
-            responseCookies.Append(GlobalConst.CookieAuthTokenKey, jwtResponse.Token, cookieOptions);
+            responseCookies.Append(GlobalConst.CookieAuthTokenKey, response.Data.Token, cookieOptions);
 
             _logger.LogInformation("User logged in successfully, token set in cookies.");
             return true;
