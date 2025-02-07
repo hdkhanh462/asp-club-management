@@ -112,12 +112,11 @@
 										</div>
 									</th>
 									<th scope="col" class="whitespace-nowrap px-4 py-3">Tên sự kiện</th>
-									<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày bắt đầu</th>
-									<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày kết thúc</th>
 									<th scope="col" class="whitespace-nowrap px-4 py-3">Địa điểm tổ chức</th>
 									<th scope="col" class="whitespace-nowrap px-4 py-3">Phí tham gia</th>
-									<th scope="col" class="whitespace-nowrap px-4 py-3">Tham gia tối đa</th>
-									<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày tạo</th>
+									<th scope="col" class="whitespace-nowrap px-4 py-3">Giới hạn tham gia</th>
+									<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày bắt đầu</th>
+									<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày kết thúc</th>
 									<th scope="col" class="px-4 py-3">
 										<span class="sr-only">Actions</span>
 									</th>
@@ -137,23 +136,20 @@
 										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
 											@item.Name
 										</td>
-										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-											@item.StartDate
-										</td>
-										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-											@item.EndDate
-										</td>
-										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										<td class="max-w-[100px] truncate px-4 py-2 text-gray-900 dark:text-white">
 											@item.Location
 										</td>
-										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-											@item.Fee
+										<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
+											@(item.Fee?.ToString("N0"))đ
+										</td>
+										<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
+											@item.MaxParticipants?.ToString("N0") người
 										</td>
 										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-											@item.MaxParticipants
+											@item.StartDate.ToString("dd/MM/yyyy HH:mm")
 										</td>
 										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-											@item.CreatedAt
+											@item.EndDate?.ToString("dd/MM/yyyy HH:mm")
 										</td>
 										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
 											<div class="flex items-center justify-end">
