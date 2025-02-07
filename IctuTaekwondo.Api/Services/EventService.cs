@@ -13,7 +13,7 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IEventService
     {
-        Task<bool> CreateAsync(EventCreateSchema schema);
+        Task<EventFullDetailResponse?> CreateAsync(EventCreateSchema schema);
         Task<bool> UpdateAsync(int id, EventUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
         Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size);
@@ -36,7 +36,7 @@ namespace IctuTaekwondo.Api.Services
             _context = context;
         }
 
-        public async Task<bool> CreateAsync(EventCreateSchema schema)
+        public async Task<EventFullDetailResponse?> CreateAsync(EventCreateSchema schema)
         {
             var newEvent = new Event
             {
@@ -53,7 +53,12 @@ namespace IctuTaekwondo.Api.Services
             _context.Events.Add(newEvent);
             var result = await _context.SaveChangesAsync();
 
-            return result > 0;
+            if (result > 0)
+            {
+                var response = await GetByIdAsync(newEvent.Id);
+                return newEvent.ToEventFullDetailResponse();
+            }
+            return null;
         }
 
         public async Task<bool> DeleteAsync(int id)

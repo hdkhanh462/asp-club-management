@@ -19,9 +19,9 @@ namespace IctuTaekwondo.Shared.Utils
         };
 
 
-        public ApiService(string baseAddress)
+        public ApiService(HttpClient httpClient)
         {
-            _httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            _httpClient = httpClient;
         }
 
         public async Task<ApiResponse<T>> GetAsync<T>(string requestUri)
@@ -84,15 +84,17 @@ namespace IctuTaekwondo.Shared.Utils
         private async Task<ApiResponse<T>> HandleApiResponse<T>(HttpResponseMessage response)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
-
-            var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(responseContent, SerializerOptions);
-
-            if (apiResponse != null)
+            if (!string.IsNullOrEmpty(responseContent))
             {
-                apiResponse.StatusCode = response.StatusCode;
-            }
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(responseContent, SerializerOptions);
 
-            return apiResponse ?? new ApiResponse<T> { StatusCode = response.StatusCode };
+                if (apiResponse != null)
+                {
+                    apiResponse.StatusCode = response.StatusCode;
+                }
+                return apiResponse ?? new ApiResponse<T> { StatusCode = response.StatusCode };
+            }
+            return new ApiResponse<T> { StatusCode = response.StatusCode };
         }
     }
 }

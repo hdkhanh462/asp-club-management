@@ -46,6 +46,11 @@ builder.Services.AddHttpClient<ApiHelper>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
 });
 
+builder.Services.AddHttpClient<ApiService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "Htmx", policy =>

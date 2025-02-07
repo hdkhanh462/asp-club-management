@@ -118,17 +118,18 @@ namespace IctuTaekwondo.Api.Controllers.Api
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> PostEvent([FromBody] EventCreateSchema schema)
         {
-            var result = await _eventService.CreateAsync(schema);
-            if (!result) return BadRequest(new ApiResponse<object>
+            var newEvent = await _eventService.CreateAsync(schema);
+            if (newEvent == null) return BadRequest(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Message = "Tạo sự kiện thất bại"
             });
 
-            return Ok(new ApiResponse<object>
+            return Ok(new ApiResponse<EventFullDetailResponse>
             {
                 StatusCode = HttpStatusCode.OK,
-                Message = "Tạo sự kiện thành công"
+                Message = "Tạo sự kiện thành công",
+                Data = newEvent
             });
         }
 
