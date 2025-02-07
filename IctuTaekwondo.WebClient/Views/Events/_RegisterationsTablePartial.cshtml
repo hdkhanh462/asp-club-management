@@ -1,0 +1,144 @@
+﻿@using IctuTaekwondo.Shared.Enums
+@using IctuTaekwondo.Shared.Responses
+@using IctuTaekwondo.Shared.Responses.Event
+@using IctuTaekwondo.Shared.Responses.User
+@model PaginationResponse<EventResgiteredUsersResponse>
+@{
+	UserFullDetailResponse? currentUser = null;
+	EventResponse? currentEvent = null;
+
+	if (ViewData.TryGetValue("CurrentUser", out var user) && user is UserFullDetailResponse userDetail)
+	{
+		currentUser = userDetail;
+	}
+
+	if (ViewData.TryGetValue("CurrentEvent", out var @event) && @event is EventResponse eventDetail)
+	{
+		currentEvent = eventDetail;
+	}
+
+	ArgumentNullException.ThrowIfNull(Model);
+	ArgumentNullException.ThrowIfNull(currentEvent);
+	ArgumentNullException.ThrowIfNull(currentUser);
+
+	var isAdmin = currentUser.Roles.Contains(Role.Admin.ToString());
+	var isManager = currentUser.Roles.Contains(Role.Manager.ToString());
+}
+
+<div class="col-span-1 order-3 lg:col-span-8">
+	<div class="relative border bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 sm:rounded-lg">
+		<div class="overflow-x-auto">
+			<table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+				<thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+					<tr>
+						<th scope="col" class="p-4">
+							<div class="flex items-center">
+								<input id="checkbox-all" type="checkbox" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+								<label for="checkbox-all" class="sr-only">checkbox</label>
+							</div>
+						</th>
+						<th scope="col" class="px-4 py-3">Người dùng</th>
+						<th scope="col" class="px-4 py-3">Địa chỉ email</th>
+						<th scope="col" class="px-4 py-3">Số điện thoại</th>
+						<th scope="col" class="px-4 py-3">Ngày đăng ký</th>
+						@if (isAdmin || isManager)
+						{
+							<th scope="col" class="px-4 py-3">
+								<span class="sr-only">Actions</span>
+							</th>
+						}
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.Items)
+					{
+						<tr id="Row-@item.Id" class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+							<td class="w-4 px-4 py-3">
+								<div class="flex items-center">
+									<input id="checkbox-table-@item.Id" value="@item.Id" table-checkbox type="checkbox" onclick="event.stopPropagation()" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+									<label for="checkbox-table-@item.Id" class="sr-only">checkbox</label>
+								</div>
+							</td>
+							<th scope="row" class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+								<div class="flex items-center">
+									@if (!string.IsNullOrEmpty(item.AvatarUrl))
+									{
+										<div class="mr-3 size-8 overflow-hidden rounded-lg border">
+											<img class="h-full w-full object-cover" src="@item.AvatarUrl" alt="@item.FullName" />
+										</div>
+									}
+									else
+									{
+										<div class="mr-3 flex size-8 items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-600">
+											<svg class="size-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+										</div>
+									}
+
+									@if (isAdmin || isManager)
+									{
+										<a asp-controller="Users" asp-action="Detail" asp-route-id="@item.Id" class="font-bold hover:underline">@item.FullName</a>
+									}
+									else
+									{
+										<span class="font-bold">@item.FullName</span>
+									}
+								</div>
+							</th>
+							<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+								@item.Email
+							</td>
+							<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+								@item.PhoneNumber
+							</td>
+							<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+								@item.RegisteredAt?.ToString("dd/MM/yyyy HH:mm")
+							</td>
+							@if (isAdmin || isManager)
+							{
+								<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+									<div class="flex items-center justify-end">
+										<button _="on htmx:beforeRequest set me.disabled to true end
+													   on htmx:afterRequest set me.disabled to false"
+												hx-delete
+												hx-action="ManagerUnregister"
+												hx-route-id="@currentEvent.Id"
+												hx-route-id="@item.Id"
+												hx-confirm="Người dùng vẫn có thể đăng ký tham gia lại."
+												type="button"
+												class="inline-flex items-center rounded-full p-2 text-center text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300">
+											<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+												<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+											</svg>
+										</button>
+									</div>
+								</td>
+							}
+						</tr>
+					}
+				</tbody>
+			</table>
+
+			<script>
+				$(document).ready(function() {
+					$('#checkbox-all').click(function() {
+						$('input[table-checkbox]').prop('checked', this.checked);
+					});
+				});
+			</script>
+		</div>
+
+		<!-- Table Footer -->
+		@await Html.PartialAsync("Partials/_TableFooterPartial", new TableFooterViewModel
+{
+	CurrentPage = Model.CurrentPage,
+	PageSize = Model.PageSize,
+	PageCount = Model.PageCount,
+	TotalItemCount = Model.TotalItemCount,
+	CurrentItemCount = Model.Items.Count,
+	HasPrevious = Model.HasPrevious,
+	HasNext = Model.HasNext,
+	ItemRange = Model.GetItemRange(),
+	DisplayPageRange = Model.GetDisplayPageRange(),
+})
+	</div>
+</div>

@@ -10,7 +10,7 @@ namespace IctuTaekwondo.WebClient.Services
 {
     public interface IAccountService : ICallApiService
     {
-        UserFullDetailResponse? GetProfile(IRequestCookieCollection requestCookies);
+        Task<UserFullDetailResponse?> GetProfileAsync(HttpRequest request);
         UserResponse? GetUser(IRequestCookieCollection requestCookies);
         Task<UserFullDetailResponse?> UpdateProfileAsync(UserUpdateSchema schema,
             ModelStateDictionary modelState, 
@@ -24,23 +24,22 @@ namespace IctuTaekwondo.WebClient.Services
     {
         private readonly ILogger<AccountService> _logger;
         private readonly ApiHelper _apiHelper;
+        private readonly ApiService _apiService;
 
-        public AccountService(ILogger<AccountService> logger, ApiHelper apiHelper)
+        public AccountService(ILogger<AccountService> logger, ApiHelper apiHelper, ApiService apiService)
         {
             _logger = logger;
             _apiHelper = apiHelper;
+            _apiService = apiService;
         }
 
-        public UserFullDetailResponse? GetProfile(IRequestCookieCollection requestCookies)
+        public async Task<UserFullDetailResponse?> GetProfileAsync(HttpRequest request)
         {
-            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
 
-            _apiHelper.AddHeaders(new Dictionary<string, string>
-            {
-                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
-            });
-
-            return _apiHelper.GetAsync<UserFullDetailResponse>("api/account/profile").Result.Data;
+            var response = await _apiService.GetAsync<UserFullDetailResponse>($"api/account/profile");
+            return response.Data;
         }
 
         public UserResponse? GetUser(IRequestCookieCollection requestCookies)

@@ -15,7 +15,7 @@ namespace IctuTaekwondo.Api.Services
     {
         Task<UserFullDetailResponse?> UpdateProfileAsync(string id, UserUpdateSchema schema);
         Task<IdentityResult> DeleteAsync(string id);
-        Task<UserResponse?> GetByIdAsync(string id);
+        Task<UserResponse?> FindByIdAsync(string id);
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string id);
         Task<PaginationResponse<UserResponse>> GetAllAsync(int page, int size);
         Task<IdentityResult> ChangePasswordAsync(string id, ChangePasswordSchema schema);
@@ -139,7 +139,7 @@ namespace IctuTaekwondo.Api.Services
                 .Select(e => e.ToUserResponse()).ToList());
         }
 
-        public async Task<UserResponse?> GetByIdAsync(string id)
+        public async Task<UserResponse?> FindByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)

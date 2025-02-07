@@ -44,7 +44,7 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detail(string id)
         {
-            var userDetail = await _userService.GetFullDetailAsync(id, ModelState, Request.Cookies);
+            var userDetail = await _userService.GetProfileByIdAsync(id, Request);
             if (userDetail == null) return NotFound();
 
             var curentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -147,7 +147,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             if (!Request.IsHtmx()) return BadRequest();
 
             var result = await _userService.DeleteAsnyc(id, ModelState, Request.Cookies);
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            //await Task.Delay(TimeSpan.FromSeconds(3));
 
             if (ModelState[string.Empty] == null)
             {

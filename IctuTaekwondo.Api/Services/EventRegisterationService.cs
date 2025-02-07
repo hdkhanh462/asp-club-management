@@ -47,8 +47,8 @@ namespace IctuTaekwondo.Api.Services
     {
         Task<EventRegisterationResult> RegisterAsync(int id, string? userId, bool isCheckValid = false);
         Task<EventRegisterationResult> UnregisterAsync(int id, string? userId);
-        Task<Event?> GetAllAsync(int id);
-        public PaginationResponse<UserResgiteredEventResponse> GetAllRegisteration(Event @event, int page, int size);
+        Task<Event?> GetFullDetailAsync(int id);
+        public PaginationResponse<EventResgiteredUsersResponse> GetAllRegisteration(Event @event, int page, int size);
     }
 
     // Lớp dịch vụ để xử lý các thao tác đăng ký sự kiện  
@@ -66,7 +66,7 @@ namespace IctuTaekwondo.Api.Services
         public async Task<EventRegisterationResult> RegisterAsync(int id, string? userId, bool isCheckValid = false)
         {
             // Lấy sự kiện cùng với các đăng ký của nó  
-            var @event = await GetAllAsync(id);
+            var @event = await GetFullDetailAsync(id);
             if (@event == null) return EventRegisterationResult.EventNotFound;
 
             // Kiểm tra xem sự kiện có hợp lệ để đăng ký không  
@@ -102,7 +102,7 @@ namespace IctuTaekwondo.Api.Services
         public async Task<EventRegisterationResult> UnregisterAsync(int id, string? userId)
         {
             // Lấy sự kiện cùng với các đăng ký của nó  
-            var @event = await GetAllAsync(id);
+            var @event = await GetFullDetailAsync(id);
             if (@event == null) return EventRegisterationResult.EventNotFound;
 
             // Tìm đăng ký của người dùng  
@@ -120,7 +120,7 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức để lấy một sự kiện cùng với các đăng ký của nó theo ID sự kiện  
-        public async Task<Event?> GetAllAsync(int id)
+        public async Task<Event?> GetFullDetailAsync(int id)
         {
             return await _context.Events
                 .Include(e => e.EventRegistrations)
@@ -129,14 +129,14 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức để kiểm tra xem sự kiện có hợp lệ để đăng ký không  
-        private EventRegisterationResult IsEventValidToRegister(Event @event)
+        public EventRegisterationResult IsEventValidToRegister(Event @event)
         {
-            if (@event.EndDate.HasValue && @event.EndDate.Value < DateTime.Now)
+            if (@event.EndDate.HasValue && @event.EndDate.Value < DateTime.UtcNow)
             {
                 return EventRegisterationResult.EventEnded;
             }
 
-            if (@event.StartDate < DateTime.Now)
+            if (@event.StartDate < DateTime.UtcNow)
             {
                 return EventRegisterationResult.EventStarted;
             }
@@ -150,7 +150,7 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức lấy tất cả người dùng đã đăng ký của sự kiện
-        public PaginationResponse<UserResgiteredEventResponse> GetAllRegisteration(Event @event, int page, int size)
+        public PaginationResponse<EventResgiteredUsersResponse> GetAllRegisteration(Event @event, int page, int size)
         {
             var registrations = @event.EventRegistrations
                 .Skip((page - 1) * size)
@@ -163,7 +163,7 @@ namespace IctuTaekwondo.Api.Services
                 })
                 .ToList();
 
-            return new PaginationResponse<UserResgiteredEventResponse>(
+            return new PaginationResponse<EventResgiteredUsersResponse>(
                 page, size,
                 registrations.Count,
                 registrations);

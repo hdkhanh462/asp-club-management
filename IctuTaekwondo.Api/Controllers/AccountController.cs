@@ -30,7 +30,7 @@ namespace IctuTaekwondo.Api.Controllers
                 StatusCode = HttpStatusCode.Unauthorized,
                 Message = "Không tìm thấy thông tin người dùng",
             });
-            var userDetail = await _userService.GetByIdAsync(userId);
+            var userDetail = await _userService.FindByIdAsync(userId);
             if (userDetail == null)
             {
                 return NotFound(new ApiResponse<object>

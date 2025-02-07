@@ -15,10 +15,10 @@ namespace IctuTaekwondo.WebClient.Services
 {
     public interface IEventService
     {
-        public Task<EventFullDetailResponse?> CreateAsync(EventCreateSchema schema, ModelStateDictionary modelState, HttpRequest request);
-        public Task<EventFullDetailResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState);
-        public Task<bool> DeleteAsync(int id);
-        public Task<EventFullDetailResponse?> FindByIdAsync(int id, ModelStateDictionary modelState);
+        public Task<EventResponse?> CreateAsync(EventCreateSchema schema, ModelStateDictionary modelState, HttpRequest request);
+        public Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState, HttpRequest request);
+        public Task<bool> DeleteAsync(int id, HttpRequest request);
+        public Task<EventResponse?> FindByIdAsync(int id, HttpRequest request);
         public Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size, ModelStateDictionary modelState, HttpRequest request);
         public Task<PaginationResponse<EventResponse>> FilterAsync(int page, int size, string? name = null, EventStatus? status = null);
     }
@@ -35,12 +35,12 @@ namespace IctuTaekwondo.WebClient.Services
             _apiService = apiService;
         }
 
-        public async Task<EventFullDetailResponse?> CreateAsync(EventCreateSchema schema, ModelStateDictionary modelState, HttpRequest request)
+        public async Task<EventResponse?> CreateAsync(EventCreateSchema schema, ModelStateDictionary modelState, HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
             _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
 
-            var apiResponse = await _apiService.PostAsync<EventFullDetailResponse>("api/events", schema.ToStringContent());
+            var apiResponse = await _apiService.PostAsync<EventResponse>("api/events", schema.ToStringContent());
             if (apiResponse.StatusCode != HttpStatusCode.OK)
             {
                 if (apiResponse.Message != null && apiResponse.Errors == null)
@@ -52,14 +52,13 @@ namespace IctuTaekwondo.WebClient.Services
             return apiResponse.Data;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, HttpRequest request)
         {
-            var response = await _apiService.DeleteAsync<object>("api/events/{id}");
-            if (!response.IsSuccess())
-            {
-                throw new HttpRequestException(response.Message);
-            }
-            return true;
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+
+            var response = await _apiService.DeleteAsync<EventResponse>($"api/events/{id}");
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         public async Task<PaginationResponse<EventResponse>> FilterAsync(int page, int size, string? name = null, EventStatus? status = null)
@@ -73,29 +72,20 @@ namespace IctuTaekwondo.WebClient.Services
             };
 
             var response = await _apiService.GetAsync<PaginationResponse<EventResponse>>($"api/events/filter?{builder.ToQueryString()}");
-            if (!response.IsSuccess() || response.Data == null)
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                throw new HttpRequestException(response.Message);
+                if (response.Data != null)
+                    return response.Data;
             }
-            return response.Data;
+            return new PaginationResponse<EventResponse>(page, size, 0, []);
         }
 
-        public async Task<EventFullDetailResponse?> FindByIdAsync(int id, ModelStateDictionary modelState)
+        public async Task<EventResponse?> FindByIdAsync(int id, HttpRequest request)
         {
-            var response = await _apiService.GetAsync<EventFullDetailResponse>($"api/events/{id}");
-            if (!response.IsSuccess() || response.Data == null)
-            {
-                if (response.Message != null && response.Errors == null)
-                    modelState.AddModelError(string.Empty, response.Message);
-                if (response.Errors != null)
-                {
-                    modelState.AddError(response.Errors, new Dictionary<string, string>
-                    {
-                        { "ABCD", "ABCD" }
-                    });
-                }
-                return null;
-            }
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+
+            var response = await _apiService.GetAsync<EventResponse>($"api/events/{id}");
             return response.Data;
         }
 
@@ -119,10 +109,13 @@ namespace IctuTaekwondo.WebClient.Services
             return new PaginationResponse<EventResponse>(page, size, 0, []);
         }
 
-        public async Task<EventFullDetailResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState)
+        public async Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState, HttpRequest request)
         {
-            var response = await _apiService.PutAsync<EventFullDetailResponse>($"api/events/{id}", schema.ToStringContent());
-            if (!response.IsSuccess() || response.Data == null)
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+
+            var response = await _apiService.PutAsync<EventResponse>($"api/events/{id}", schema.ToStringContent());
+            if (response.StatusCode != HttpStatusCode.OK)
             {
                 if (response.Message != null && response.Errors == null)
                     modelState.AddModelError(string.Empty, response.Message);
@@ -130,6 +123,7 @@ namespace IctuTaekwondo.WebClient.Services
                     modelState.AddError(response.Errors);
                 return null;
             }
+
             return response.Data;
         }
     }

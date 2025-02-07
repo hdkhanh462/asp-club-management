@@ -7,8 +7,10 @@
         //    popup: 'colored-toast',
         //},
         showConfirmButton: false,
-        timer: 3000,
+        showCloseButton: true,
+        timer: 5000,
         timerProgressBar: true,
+        width: 'auto', 
         didOpen: function (toast) {
             toast.onmouseenter = Swal.stopTimer;
             toast.onmouseleave = Swal.resumeTimer;

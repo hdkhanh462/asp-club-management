@@ -45,12 +45,13 @@
 			Hồ sơ cá nhân
 		</h2>
 
-		<div class="grid-cols-1 grid gap-4 pt-6 lg:grid-cols-5">
-			<div id="message-update-user" class="col-span-1 lg:col-span-5"></div>
+		<div class="grid-cols-1 grid gap-4 pt-6 lg:grid-cols-8">
+			<div id="Message-Update-User" class="col-span-1 lg:col-span-5" hidden></div>
 
-			@await Html.PartialAsync("Users/_UpdateUserFormPartial", Model)
+			<!-- Action Buttons -->
+			<div class="col-span-1 lg:col-span-2 lg:order-2">
+				<h6 class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Hành động</h6>
 
-			<div class="col-span-1 lg:col-span-1">
 				<div class="flex gap-2 gap-x-2 gap-y-4 lg:flex-col">
 					<button _="on click trigger 'update-user'"
 							id="update-user-btn"
@@ -72,6 +73,9 @@
 					</button>
 				</div>
 			</div>
+
+			<!-- Information -->
+			@await Html.PartialAsync("Users/_UpdateUserFormPartial", Model)
 		</div>
 	</div>
 </section>

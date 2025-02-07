@@ -75,6 +75,12 @@ namespace IctuTaekwondo.Shared.Enums
         
         [Display(Name = "Đã kết thúc")]
         Ended,
+
+        [Display(Name = "Đã đầy")]
+        Full,
+
+        [Display(Name = "Đã đăng ký")]
+        Registered,
     }
 
     public enum ToastType

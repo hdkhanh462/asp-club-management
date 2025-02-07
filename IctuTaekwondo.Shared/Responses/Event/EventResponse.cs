@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using IctuTaekwondo.Shared.Enums;
 
 namespace IctuTaekwondo.Shared.Responses.Event
 {
@@ -11,7 +12,8 @@ namespace IctuTaekwondo.Shared.Responses.Event
         public string Location { get; set; }
         public string? Description { get; set; }
         public long? Fee { get; set; }
-        public int? MaxParticipants { get; set; }
+        public short? MaxParticipants { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public List<EventStatus> Status { get; set; } = [];
     }
 }
