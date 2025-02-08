@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Schemas.Auth;
 
-namespace IctuTaekwondo.WindowsClient.Services
+namespace IctuTaekwondo.Shared.Services.Auth
 {
     public interface IAuthService
     {
         Task<JwtResponse?> LoginAsync(LoginSchema schema);
-        Task<bool> RegisterAsync(RegisterSchema schema);
-        Task LogoutAsync();
+        //Task<bool> LogoutAsync();
     }
 }

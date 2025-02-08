@@ -1,6 +1,6 @@
-﻿namespace IctuTaekwondo.WindowsClient.Views
+﻿namespace IctuTaekwondo.WindowsClient.Forms
 {
-    partial class LoginView
+    partial class LoginForm
     {
         /// <summary>
         /// Required designer variable.
@@ -35,7 +35,7 @@
             pictureBox1 = new PictureBox();
             label1 = new Label();
             dungeonLabel1 = new ReaLTaiizor.Controls.DungeonLabel();
-            tbUsername = new ReaLTaiizor.Controls.DungeonTextBox();
+            tbEmail = new ReaLTaiizor.Controls.DungeonTextBox();
             dungeonLabel2 = new ReaLTaiizor.Controls.DungeonLabel();
             tbPassword = new ReaLTaiizor.Controls.DungeonTextBox();
             btnLogin = new ReaLTaiizor.Controls.MaterialButton();
@@ -134,27 +134,27 @@
             dungeonLabel1.Location = new Point(483, 123);
             dungeonLabel1.Margin = new Padding(3, 0, 3, 3);
             dungeonLabel1.Name = "dungeonLabel1";
-            dungeonLabel1.Size = new Size(111, 20);
+            dungeonLabel1.Size = new Size(97, 20);
             dungeonLabel1.TabIndex = 3;
-            dungeonLabel1.Text = "Tên đăng nhập";
+            dungeonLabel1.Text = "Địa chỉ email";
             // 
-            // tbUsername
+            // tbEmail
             // 
-            tbUsername.BackColor = Color.Transparent;
-            tbUsername.BorderColor = Color.FromArgb(180, 180, 180);
-            tbUsername.EdgeColor = Color.White;
-            tbUsername.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tbUsername.ForeColor = Color.Black;
-            tbUsername.Location = new Point(483, 149);
-            tbUsername.MaxLength = 32767;
-            tbUsername.Multiline = false;
-            tbUsername.Name = "tbUsername";
-            tbUsername.ReadOnly = false;
-            tbUsername.Size = new Size(280, 32);
-            tbUsername.TabIndex = 6;
-            tbUsername.TabStop = false;
-            tbUsername.TextAlignment = HorizontalAlignment.Left;
-            tbUsername.UseSystemPasswordChar = false;
+            tbEmail.BackColor = Color.Transparent;
+            tbEmail.BorderColor = Color.FromArgb(180, 180, 180);
+            tbEmail.EdgeColor = Color.White;
+            tbEmail.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            tbEmail.ForeColor = Color.Black;
+            tbEmail.Location = new Point(483, 149);
+            tbEmail.MaxLength = 32767;
+            tbEmail.Multiline = false;
+            tbEmail.Name = "tbEmail";
+            tbEmail.ReadOnly = false;
+            tbEmail.Size = new Size(280, 32);
+            tbEmail.TabIndex = 6;
+            tbEmail.TabStop = false;
+            tbEmail.TextAlignment = HorizontalAlignment.Left;
+            tbEmail.UseSystemPasswordChar = false;
             // 
             // dungeonLabel2
             // 
@@ -208,6 +208,7 @@
             btnLogin.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
             btnLogin.UseAccentColor = false;
             btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.Click += btnLogin_Click;
             // 
             // cbRememberMe
             // 
@@ -247,7 +248,7 @@
             controlBox1.TabIndex = 5;
             controlBox1.Text = "controlBox1";
             // 
-            // LoginView
+            // LoginForms
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -258,14 +259,15 @@
             Controls.Add(btnLogin);
             Controls.Add(tbPassword);
             Controls.Add(dungeonLabel2);
-            Controls.Add(tbUsername);
+            Controls.Add(tbEmail);
             Controls.Add(dungeonLabel1);
             Controls.Add(label1);
             Controls.Add(parrotGradientPanel1);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "LoginView";
+            Name = "LoginForms";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginView";
+            Load += LoginForms_Load;
             parrotGradientPanel1.ResumeLayout(false);
             parrotGradientPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
@@ -280,7 +282,7 @@
         private PictureBox pictureBox1;
         private Label label1;
         private ReaLTaiizor.Controls.DungeonLabel dungeonLabel1;
-        private ReaLTaiizor.Controls.DungeonTextBox tbUsername;
+        private ReaLTaiizor.Controls.DungeonTextBox tbEmail;
         private Label label3;
         private PictureBox pictureBox2;
         private Label label2;

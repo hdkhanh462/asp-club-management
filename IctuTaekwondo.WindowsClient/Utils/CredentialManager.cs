@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace IctuTaekwondo.WindowsClient.Utils
 {
@@ -11,11 +7,11 @@ namespace IctuTaekwondo.WindowsClient.Utils
     {
         public const string ApplicationName = "IctuTaekwondoApp";
 
-        public static void SaveCredentials(string applicationName, string userName, string password)
+        public static void SaveCredentials(string userName, string password)
         {
             var credential = new CREDENTIAL
             {
-                TargetName = Marshal.StringToCoTaskMemUni(applicationName),
+                TargetName = Marshal.StringToCoTaskMemUni(ApplicationName),
                 UserName = Marshal.StringToCoTaskMemUni(userName),
                 CredentialBlob = Marshal.StringToCoTaskMemUni(password),
                 CredentialBlobSize = (uint)Encoding.Unicode.GetBytes(password).Length,
@@ -36,10 +32,10 @@ namespace IctuTaekwondo.WindowsClient.Utils
             }
         }
 
-        public static string RetrieveCredentials(string applicationName, out string userName)
+        public static string RetrieveCredentials( out string userName)
         {
             IntPtr credentialPtr;
-            bool result = CredRead(applicationName, CredentialType.Generic, 0, out credentialPtr);
+            bool result = CredRead(ApplicationName, CredentialType.Generic, 0, out credentialPtr);
 
             if (!result)
             {

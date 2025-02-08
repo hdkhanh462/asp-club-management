@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using IctuTaekwondo.Shared.Responses.Auth;
+﻿using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Utils;
 
-namespace IctuTaekwondo.WindowsClient.Services
+namespace IctuTaekwondo.Shared.Services.Auth
 {
     public class AuthService : IAuthService
     {
@@ -23,16 +17,6 @@ namespace IctuTaekwondo.WindowsClient.Services
         {
             var response = await _apiService.PostAsync<JwtResponse>("api/auth/login", schema.ToStringContent());
             return response.Data;
-        }
-
-        public Task LogoutAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> RegisterAsync(RegisterSchema schema)
-        {
-            throw new NotImplementedException();
         }
     }
 }

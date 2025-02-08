@@ -1,15 +1,16 @@
 using System.Configuration;
+using Autofac;
+using IctuTaekwondo.Shared.Services.Account;
+using IctuTaekwondo.Shared.Services.Auth;
+using IctuTaekwondo.Shared.Services.Users;
 using IctuTaekwondo.Shared.Utils;
-using IctuTaekwondo.WindowsClient.Presenters;
-using IctuTaekwondo.WindowsClient.Services;
-using IctuTaekwondo.WindowsClient.Utils;
-using IctuTaekwondo.WindowsClient.Views;
-using YourNamespace;
 
-namespace IctuTaekwondo.WindowsClient
+namespace IctuTaekwondo.WindowsClient.Forms
 {
     internal static class Program
     {
+        public static IContainer AppContainer;
+
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -20,6 +21,13 @@ namespace IctuTaekwondo.WindowsClient
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
+            AppContainer = Configure();
+
+            Application.Run(new LoginForm(AppContainer));
+        }
+
+        static IContainer Configure()
+        {
             string ApiUrl = ConfigurationManager.AppSettings["ApiUrl"]!;
 
             HttpClient client = new()
@@ -27,20 +35,17 @@ namespace IctuTaekwondo.WindowsClient
                 BaseAddress = new Uri(ApiUrl)
             };
 
-            var resolver = new DependencyResolver();
-            resolver.Register<IApiService, ApiService>(resolver => new ApiService(client));
-            resolver.RegisterSingleton<ILogger, ConsoleLogger>();
-            resolver.Register<ILoginView, LoginView>();
-            resolver.Register<IPresenter, LoginPresenter>(resolver => new LoginPresenter(
-                resolver.Resolve<ILoginView>(),
-                resolver.Resolve<IAuthService>(), 
-                resolver.Resolve<ILogger>(),
-                resolver
-            ));
+            var apiService = new ApiService(client);
 
-            var loginView = resolver.Resolve<ILoginView>() as Form;
+            var builder = new ContainerBuilder();
 
-            Application.Run(loginView!);
+            builder.RegisterInstance(apiService).As<IApiService>();
+            builder.RegisterInstance(new AuthService(apiService)).As<IAuthService>();
+            builder.RegisterInstance(new AccountService(apiService)).As<IAccountService>();
+            builder.RegisterInstance(new UsersService(apiService)).As<IUsersService>();
+            builder.RegisterType<LoginForm>();
+
+            return builder.Build();
         }
     }
 }
