@@ -9,7 +9,7 @@ using IctuTaekwondo.Shared.Responses;
 
 namespace IctuTaekwondo.Shared.Utils
 {
-    public class ApiService
+    public class ApiService : IApiService
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions SerializerOptions = new()
@@ -17,8 +17,6 @@ namespace IctuTaekwondo.Shared.Utils
             IncludeFields = true,
             PropertyNameCaseInsensitive = true
         };
-
-        public const string DefaultAuthorizationScheme = "Bearer";
 
         public ApiService(HttpClient httpClient)
         {
@@ -61,7 +59,7 @@ namespace IctuTaekwondo.Shared.Utils
             return await HandleApiResponse<T>(response);
         }
 
-        public void SetAuthorizationHeader(string parameter, string scheme = DefaultAuthorizationScheme)
+        public void SetAuthorizationHeader(string parameter, string scheme = GlobalConst.DefaultAuthorizationScheme)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme, parameter);
         }

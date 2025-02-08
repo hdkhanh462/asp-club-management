@@ -2,6 +2,7 @@ using System.Configuration;
 using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.WindowsClient.Presenters;
 using IctuTaekwondo.WindowsClient.Services;
+using IctuTaekwondo.WindowsClient.Utils;
 using IctuTaekwondo.WindowsClient.Views;
 using YourNamespace;
 
@@ -21,18 +22,25 @@ namespace IctuTaekwondo.WindowsClient
 
             string ApiUrl = ConfigurationManager.AppSettings["ApiUrl"]!;
 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(ApiUrl);
+            HttpClient client = new()
+            {
+                BaseAddress = new Uri(ApiUrl)
+            };
 
-            ApiService apiService = new ApiService(client);
+            var resolver = new DependencyResolver();
+            resolver.Register<IApiService, ApiService>(resolver => new ApiService(client));
+            resolver.RegisterSingleton<ILogger, ConsoleLogger>();
+            resolver.Register<ILoginView, LoginView>();
+            resolver.Register<IPresenter, LoginPresenter>(resolver => new LoginPresenter(
+                resolver.Resolve<ILoginView>(),
+                resolver.Resolve<IAuthService>(), 
+                resolver.Resolve<ILogger>(),
+                resolver
+            ));
 
-            IAuthService authService = new AuthService(apiService);
-            IAccountService accountService = new AccountService(apiService);
-            ILoginView loginView = LoginView.GetInstance();
+            var loginView = resolver.Resolve<ILoginView>() as Form;
 
-            new LoginPresenter(loginView, authService, accountService, apiService);
-
-            Application.Run(new MainForm());
+            Application.Run(loginView!);
         }
     }
 }

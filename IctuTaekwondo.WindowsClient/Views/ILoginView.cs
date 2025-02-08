@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Responses.User;
+using IctuTaekwondo.WindowsClient.Utils;
 
 namespace IctuTaekwondo.WindowsClient.Views
 {
-    public interface ILoginView
+    public interface ILoginView : IView
     {
         string EmailValue { get; set; }
         string PasswordValue { get; set; }
@@ -16,8 +17,6 @@ namespace IctuTaekwondo.WindowsClient.Views
 
         event EventHandler LoginEvent;
 
-        void Show();
-        void Hide();
-        void Close();
+        
     }
 }

@@ -9,16 +9,44 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Responses.User;
+using IctuTaekwondo.WindowsClient.Utils;
 
 namespace IctuTaekwondo.WindowsClient.Views
 {
 
     public partial class LoginView : Form, ILoginView
     {
+        private IPresenter _presenter;
+        private static LoginView? _instance = null;
+
         public LoginView()
         {
             InitializeComponent();
             InitEvents();
+        }
+
+        public void SetPresenter(IPresenter presenter)
+        {
+            _presenter = presenter;
+        }
+
+        private void OnLoad(object sender, EventArgs e)
+        {
+            _presenter?.Run();
+        }
+
+        public static LoginView GetInstance()
+        {
+            if (_instance == null || _instance.IsDisposed)
+                _instance = new LoginView();
+            else
+            {
+                if (_instance.WindowState == FormWindowState.Minimized)
+                    _instance.WindowState = FormWindowState.Normal;
+                _instance.BringToFront();
+            }
+
+            return _instance;
         }
 
         private void InitEvents()
@@ -37,24 +65,6 @@ namespace IctuTaekwondo.WindowsClient.Views
 
         public event EventHandler LoginEvent;
 
-        private static LoginView _instance;
-        public static LoginView GetInstance()
-        {
-            if (_instance == null || _instance.IsDisposed)
-                _instance = new LoginView();
-            else
-            {
-                if (_instance.WindowState == FormWindowState.Minimized)
-                    _instance.WindowState = FormWindowState.Normal;
-                _instance.BringToFront();
-            }
-
-            return _instance;
-        }
-
-        private void LoginView_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
-        }
+        
     }
 }

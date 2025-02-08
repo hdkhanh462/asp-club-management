@@ -13,28 +13,42 @@ using IctuTaekwondo.WindowsClient.Views;
 namespace IctuTaekwondo.WindowsClient.Presenters
 {
 
-    public class LoginPresenter
+    public class LoginPresenter : IPresenter
     {
-        private ILoginView _loginView;
-        private IAuthService _authService;
-        private IAccountService _accountService;
-        private ApiService _apiService;
+        private readonly ILoginView _view;
+        private readonly IAuthService _authService;
+        private readonly ILogger _logger;
+        private readonly IDependencyResolver _resolver;
 
-        public LoginPresenter(ILoginView loginView, IAuthService authService, IAccountService accountService, ApiService apiService)
+        public LoginPresenter(ILoginView view, IAuthService authService, ILogger logger, IDependencyResolver resolver)
         {
-            _loginView = loginView;
+            _view = view;
             _authService = authService;
-            _accountService = accountService;
-            _apiService = apiService;
+            _logger = logger;
+            _resolver = resolver;
+            _view.SetPresenter(this);
+        }
 
-            _loginView.LoginEvent += _LoginEvent;
+        public void Run()
+        {
+            _logger.Log("MainPresenter is running.");
+            _view.LoginEvent += _LoginEvent;
+            _GetSavedCred();
+        }
 
+        public T Resolve<T>()
+        {
+            return _resolver.Resolve<T>();
+        }
+
+        private void _GetSavedCred()
+        {
             try
             {
                 var password = CredentialManager.RetrieveCredentials(CredentialManager.ApplicationName, out var userName);
-                _loginView.EmailValue = userName;
-                _loginView.PasswordValue = password;
-                _loginView.RememberMeValue = true;
+                _view.EmailValue = userName;
+                _view.PasswordValue = password;
+                _view.RememberMeValue = true;
             }
             catch (Exception ex)
             {
@@ -46,23 +60,19 @@ namespace IctuTaekwondo.WindowsClient.Presenters
         {
             var jwt = await _authService.LoginAsync(new LoginSchema
             {
-                Email = _loginView.EmailValue,
-                Password = _loginView.PasswordValue,
-                RememberMe = _loginView.RememberMeValue
+                Email = _view.EmailValue,
+                Password = _view.PasswordValue,
+                RememberMe = _view.RememberMeValue
             });
 
             if (jwt != null && !string.IsNullOrEmpty(jwt.Token))
             {
-                if (_loginView.RememberMeValue)
-                    CredentialManager.SaveCredentials(CredentialManager.ApplicationName, _loginView.EmailValue, _loginView.PasswordValue);
+                if (_view.RememberMeValue)
+                    CredentialManager.SaveCredentials(CredentialManager.ApplicationName, _view.EmailValue, _view.PasswordValue);
                 else
-                    CredentialManager.SaveCredentials(CredentialManager.ApplicationName, _loginView.EmailValue, string.Empty);
+                    CredentialManager.SaveCredentials(CredentialManager.ApplicationName, _view.EmailValue, string.Empty);
 
                 IMainView mainView = MainView.GetInstance();
-
-                _loginView.Hide();
-
-                new MainPresenter(jwt.Token, mainView, _accountService, _apiService);
             }
             else
             {
