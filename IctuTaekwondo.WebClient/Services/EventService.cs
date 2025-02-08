@@ -38,7 +38,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<EventResponse?> CreateAsync(EventCreateSchema schema, ModelStateDictionary modelState, HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var apiResponse = await _apiService.PostAsync<EventResponse>("api/events", schema.ToStringContent());
             if (apiResponse.StatusCode != HttpStatusCode.OK)
@@ -55,7 +55,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<bool> DeleteAsync(int id, HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var response = await _apiService.DeleteAsync<EventResponse>($"api/events/{id}");
             return response.StatusCode == HttpStatusCode.OK;
@@ -83,7 +83,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<EventResponse?> FindByIdAsync(int id, HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var response = await _apiService.GetAsync<EventResponse>($"api/events/{id}");
             return response.Data;
@@ -98,7 +98,7 @@ namespace IctuTaekwondo.WebClient.Services
             };
 
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var response = await _apiService.GetAsync<PaginationResponse<EventResponse>>($"api/events{builder.ToQueryString()}");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -112,7 +112,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState, HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var response = await _apiService.PutAsync<EventResponse>($"api/events/{id}", schema.ToStringContent());
             if (response.StatusCode != HttpStatusCode.OK)

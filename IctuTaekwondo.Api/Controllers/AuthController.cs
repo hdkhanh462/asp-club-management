@@ -21,7 +21,7 @@ namespace IctuTaekwondo.api.Controllers
 
         [HttpPost("register")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Register([FromForm] RegisterAdminSchema schema)
+        public async Task<IActionResult> Register([FromForm] AdminRegisterSchema schema)
         {
             if (!ModelState.IsValid) return BadRequest(new ApiResponse<object>
             {

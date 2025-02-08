@@ -13,5 +13,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
     }
 }

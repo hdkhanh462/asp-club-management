@@ -18,6 +18,7 @@ namespace IctuTaekwondo.Shared.Utils
             PropertyNameCaseInsensitive = true
         };
 
+        public const string DefaultAuthorizationScheme = "Bearer";
 
         public ApiService(HttpClient httpClient)
         {
@@ -60,7 +61,7 @@ namespace IctuTaekwondo.Shared.Utils
             return await HandleApiResponse<T>(response);
         }
 
-        public void SetAuthorizationHeader(string scheme, string parameter)
+        public void SetAuthorizationHeader(string parameter, string scheme = DefaultAuthorizationScheme)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme, parameter);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using IctuTaekwondo.Shared.Responses.User;
 
 namespace IctuTaekwondo.Shared.Responses
 {
@@ -53,5 +54,9 @@ namespace IctuTaekwondo.Shared.Responses
             return list;
         }
 
+        public static PaginationResponse<T> GetDefaultInstance()
+        {
+            return new PaginationResponse<T>(1, 10, 0, []);
+        }
     }
 }

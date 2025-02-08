@@ -39,7 +39,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         public string ConfirmPassword { get; set; } = null!;
     }
 
-    public class RegisterAdminSchema : RegisterSchema
+    public class AdminRegisterSchema : RegisterSchema
     {
         [Display(Name = "Vai trò")]
         [EnumList(typeof(Role), ErrorMessage = "Vai trò không hợp lệ")]

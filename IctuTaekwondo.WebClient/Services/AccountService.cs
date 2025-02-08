@@ -36,7 +36,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<UserFullDetailResponse?> GetProfileAsync(HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var response = await _apiService.GetAsync<UserFullDetailResponse>($"api/account/profile");
             return response.Data;

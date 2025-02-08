@@ -2,7 +2,7 @@
 
 namespace IctuTaekwondo.WebClient.Models
 {
-    public class RegisterViewModel : RegisterAdminSchema
+    public class RegisterViewModel : AdminRegisterSchema
     {
         public Dictionary<string, object> ToDictionary()
         {

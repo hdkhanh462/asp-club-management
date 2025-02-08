@@ -41,7 +41,7 @@ namespace IctuTaekwondo.WebClient.Services
             };
 
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var response = await _apiService.GetAsync<PaginationResponse<EventResgiteredUsersResponse>>($"api/events/{id}/registerations{builder.ToQueryString()}");
             if (response.StatusCode == HttpStatusCode.OK)
@@ -65,7 +65,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<bool> RegisterAsync(int eventId, HttpRequest request, ModelStateDictionary modelState)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var apiResponse = await _apiService.PostAsync<object>($"api/events/{eventId}/register", string.Empty.ToStringContent());
             if (apiResponse.StatusCode != HttpStatusCode.OK)
@@ -81,7 +81,7 @@ namespace IctuTaekwondo.WebClient.Services
         public async Task<bool> UnregisterAsync(int eventId, HttpRequest request)
         {
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader("Bearer", authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
             var apiResponse = await _apiService.DeleteAsync<object>($"api/events/{eventId}/unregister");
             return apiResponse.StatusCode == HttpStatusCode.OK;
