@@ -6,7 +6,6 @@
 @using Microsoft.AspNetCore.WebUtilities
 @model PaginationResponse<EventResponse>
 @{
-	ViewData["Title"] = "Quản lý sự kiện";
 	Layout = "_DashboardLayout";
 
 	var queryParameters = (IQueryCollection)ViewData["QueryParameters"]!;
@@ -23,6 +22,11 @@
 
 	var isAdmin = currentUser.Roles.Contains(Role.Admin.ToString());
 	var isManager = currentUser.Roles.Contains(Role.Manager.ToString());
+
+	if (isAdmin || isManager)
+		ViewData["Title"] = "Quản lý sự kiện";
+	else
+		ViewData["Title"] = "Danh sách sự kiện";
 }
 
 <section class="bg-white py-4 antialiased dark:bg-gray-900">
@@ -152,7 +156,7 @@
 									</td>
 
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										<a asp-action="Detail" asp-route-id="@item.Id" class="font-medium hover:underline">@item.Name</a>
+										<a asp-action="Detail" asp-route-id="@item.Id" class="font-bold hover:underline">@item.Name</a>
 									</td>
 									<td class="max-w-[100px] truncate px-4 py-2 text-gray-900 dark:text-white">
 										@item.Location

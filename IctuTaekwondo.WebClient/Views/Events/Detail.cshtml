@@ -17,9 +17,9 @@
 		currentUser = userDetail;
 	}
 
-	if (ViewData.TryGetValue("CurrentEvent", out var @event) && @event is EventResponse eventDetail)
+	if (ViewData.TryGetValue("CurrentEvent", out var detail) && detail is EventResponse response)
 	{
-		currentEvent = eventDetail;
+		currentEvent = response;
 	}
 
 	if (ViewData.TryGetValue("RegisterationPaginator", out var registerations) && registerations is PaginationResponse<EventResgiteredUsersResponse> paginator)

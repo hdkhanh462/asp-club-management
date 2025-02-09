@@ -1,9 +1,6 @@
-﻿using System.Security.Claims;
-using Htmx;
+﻿using Htmx;
 using IctuTaekwondo.Shared;
-using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Schemas.Achievement;
-using IctuTaekwondo.Shared.Schemas.Event;
 using IctuTaekwondo.Shared.Services.Account;
 using IctuTaekwondo.Shared.Services.Achievements;
 using Microsoft.AspNetCore.Authorization;

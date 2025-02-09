@@ -7,7 +7,6 @@
 
 @model PaginationResponse<AchievementResponse>
 @{
-	ViewData["Title"] = "Quản lý thành tích";
 	Layout = "_DashboardLayout";
 
 	var queryParameters = (IQueryCollection)ViewData["QueryParameters"]!;
@@ -24,6 +23,11 @@
 
 	var isAdmin = currentUser.Roles.Contains(Role.Admin.ToString());
 	var isManager = currentUser.Roles.Contains(Role.Manager.ToString());
+
+	if (isAdmin || isManager)
+		ViewData["Title"] = "Quản lý thành tích";
+	else
+		ViewData["Title"] = "Danh sách thành tích";
 }
 
 <section class="bg-white py-4 antialiased dark:bg-gray-900">
@@ -151,7 +155,7 @@
 									</td>
 
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										<a asp-action="Detail" asp-route-id="@item.Id" class="font-medium hover:underline">@item.Name</a>
+										<a asp-action="Detail" asp-route-id="@item.Id" class="font-bold hover:underline">@item.Name</a>
 									</td>
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
 										@item.User.FullName
@@ -160,7 +164,7 @@
 										@item.Event?.Name
 									</td>
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										@item.DateAchieved
+										@item.DateAchieved.ToString("dd/MM/yyyy")
 									</td>
 									@if (isAdmin || isManager)
 									{

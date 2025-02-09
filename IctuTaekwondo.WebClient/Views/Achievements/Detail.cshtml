@@ -5,7 +5,7 @@
 @using IctuTaekwondo.Shared.Schemas.Achievement
 @model AchievementUpdateSchema
 @{
-	ViewData["Title"] = "Thông tin sự kiện";
+	ViewData["Title"] = "Thông tin thành tích";
 	Layout = "_DashboardLayout";
 
 	UserFullDetailResponse? currentUser = null;
@@ -16,9 +16,9 @@
 		currentUser = userDetail;
 	}
 
-	if (ViewData.TryGetValue("CurrentAchievement", out var @event) && @event is AchievementResponse eventDetail)
+	if (ViewData.TryGetValue("CurrentAchievement", out var detail) && detail is AchievementResponse response)
 	{
-		currentAchievement = eventDetail;
+		currentAchievement = response;
 	}
 
 	ArgumentNullException.ThrowIfNull(currentUser);

@@ -37,7 +37,7 @@ namespace IctuTaekwondo.Api.Controllers
             });
         }
 
-        // GET: api/finances/filter?page=1&size=10&type=1&categories=danhmuc&start=2025-01-01&end=2025-01-31
+        // GET: api/finances/filter?page=1&size=10&type=1&category=danhmuc&start=2025-01-01&end=2025-01-31
         // Lọc danh sách tài chính với phân trang
         [HttpGet("filter")]
         [Authorize]
@@ -45,11 +45,11 @@ namespace IctuTaekwondo.Api.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int size = 10,
             [FromQuery] TransactionType? type = null,
-            [FromQuery] string[]? categories = null,
+            [FromQuery] string[]? category = null,
             [FromQuery] DateTime? start = null,
             [FromQuery] DateTime? end = null)
         {
-            var paginator = await _financeService.GetAllWithFilterAsync(page, size, type, categories, start, end);
+            var paginator = await _financeService.GetAllWithFilterAsync(page, size, type, category, start, end);
 
             return Ok(new ApiResponse<PaginationResponse<FinanceResponse>>
             {
