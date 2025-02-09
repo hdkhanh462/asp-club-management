@@ -68,15 +68,24 @@
 	</div>
 
 	<div class="space-y-2">
-		<label asp-for="FullName" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
-		<input asp-for="FullName" value="@Model.FullName" autofocus class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Nguyễn Văn A" />
+		<div class="flex text-sm">
+			<label asp-for="FullName" class="block font-medium text-gray-900 dark:text-white"></label>
+			<span class="text-red-600">*</span>
+		</div>
+		<input asp-for="FullName"
+			   value="@Model.FullName"
+			   placeholder="Ví dụ: Nguyễn Văn A"
+			   autofocus
+			   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 		<p class="text-sm text-red-600 dark:text-red-500">
 			<span asp-validation-for="FullName"></span>
 		</p>
 	</div>
 
 	<div class="space-y-2">
-		<label asp-for="Roles" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="flex text-sm">
+			<label asp-for="Roles" class="block font-medium text-gray-900 dark:text-white"></label>
+		</div>
 		<select asp-for="Roles" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 			<option disabled>Chọn vai trò (có thể chọn nhiều)</option>
 			@foreach (Role role in Enum.GetValues(typeof(Role)))
@@ -97,8 +106,13 @@
 	</div>
 
 	<div class="space-y-2">
-		<label asp-for="PhoneNumber" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
-		<input asp-for="PhoneNumber" placeholder="0987654321" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+		<div class="flex text-sm">
+			<label asp-for="PhoneNumber" class="block font-medium text-gray-900 dark:text-white"></label>
+			<span class="text-red-600">*</span>
+		</div>
+		<input asp-for="PhoneNumber"
+			   placeholder="Ví dụ: 0987654321"
+			   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 
 		<p class="text-sm text-red-600 dark:text-red-500">
 			<span asp-validation-for="PhoneNumber"></span>
@@ -106,7 +120,10 @@
 	</div>
 
 	<div class="space-y-2">
-		<label asp-for="Email" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="flex text-sm">
+			<label asp-for="Email" class="block font-medium text-gray-900 dark:text-white"></label>
+			<span class="text-red-600">*</span>
+		</div>
 		<input asp-for="Email" placeholder="email@example.com" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 
 		@if (!ViewData.ModelState.IsValid && ViewData.ModelState["Email"]?.Errors.Count > 0)
@@ -121,7 +138,10 @@
 	</div>
 
 	<div class="space-y-2">
-		<label asp-for="Password" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="flex text-sm">
+			<label asp-for="Password" class="block font-medium text-gray-900 dark:text-white"></label>
+			<span class="text-red-600">*</span>
+		</div>
 		<input asp-for="Password" autocomplete="new-password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 		<p class="text-sm text-red-600 dark:text-red-500">
 			<span asp-validation-for="Password"></span>
@@ -129,7 +149,10 @@
 	</div>
 
 	<div class="space-y-2">
-		<label asp-for="ConfirmPassword" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+		<div class="flex text-sm">
+			<label asp-for="ConfirmPassword" class="block font-medium text-gray-900 dark:text-white"></label>
+			<span class="text-red-600">*</span>
+		</div>
 		<input asp-for="ConfirmPassword" autocomplete="new-password" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
 
 		@if (!ViewData.ModelState.IsValid && ViewData.ModelState["ConfirmPassword"]?.Errors.Count > 0)

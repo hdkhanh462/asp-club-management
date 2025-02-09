@@ -9,6 +9,8 @@
 @{
 	Layout = "_DashboardLayout";
 
+	// TODO: Link User, Event
+
 	var queryParameters = (IQueryCollection)ViewData["QueryParameters"]!;
 	var queryDict = queryParameters.ToDictionary(q => q.Key, q => q.Value.ToString());
 	UserFullDetailResponse? currentUser = null;

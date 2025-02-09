@@ -105,13 +105,19 @@
 				</div>
 			</div>
 			<div class="space-y-2 pb-2">
-				<label asp-for="@Model.Email" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+				<div class="flex text-sm">
+					<label asp-for="@Model.Email" class="block font-medium text-gray-900 dark:text-white"></label>
+					<span class="text-red-600">*</span>
+				</div>
 				<input readonly asp-for="@Model.Email" value="@Model.Email" class="!ring-0 block w-full cursor-not-allowed rounded-lg border !border-gray-300 bg-gray-200 p-2.5 text-sm text-gray-500" />
 			</div>
 		</div>
 
 		<div class="col-span-2 space-y-2 sm:col-span-1">
-			<label asp-for="@Model.FullName" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="FullName" class="block font-medium text-gray-900 dark:text-white"></label>
+				<span class="text-red-600">*</span>
+			</div>
 			<input placeholder="Ví dụ: Nguyễn Văn A" asp-for="@Model.FullName" value="@Model.FullName" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
 			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.FullName"></span>
@@ -119,7 +125,10 @@
 		</div>
 
 		<div class="col-span-2 space-y-2 sm:col-span-1">
-			<label asp-for="@Model.PhoneNumber" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="PhoneNumber" class="block font-medium text-gray-900 dark:text-white"></label>
+				<span class="text-red-600">*</span>
+			</div>
 			<input placeholder="Ví dụ: 0987654321" asp-for="@Model.PhoneNumber" value="@Model.PhoneNumber" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
 			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.PhoneNumber"></span>
@@ -127,8 +136,8 @@
 		</div>
 
 		<div class="col-span-2 space-y-2 sm:col-span-1">
-			<div class="flex items-center gap-2">
-				<label asp-for="@Model.Gender" value="@Model.Gender" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="Gender" class="block font-medium text-gray-900 dark:text-white"></label>
 			</div>
 			<select asp-for="@Model.Gender" 
 			class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
@@ -142,8 +151,8 @@
 		</div>
 
 		<div class="col-span-2 space-y-2 sm:col-span-1">
-			<div class="flex items-center gap-2">
-				<label asp-for="@Model.CurrentRank" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="CurrentRank" class="block font-medium text-gray-900 dark:text-white"></label>
 			</div>
 			<select asp-for="@Model.CurrentRank" value="@Model.CurrentRank" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
 				@if (Model.CurrentRank == null)
@@ -173,7 +182,9 @@
 		</div>
 
 		<div class="col-span-2 space-y-2 sm:col-span-1" data-datepicker-id="DateOfBirth">
-			<label asp-for="@Model.DateOfBirth" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="DateOfBirth" class="block font-medium text-gray-900 dark:text-white"></label>
+			</div>
 			<input placeholder="dd/mm/yyyy" type="text" asp-for="@Model.DateOfBirth" value="@Model.DateOfBirth" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
 			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.DateOfBirth"></span>
@@ -189,7 +200,9 @@
 		</div>
 
 		<div class="col-span-2 space-y-2 sm:col-span-1" data-datepicker-id="JoinDate">
-			<label asp-for="@Model.JoinDate" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="JoinDate" class="block font-medium text-gray-900 dark:text-white"></label>
+			</div>
 			<input placeholder="dd/mm/yyyy" type="text" asp-for="@Model.JoinDate" value="@Model.JoinDate" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
 			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.JoinDate"></span>
@@ -210,7 +223,9 @@
 		</div>
 
 		<div class="col-span-2 space-y-2">
-			<label asp-for="@Model.Address" class="block text-sm font-medium text-gray-900 dark:text-white"></label>
+			<div class="flex text-sm">
+				<label asp-for="Address" class="block font-medium text-gray-900 dark:text-white"></label>
+			</div>
 			<textarea placeholder="Ví dụ: Hà Nội" asp-for="@Model.Address" value="@Model.Address" rows=" 2" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></textarea>
 			<p class="text-sm text-red-600 dark:text-red-500">
 				<span asp-validation-for="@Model.Address"></span>
