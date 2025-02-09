@@ -71,8 +71,8 @@
             // btnSearch
             // 
             btnSearch.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSearch.Location = new Point(611, 63);
-            btnSearch.Margin = new Padding(10);
+            btnSearch.Location = new Point(625, 62);
+            btnSearch.Margin = new Padding(3, 10, 10, 10);
             btnSearch.Name = "btnSearch";
             btnSearch.Size = new Size(75, 23);
             btnSearch.TabIndex = 4;
@@ -85,19 +85,20 @@
             textBox1.Location = new Point(12, 63);
             textBox1.Margin = new Padding(10);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(579, 23);
+            textBox1.Size = new Size(600, 23);
             textBox1.TabIndex = 3;
             // 
             // btnRegister
             // 
             btnRegister.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRegister.Location = new Point(706, 63);
-            btnRegister.Margin = new Padding(10);
+            btnRegister.Location = new Point(713, 62);
+            btnRegister.Margin = new Padding(3, 10, 10, 10);
             btnRegister.Name = "btnRegister";
             btnRegister.Size = new Size(75, 23);
             btnRegister.TabIndex = 4;
             btnRegister.Text = "Đăng ký";
             btnRegister.UseVisualStyleBackColor = true;
+            btnRegister.Click += btnRegister_Click;
             // 
             // UsersForm
             // 

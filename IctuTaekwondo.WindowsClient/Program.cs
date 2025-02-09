@@ -42,6 +42,7 @@ namespace IctuTaekwondo.WindowsClient.Forms
                 services.AddSingleton<MainForm>();
                 services.AddSingleton<UsersForm>();
                 services.AddSingleton<UsersDetailForm>();
+                services.AddSingleton<RegisterForm>();
                 services.AddSingleton<EventsForm>();
                 services.AddSingleton<EventsDetailForm>();
                 services.AddSingleton<AchievementsForm>();

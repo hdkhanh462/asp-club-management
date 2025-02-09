@@ -18,14 +18,16 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
     {
         private readonly IUsersService usersService;
         private readonly UsersDetailForm detailForm;
+        private readonly RegisterForm registerForm;
 
         private JwtResponse Jwt;
 
-        public UsersForm(IUsersService usersService, UsersDetailForm detailForm)
+        public UsersForm(IUsersService usersService, UsersDetailForm detailForm, RegisterForm registerForm)
         {
             this.usersService = usersService;
             this.detailForm = detailForm;
-            
+            this.registerForm = registerForm;
+
             InitializeComponent();
         }
 
@@ -36,12 +38,12 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
             dataGridView1.DataSource = response.Items;
         }
 
-        private  void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var userId = dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString();
-                detailForm.SetJwt(Jwt,true,userId);
+                detailForm.SetJwt(Jwt, true, userId);
                 detailForm.ShowDialog();
             }
         }
@@ -49,6 +51,12 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
         internal void SetJwt(JwtResponse jwt)
         {
             Jwt = jwt;
+        }
+
+        private void btnRegister_Click(object sender, EventArgs e)
+        {
+            registerForm.SetJwt(Jwt);
+            registerForm.ShowDialog();
         }
     }
 }
