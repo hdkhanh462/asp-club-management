@@ -12,7 +12,7 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IAuthService
     {
-        public Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema);
+        public Task<IdentityResult> RegisterAsync(AdminRegisterSchema schema);
         public Task<JwtResponse?> LoginAsync(LoginSchema schema);
     }
 
@@ -37,7 +37,7 @@ namespace IctuTaekwondo.Api.Services
             _fileService = fileService;
         }
 
-        public async Task<IdentityResult> RegisterAsync(RegisterAdminSchema schema)
+        public async Task<IdentityResult> RegisterAsync(AdminRegisterSchema schema)
         {
             var newUser = new User
             {
@@ -128,7 +128,7 @@ namespace IctuTaekwondo.Api.Services
 
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            return GenerateJwt(claims);
+            return GenerateJwt(claims, !schema.RememberMe ? DateTime.UtcNow.AddDays(1) : null);
         }
 
         public JwtResponse GenerateJwt(List<Claim> claims, 
@@ -142,7 +142,7 @@ namespace IctuTaekwondo.Api.Services
                 claims: claims,
                 audience: _configuration["Jwt:Audience"],
                 issuer: _configuration["Jwt:Issuer"],
-                expires: expires ?? DateTime.Now.AddDays(30),
+                expires: expires ?? DateTime.UtcNow.AddDays(30),
                 signingCredentials: signingCredentials
             );
 

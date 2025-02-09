@@ -6,6 +6,7 @@ using IctuTaekwondo.Api.Services;
 using IctuTaekwondo.Shared.Responses;
 using System.Net;
 using IctuTaekwondo.Shared.Enums;
+using System.Security.Claims;
 
 namespace IctuTaekwondo.Api.Controllers.Api
 {
@@ -47,7 +48,7 @@ namespace IctuTaekwondo.Api.Controllers.Api
             [FromQuery] string? name = null,
             [FromQuery] EventStatus? status = null)
         {
-            var events = await _eventService.GetAllWithFilterAsync(page, size, name, status);
+            var events = await _eventService.FilterAsync(page, size, name, status);
 
             return Ok(new ApiResponse<PaginationResponse<EventResponse>>
             {
@@ -62,14 +63,15 @@ namespace IctuTaekwondo.Api.Controllers.Api
         [Authorize]
         public async Task<IActionResult> GetEvent(int id)
         {
-            var @event = await _eventService.GetByIdAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var @event = await _eventService.FindByIdAsync(id, userId);
             if (@event == null) return NotFound(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.NotFound,
                 Message = "Sự kiện không tồn tại"
             });
 
-            return Ok(new ApiResponse<EventFullDetailResponse>
+            return Ok(new ApiResponse<EventResponse>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = @event
@@ -89,11 +91,17 @@ namespace IctuTaekwondo.Api.Controllers.Api
 
             try
             {
-                var result = await _eventService.UpdateAsync(id, schema);
-                if (!result) return BadRequest(new ApiResponse<object>
+                var newEvent = await _eventService.UpdateAsync(id, schema);
+                if (newEvent ==null) return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Message = "Cập nhật sự kiện thất bại"
+                });
+                return Ok(new ApiResponse<EventResponse>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Cập nhật sự kiện thành công",
+                    Data = newEvent
                 });
             }
             catch (Exception ex)
@@ -104,12 +112,6 @@ namespace IctuTaekwondo.Api.Controllers.Api
                     Message = ex.Message
                 });
             }
-
-            return Ok(new ApiResponse<object>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Cập nhật sự kiện thành công"
-            });
         }
 
         // POST: api/events
@@ -118,17 +120,18 @@ namespace IctuTaekwondo.Api.Controllers.Api
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> PostEvent([FromBody] EventCreateSchema schema)
         {
-            var result = await _eventService.CreateAsync(schema);
-            if (!result) return BadRequest(new ApiResponse<object>
+            var newEvent = await _eventService.CreateAsync(schema);
+            if (newEvent == null) return BadRequest(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.BadRequest,
                 Message = "Tạo sự kiện thất bại"
             });
 
-            return Ok(new ApiResponse<object>
+            return Ok(new ApiResponse<EventResponse>
             {
                 StatusCode = HttpStatusCode.OK,
-                Message = "Tạo sự kiện thành công"
+                Message = "Tạo sự kiện thành công",
+                Data = newEvent
             });
         }
 

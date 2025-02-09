@@ -1,0 +1,235 @@
+﻿@using IctuTaekwondo.Shared.Enums
+@using IctuTaekwondo.Shared.Responses
+@using IctuTaekwondo.Shared.Responses.Event
+@using IctuTaekwondo.Shared.Responses.User
+@using IctuTaekwondo.Shared.Schemas.Event
+@using Microsoft.AspNetCore.WebUtilities
+@model PaginationResponse<EventResponse>
+@{
+	ViewData["Title"] = "Quản lý sự kiện";
+	Layout = "_DashboardLayout";
+
+	var queryParameters = (IQueryCollection)ViewData["QueryParameters"]!;
+	var queryDict = queryParameters.ToDictionary(q => q.Key, q => q.Value.ToString());
+	UserFullDetailResponse? currentUser = null;
+
+	if (ViewData.TryGetValue("CurrentUser", out var user) && user is UserFullDetailResponse userDetail)
+	{
+		currentUser = userDetail;
+	}
+
+	ArgumentNullException.ThrowIfNull(Model);
+	ArgumentNullException.ThrowIfNull(currentUser);
+
+	var isAdmin = currentUser.Roles.Contains(Role.Admin.ToString());
+	var isManager = currentUser.Roles.Contains(Role.Manager.ToString());
+}
+
+<section class="bg-white py-4 antialiased dark:bg-gray-900">
+	<div class="mx-auto max-w-screen-lg px-4">
+
+		<nav class="mb-4 flex" aria-label="Breadcrumb">
+			<ol class="inline-flex items-center space-x-1 rtl:space-x-reverse md:space-x-2">
+				<li class="inline-flex items-center">
+					<a href="/" class="inline-flex items-center text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 dark:hover:text-white">
+						<svg class="me-2 h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5" />
+						</svg>
+						Trang chủ
+					</a>
+				</li>
+				<li>
+					<div class="flex items-center">
+						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+						</svg>
+						<a asp-controller="Users" asp-action="Index" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
+							Quản lý sự kiện
+						</a>
+					</div>
+				</li>
+				<li aria-current="page">
+					<div class="flex items-center">
+						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
+						</svg>
+						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Danh sách sự kiện</span>
+					</div>
+				</li>
+			</ol>
+		</nav>
+
+		<h2 class="border-b border-gray-200 pb-4 text-xl font-semibold text-gray-900 dark:text-white dark:border-gray-700 sm:text-2xl">
+			Quản lý sự kiện
+		</h2>
+
+		<div class="pt-6">
+			<div class="relative border bg-white shadow-md dark:border-gray-700 dark:bg-gray-800 sm:rounded-lg">
+				<div class="flex flex-col space-y-3 px-4 py-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
+					<div class="flex w-full gap-3 md:w-1/2">
+						<form asp-all-route-data="queryDict" method="get" class="flex w-full items-center">
+							<div class="relative w-full">
+								<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+									<svg aria-hidden="true" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+										<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+									</svg>
+								</div>
+								<input value="@queryParameters["search"]" name="search" type="text" id="search" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Tìm kiếm" required="">
+							</div>
+						</form>
+
+						@if (queryParameters["search"].Any())
+						{
+							<a asp-action="Index" class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white p-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 md:w-auto dark:focus:ring-gray-700 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+								<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+								</svg>
+							</a>
+						}
+					</div>
+					<div class="flex-shrink-0 flex flex-col space-y-3 md:flex-row md:items-center md:space-y-0 md:space-x-3 lg:justify-end">
+						@if (isAdmin || isManager)
+						{
+							<button data-modal-target="Modal-Create-Event"
+									data-modal-toggle="Modal-Create-Event"
+									class="flex items-center justify-center rounded-lg bg-primary-700 p-2 text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+								<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+								</svg>
+							</button>
+						}
+						<button id="order-dropdown-button" data-dropdown-toggle="order-dropdown" class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 md:w-auto dark:focus:ring-gray-700 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+							<svg class="-ml-1 mr-1.5 size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V10m0 10-3-3m3 3 3-3m5-13v10m0-10 3 3m-3-3-3 3" />
+							</svg>
+							Sắp xếp
+						</button>
+						<div id="order-dropdown" class="z-10 hidden w-fit divide-y divide-gray-100 rounded bg-white shadow dark:bg-gray-700 dark:divide-gray-600">
+							<div class="py-1">
+								<a asp-all-route-data="queryDict" asp-route-order="-CreatedAt" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+									Theo ngày tạo mới nhất
+								</a>
+								<a asp-all-route-data="queryDict" asp-route-order="CreatedAt" class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white">
+									Theo ngày tạo cũ nhất
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+						<thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+							<tr>
+								<th scope="col" class="p-4">
+									<div class="flex items-center">
+										<input id="checkbox-all" type="checkbox" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+										<label for="checkbox-all" class="sr-only">checkbox</label>
+									</div>
+								</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Tên sự kiện</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Địa điểm tổ chức</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Phí tham gia</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Giới hạn tham gia</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày bắt đầu</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày kết thúc</th>
+								@if (isAdmin || isManager)
+								{
+									<th scope="col" class="px-4 py-3">
+										<span class="sr-only">Actions</span>
+									</th>
+								}
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in Model.Items)
+							{
+								<tr id="Row-@item.Id" class="border-b hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700">
+									<td class="w-4 px-4 py-3">
+										<div class="flex items-center">
+											<input id="checkbox-table-@item.Id" value="@item.Id" table-checkbox type="checkbox" onclick="event.stopPropagation()" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-primary-600 focus:ring-primary-500 focus:ring-2 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600">
+											<label for="checkbox-table-@item.Id" class="sr-only">checkbox</label>
+										</div>
+									</td>
+
+									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										<a asp-action="Detail" asp-route-id="@item.Id" class="font-medium hover:underline">@item.Name</a>
+									</td>
+									<td class="max-w-[100px] truncate px-4 py-2 text-gray-900 dark:text-white">
+										@item.Location
+									</td>
+									<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
+										@(item.Fee?.ToString("N0"))@(item.Fee.HasValue ? "đ" : null)
+									</td>
+									<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
+										@item.MaxParticipants?.ToString("N0") @(item.MaxParticipants.HasValue ? "người" : null)
+									</td>
+									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										@item.StartDate.ToString("dd/MM/yyyy HH:mm")
+									</td>
+									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										@item.EndDate?.ToString("dd/MM/yyyy HH:mm")
+									</td>
+									@if (isAdmin || isManager)
+									{
+										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+											<div class="flex items-center justify-end">
+												<button _="on htmx:beforeRequest set me.disabled to true end
+													   on htmx:afterRequest set me.disabled to false"
+														hx-delete
+														hx-action="Delete"
+														hx-route-id="@item.Id"
+														hx-confirm="Sự kiện này sẽ bị xoá vĩnh viễn."
+														type="button"
+														class="inline-flex items-center rounded-full p-2 text-center text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300">
+													<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+														<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+													</svg>
+												</button>
+											</div>
+										</td>
+									}
+								</tr>
+							}
+						</tbody>
+					</table>
+
+					<script>
+						$(document).ready(function() {
+							$('#checkbox-all').click(function() {
+								$('input[table-checkbox]').prop('checked', this.checked);
+							});
+						});
+					</script>
+				</div>
+
+				<!-- Table Footer -->
+				@await Html.PartialAsync("Partials/_TableFooterPartial", new TableFooterViewModel
+{
+	CurrentPage = Model.CurrentPage,
+	PageSize = Model.PageSize,
+	PageCount = Model.PageCount,
+	TotalItemCount = Model.TotalItemCount,
+	CurrentItemCount = Model.Items.Count,
+	HasPrevious = Model.HasPrevious,
+	HasNext = Model.HasNext,
+	ItemRange = Model.GetItemRange(),
+	DisplayPageRange = Model.GetDisplayPageRange(),
+})
+			</div>
+		</div>
+	</div>
+</section>
+
+@section Modals
+{
+	@if (isAdmin || isManager)
+	{
+		@await Html.PartialAsync("Partials/_ModalPartial", new ModalViewModel
+{
+	Id = "Create-Event",
+	Header = "Tạo sự kiện mới",
+	BodyPartialName = "_CreateEventFormPartial",
+	BodyModel = new EventCreateSchema()
+})
+	}
+}

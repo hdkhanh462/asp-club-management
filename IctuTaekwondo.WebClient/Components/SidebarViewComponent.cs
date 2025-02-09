@@ -14,7 +14,7 @@ namespace IctuTaekwondo.WebClient.Components
 
         public IViewComponentResult Invoke()
         {
-            var user = _accountService.GetProfile(Request.Cookies);
+            var user = _accountService.GetProfileAsync(Request).Result;
             return View(user);
         }
     }

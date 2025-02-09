@@ -10,18 +10,16 @@ namespace IctuTaekwondo.Shared.Schemas.Event
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Tên sự kiện phải có độ dài từ 2 đến 100 ký tự")]
         public string Name { get; set; }
 
-        [Display(Name = "Địa điểm")]
+        [Display(Name = "Địa điểm tổ chức")]
         [Required(ErrorMessage = "Địa điểm không được để trống")]
         public string Location { get; set; }
 
         [Display(Name = "Bắt đầu vào")]
-        [DataType(DataType.DateTime, ErrorMessage = "Định dạng ngày giờ không chính xác")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime StartDate { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime StartDate { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Kết thúc vào")]
-        [DataType(DataType.DateTime, ErrorMessage = "Định dạng ngày giờ không chính xác")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.DateTime)]
         [GreaterThan("StartDate", ErrorMessage = "Ngày kết thúc phải lớn hơn Ngày bắt đầu")]
         public DateTime? EndDate { get; set; }
 

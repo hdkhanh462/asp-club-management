@@ -13,16 +13,17 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IEventService
     {
-        Task<bool> CreateAsync(EventCreateSchema schema);
-        Task<bool> UpdateAsync(int id, EventUpdateSchema schema);
+        Task<EventResponse?> CreateAsync(EventCreateSchema schema);
+        Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
         Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size);
-        Task<EventFullDetailResponse?> GetByIdAsync(int id);
-        Task<PaginationResponse<EventResponse>> GetAllWithFilterAsync(
+        Task<EventResponse?> FindByIdAsync(int id, string? userId);
+        Task<PaginationResponse<EventResponse>> FilterAsync(
             int page,
             int size,
             string? name = null,
             EventStatus? status = null);
+        List<EventStatus> GetStatus(Event @event, string? userId);
     }
 
     public class EventService : IEventService
@@ -36,7 +37,7 @@ namespace IctuTaekwondo.Api.Services
             _context = context;
         }
 
-        public async Task<bool> CreateAsync(EventCreateSchema schema)
+        public async Task<EventResponse?> CreateAsync(EventCreateSchema schema)
         {
             var newEvent = new Event
             {
@@ -53,7 +54,12 @@ namespace IctuTaekwondo.Api.Services
             _context.Events.Add(newEvent);
             var result = await _context.SaveChangesAsync();
 
-            return result > 0;
+            if (result > 0)
+            {
+                var response = await FindByIdAsync(newEvent.Id, null);
+                return newEvent.ToEventResponse();
+            }
+            return null;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -73,16 +79,26 @@ namespace IctuTaekwondo.Api.Services
 
         public async Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size)
         {
-            var events = await _context.Events.ToListAsync();
+            var events = await _context.Events
+                .Include(e => e.EventRegistrations)
+                .ThenInclude(er => er.User)
+                .ToListAsync();
 
-            return new PaginationResponse<EventResponse>(
-                page, size,
-                events.Count,
-                events.Skip((page - 1) * size).Take(size)
-                .Select(e => e.ToEventResponse()).ToList());
+            var response = events
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Select(e =>
+                {
+                    var r = e.ToEventResponse();
+                    r.Status = GetStatus(e, null);
+                    return r;
+                })
+                .ToList();
+
+            return new PaginationResponse<EventResponse>(page, size, events.Count, response);
         }
 
-        public async Task<PaginationResponse<EventResponse>> GetAllWithFilterAsync(
+        public async Task<PaginationResponse<EventResponse>> FilterAsync(
             int page,
             int size,
             string? name = null,
@@ -104,37 +120,45 @@ namespace IctuTaekwondo.Api.Services
                     query = query.Where(p => p.EndDate.HasValue && p.EndDate.Value <= DateTime.UtcNow);
             }
 
-            var events = await query.ToListAsync();
+            var events = await query
+                .Include(e => e.EventRegistrations)
+                .ThenInclude(er => er.User)
+                .ToListAsync();
 
-            return new PaginationResponse<EventResponse>(
-                page, size,
-                events.Count,
-                events.Skip((page - 1) * size).Take(size)
-                .Select(e => e.ToEventResponse()).ToList());
+            var response = events
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Select(e =>
+                {
+                    var r = e.ToEventResponse();
+                    r.Status = GetStatus(e, null);
+                    return r;
+                })
+                .ToList();
+
+            return new PaginationResponse<EventResponse>(page, size, events.Count, response);
         }
 
-        public async Task<EventFullDetailResponse?> GetByIdAsync(int id)
+        public async Task<EventResponse?> FindByIdAsync(int id, string? userId)
         {
             var @event = await _context.Events
                 .Include(e => e.EventRegistrations)
                 .ThenInclude(er => er.User)
                 .FirstOrDefaultAsync(e => e.Id == id);
-
             if (@event == null)
             {
                 _logger.LogError("Event not found: {0}", id);
                 return null;
             }
 
-            return @event.ToEventFullDetailResponse();
+            var response = @event.ToEventResponse();
+            response.Status = GetStatus(@event, userId);
+            return response;
         }
 
-        public async Task<bool> UpdateAsync(int id, EventUpdateSchema schema)
+        public async Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema)
         {
-            var @event = await _context.Events
-                .Include(e => e.EventRegistrations)
-                .ThenInclude(er => er.User)
-                .FirstOrDefaultAsync(e => e.Id == id);
+            var @event = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
 
             if (@event == null)
             {
@@ -152,8 +176,41 @@ namespace IctuTaekwondo.Api.Services
 
             _context.Entry(@event).State = EntityState.Modified;
             var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                return @event.ToEventResponse();
+            }
+            return null;
+        }
 
-            return result > 0;
+        public List<EventStatus> GetStatus(Event @event, string? userId)
+        {
+            var status = new List<EventStatus>();
+
+            if (@event.EndDate.HasValue && @event.EndDate.Value < DateTime.UtcNow)
+            {
+                status.Add(EventStatus.Ended);
+            }
+            else if (@event.StartDate < DateTime.UtcNow)
+            {
+                status.Add(EventStatus.Started);
+            }
+            else
+            {
+                status.Add(EventStatus.NotStarted);
+            }
+
+            if (@event.MaxParticipants.HasValue && @event.EventRegistrations.Count >= @event.MaxParticipants.Value)
+            {
+                status.Add(EventStatus.Full);
+            }
+
+            if (!string.IsNullOrEmpty(userId) && @event.EventRegistrations.Any(er => er.UserId == userId))
+            {
+                status.Add(EventStatus.Registered);
+            }
+
+            return status;
         }
     }
 }

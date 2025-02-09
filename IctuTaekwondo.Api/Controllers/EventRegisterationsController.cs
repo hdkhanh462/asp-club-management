@@ -27,7 +27,7 @@ namespace IctuTaekwondo.Api.Controllers
         [Authorize(Roles = "Member")]
         public async Task<IActionResult> RegisterEvent(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _service.RegisterAsync(id, userId, true);
 
             if (result != EventRegisterationResult.Success) return BadRequest(new ApiResponse<object>
@@ -45,11 +45,11 @@ namespace IctuTaekwondo.Api.Controllers
 
         // POST : api/events/5/unregister
         // Hủy đăng ký tham gia sự kiện
-        [HttpPost("{id}/unregister")]
+        [HttpDelete("{id}/unregister")]
         [Authorize(Roles = "Member")]
         public async Task<IActionResult> UnregisterEvent(int id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _service.UnregisterAsync(id, userId);
 
             if (result != EventRegisterationResult.Success) return BadRequest(new ApiResponse<object>
@@ -67,14 +67,14 @@ namespace IctuTaekwondo.Api.Controllers
 
         // GET : api/events/5/registrations?page=1&size=10
         // Lấy danh sách người đăng ký tham gia sự kiện với phân trang
-        [HttpGet("{id}/registrations")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> GetEventRegistrations(
+        [HttpGet("{id}/registerations")]
+        [Authorize]
+        public async Task<IActionResult> GetAll(
             int id,
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
         {
-            var @event = await _service.GetAllAsync(id);
+            var @event = await _service.GetFullDetailAsync(id);
             if (@event == null) return NotFound(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.NotFound,
@@ -83,7 +83,7 @@ namespace IctuTaekwondo.Api.Controllers
 
             var paginator = _service.GetAllRegisteration(@event, page, size);
 
-            return Ok(new ApiResponse<PaginationResponse<UserResgiteredEventResponse>>
+            return Ok(new ApiResponse<PaginationResponse<EventResgiteredUsersResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = paginator

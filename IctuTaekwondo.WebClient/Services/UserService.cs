@@ -2,6 +2,7 @@
 using System.Net;
 using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Responses;
+using IctuTaekwondo.Shared.Responses.Event;
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.Shared.Utils;
@@ -20,10 +21,7 @@ namespace IctuTaekwondo.WebClient.Services
             List<string> order,
             ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies);
-        public Task<UserFullDetailResponse?> GetFullDetailAsync(
-            string id,
-            ModelStateDictionary modelState,
-            IRequestCookieCollection requestCookies);
+        public Task<UserFullDetailResponse?> GetProfileByIdAsync(string id, HttpRequest request);
         public Task<UserFullDetailResponse?> UpdateAsync(
             string id,
             UserUpdateSchema schema,
@@ -51,11 +49,13 @@ namespace IctuTaekwondo.WebClient.Services
     {
         private readonly ILogger<UserService> _logger;
         private readonly ApiHelper _apiHelper;
+        private readonly ApiService _apiService;
 
-        public UserService(ILogger<UserService> logger, ApiHelper apiHelper)
+        public UserService(ILogger<UserService> logger, ApiHelper apiHelper, ApiService apiService)
         {
             _logger = logger;
             _apiHelper = apiHelper;
+            _apiService = apiService;
         }
 
         public async Task<string?> DeleteAsnyc(
@@ -110,24 +110,12 @@ namespace IctuTaekwondo.WebClient.Services
             return response.Data;
         }
 
-        public async Task<UserFullDetailResponse?> GetFullDetailAsync(
-            string id,
-            ModelStateDictionary modelState,
-            IRequestCookieCollection requestCookies)
+        public async Task<UserFullDetailResponse?> GetProfileByIdAsync(string id, HttpRequest request)
         {
-            _apiHelper.AddHeaders(new Dictionary<string, string>
-            {
-                {
-                    GlobalConst.ApiAuthorizationKey,
-                    $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]!}"
-                }
-            });
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
-            var response = await _apiHelper.GetAsync<UserFullDetailResponse>($"api/users/{id}");
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                HandleErrors<UserFullDetailResponse>(response, modelState);
-            }
+            var response = await _apiService.GetAsync<UserFullDetailResponse>($"api/users/{id}");
             return response.Data;
         }
 
@@ -167,7 +155,7 @@ namespace IctuTaekwondo.WebClient.Services
 
             var response = await _apiHelper.PutAsync<UserFullDetailResponse>(
                 $"api/users/{id}/profile",
-                schema.ToDictionary(), 
+                schema.ToDictionary(),
                 "multipart/form-data");
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -203,10 +191,10 @@ namespace IctuTaekwondo.WebClient.Services
         }
 
         public async Task<bool> UpdateRolesAsync(
-            string currentId, 
+            string currentId,
             string targetId,
-            UpdateRolesSchema schema, 
-            ModelStateDictionary modelState, 
+            UpdateRolesSchema schema,
+            ModelStateDictionary modelState,
             IRequestCookieCollection requestCookies)
         {
             _apiHelper.AddHeaders(new Dictionary<string, string>

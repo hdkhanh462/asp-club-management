@@ -46,6 +46,11 @@ builder.Services.AddHttpClient<ApiHelper>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
 });
 
+builder.Services.AddHttpClient<ApiService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "Htmx", policy =>
@@ -61,6 +66,8 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
 
 var app = builder.Build();
 

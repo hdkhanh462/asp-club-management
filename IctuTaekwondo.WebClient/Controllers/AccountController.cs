@@ -19,9 +19,9 @@ namespace IctuTaekwondo.WebClient.Controllers
         }
 
         [Authorize]
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile()
         {
-            var userDetail = _accountService.GetProfile(Request.Cookies);
+            var userDetail = await _accountService.GetProfileAsync(Request);
             if (userDetail == null) return Unauthorized();
 
             var roles = userDetail.Roles

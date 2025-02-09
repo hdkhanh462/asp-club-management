@@ -21,9 +21,9 @@ namespace IctuTaekwondo.Api.Mappers
             };
         }
 
-        public static UserResgiteredEventResponse ToUserResgiteredEventResponse(this User user)
+        public static EventResgiteredUsersResponse ToUserResgiteredEventResponse(this User user)
         {
-            return new UserResgiteredEventResponse
+            return new EventResgiteredUsersResponse
             {
                 Id = user.Id,
                 UserName = user.UserName,
@@ -31,30 +31,6 @@ namespace IctuTaekwondo.Api.Mappers
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
                 AvatarUrl = user.AvatarUrl,
-            };
-        }
-
-        public static EventFullDetailResponse ToEventFullDetailResponse(this Event @event)
-        {
-            return new EventFullDetailResponse
-            {
-                Id = @event.Id,
-                Name = @event.Name,
-                StartDate = @event.StartDate,
-                EndDate = @event.EndDate,
-                Location = @event.Location,
-                Fee = @event.Fee,
-                MaxParticipants = @event.MaxParticipants,
-                Description = @event.Description,
-                CreatedAt = @event.CreatedAt,
-                RegisteredUsers = @event.EventRegistrations
-                    .Where(eventResgisteration => eventResgisteration.User != null)
-                    .Select(eventResgisteration =>
-                    {
-                        var response = eventResgisteration.User.ToUserResgiteredEventResponse();
-                        response.RegisteredAt = eventResgisteration.CreatedAt;
-                        return response;
-                    }).ToList()
             };
         }
     }
