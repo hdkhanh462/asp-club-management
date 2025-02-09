@@ -11,18 +11,18 @@ namespace IctuTaekwondo.WindowsClient.Forms
 
     public partial class LoginForm : Form
     {
-        private readonly IAuthService authService;
-        private readonly IContainer appContainer;
-        private JwtResponse jwt;
+        private readonly IAuthService service;
+        private readonly MainForm mainForm;
 
-        public LoginForm(IContainer appContainer)
+        public LoginForm(IAuthService service, MainForm mainForm)
         {
+            this.service = service;
+            this.mainForm = mainForm;
+
             InitializeComponent();
-            this.appContainer = appContainer;
-            this.authService = appContainer.Resolve<IAuthService>();
         }
 
-        private void RetrieveCredentials()
+        private void LoginForm_Load(object sender, EventArgs e)
         {
             try
             {
@@ -38,22 +38,9 @@ namespace IctuTaekwondo.WindowsClient.Forms
             catch { }
         }
 
-        private void ShowMainForm()
-        {
-            var mainForm = new MainForm(appContainer, jwt);
-            Hide();
-            
-            mainForm.Show();
-        }
-
-        private void LoginForms_Load(object sender, EventArgs e)
-        {
-            RetrieveCredentials();
-        }
-
         private async void btnLogin_Click(object sender, EventArgs e)
         {
-            var response = await this.authService.LoginAsync(new LoginSchema
+            var response = await this.service.LoginAsync(new LoginSchema
             {
                 Email = tbEmail.Text,
                 Password = tbPassword.Text,
@@ -66,9 +53,9 @@ namespace IctuTaekwondo.WindowsClient.Forms
                 return;
             }
 
-            jwt = response;
-
-            ShowMainForm();
+            Hide();
+            mainForm.SetJwt(response);
+            mainForm.Show();
         }
     }
 }

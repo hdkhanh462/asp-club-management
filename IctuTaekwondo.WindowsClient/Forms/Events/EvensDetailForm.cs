@@ -18,28 +18,24 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
 {
     public partial class EventsDetailForm : Form
     {
-        private readonly IContainer appContainer;
-        private JwtResponse jwt;
-        private bool isEdit;
-        private int? id;
         private readonly IEventsService service;
 
-        public EventsDetailForm(IContainer appContainer, JwtResponse jwt, bool isEdit, int? id = null)
-        {
-            InitializeComponent();
+        private JwtResponse Jwt;
+        private bool IsEdit;
+        private int? Id;
 
-            this.appContainer = appContainer;
-            this.jwt = jwt;
-            this.isEdit = isEdit;
-            this.id = id;
-            this.service = appContainer.Resolve<IEventsService>();
+        public EventsDetailForm(IEventsService service)
+        {
+            this.service = service;
+
+            InitializeComponent();
         }
 
         private async void EvensDetailForm_Load(object sender, EventArgs e)
         {
-            if (isEdit && id.HasValue)
+            if (IsEdit && Id.HasValue)
             {
-                var detail = await service.FindByIdAsync(jwt.Token, id.Value);
+                var detail = await service.FindByIdAsync(Jwt.Token, Id.Value);
 
                 if (detail != null)
                 {
@@ -67,7 +63,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
 
         private async void btnAddNew_Click(object sender, EventArgs e)
         {
-            if (isEdit || id.HasValue) return;
+            if (IsEdit || Id.HasValue) return;
 
             try
             {
@@ -81,7 +77,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
                     MaxParticipants = short.Parse(tbMax.Text)
                 };
 
-                var result = await service.CreateAsync(jwt.Token, newEvent);
+                var result = await service.CreateAsync(Jwt.Token, newEvent);
 
                 if (result != null)
                 {
@@ -101,9 +97,9 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
-            if (isEdit && id.HasValue)
+            if (IsEdit && Id.HasValue)
             {
-                var result = await service.DeleteAsync(jwt.Token, id.Value);
+                var result = await service.DeleteAsync(Jwt.Token, Id.Value);
 
                 if (result)
                 {
@@ -119,13 +115,13 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            if (isEdit && id.HasValue)
+            if (IsEdit && Id.HasValue)
             {
                 try
                 {
                     var updateEvent = new EventUpdateSchema
                     {
-                        Id = id.Value,
+                        Id = Id.Value,
                         Name = tbName.Text,
                         Location = tbLocation.Text,
                         StartDate = DateTime.Parse(tbStartDate.Text),
@@ -134,7 +130,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
                         MaxParticipants = short.Parse(tbMax.Text)
                     };
 
-                    var result = await service.UpdateAsync(jwt.Token, id.Value, updateEvent);
+                    var result = await service.UpdateAsync(Jwt.Token, Id.Value, updateEvent);
 
                     if (result != null)
                     {
@@ -151,6 +147,13 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
                     MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        internal void SetJwt(JwtResponse jwt, bool isEdit, int? id)
+        {
+            Jwt = jwt;
+            IsEdit = isEdit;
+            Id = id;
         }
     }
 }

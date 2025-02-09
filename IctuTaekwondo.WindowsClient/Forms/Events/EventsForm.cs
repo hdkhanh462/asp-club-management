@@ -7,40 +7,46 @@ namespace IctuTaekwondo.WindowsClient.Forms.Events
     public partial class EventsForm : Form
     {
         private readonly IEventsService service;
-        private readonly IContainer appContainer;
-        private JwtResponse jwt;
+        private readonly EventsDetailForm detailForm;
 
-        public EventsForm(IContainer appContainer, JwtResponse jwt)
+        private JwtResponse Jwt;
+
+        public EventsForm(IEventsService service, EventsDetailForm detailForm)
         {
+            this.service = service;
+            this.detailForm = detailForm;
+            
             InitializeComponent();
-            this.appContainer = appContainer;
-            this.jwt = jwt;
-            this.service = appContainer.Resolve<IEventsService>();
         }
 
         private async void EventsForm_Load(object sender, EventArgs e)
         {
-            var response = await service.GetAllAsync(jwt.Token, 1, 999);
+            var response = await service.GetAllAsync(Jwt.Token, 1, 999);
 
             dataGridView1.DataSource = response.Items;
         }
 
-        private async void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private  void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var id = dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString();
                 int.TryParse(id, out var result);
 
-                var userDetailForm = new EventsDetailForm(appContainer, jwt, true, result);
-                userDetailForm.ShowDialog();
+                detailForm.SetJwt(Jwt,true,result);
+                detailForm.ShowDialog();
             }
         }
 
         private void btnAđNew_Click(object sender, EventArgs e)
         {
-            var userDetailForm = new EventsDetailForm(appContainer, jwt, false);
-            userDetailForm.ShowDialog();
+            detailForm.SetJwt(Jwt,false,null);
+            detailForm.ShowDialog();
+        }
+
+        internal void SetJwt(JwtResponse jwt)
+        {
+            Jwt = jwt;
         }
     }
 }

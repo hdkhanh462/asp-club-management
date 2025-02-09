@@ -6,9 +6,9 @@ namespace IctuTaekwondo.Shared.Services.Auth
 {
     public class AuthService : IAuthService
     {
-        private readonly ApiService _apiService;
+        private readonly IApiService _apiService;
 
-        public AuthService(ApiService apiService)
+        public AuthService(IApiService apiService)
         {
             _apiService = apiService;
         }

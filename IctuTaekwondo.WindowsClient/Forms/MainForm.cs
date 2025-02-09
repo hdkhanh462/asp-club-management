@@ -20,52 +20,62 @@ namespace IctuTaekwondo.WindowsClient.Forms
     public partial class MainForm : Form
     {
         private readonly IAccountService accountService;
-        private readonly IContainer appContainer;
-        private readonly JwtResponse jwt;
-        private UserFullDetailResponse userProfile;
+        private readonly UsersForm usersForm;
+        private readonly EventsForm eventsForm;
+        private readonly AchievementsForm achievementsForm;
+        private readonly FinancesForm financesForm;
 
-        public MainForm(IContainer appContainer, JwtResponse jwt)
+        private JwtResponse Jwt;
+        private UserFullDetailResponse UserProfile;
+
+        public MainForm(IAccountService accountService, UsersForm usersForm, EventsForm eventsForm, AchievementsForm achievementsForm, FinancesForm financesForm)
         {
+            this.accountService = accountService;
+            this.usersForm = usersForm;
+            this.eventsForm = eventsForm;
+            this.achievementsForm = achievementsForm;
+            this.financesForm = financesForm;
+
             InitializeComponent();
-            this.appContainer = appContainer;
-            this.jwt = jwt;
-            this.accountService = appContainer.Resolve<IAccountService>();
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            var profile = await accountService.GetProfileAsync(jwt.Token);
+            var profile = await accountService.GetProfileAsync(Jwt.Token);
             if (profile == null)
             {
                 MessageBox.Show("Lỗi xác thực người dùng", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
-            userProfile = profile;
         }
 
         private void buttonUsers_Click(object sender, EventArgs e)
         {
-            var form = new UsersForm(appContainer, jwt);
-            form.ShowDialog();
+            usersForm.SetJwt(Jwt);
+            usersForm.ShowDialog();
         }
 
         private void btnEventsManager_Click(object sender, EventArgs e)
         {
-            var form = new EventsForm(appContainer, jwt);
-            form.ShowDialog();
+            eventsForm.SetJwt(Jwt);
+            eventsForm.ShowDialog();
         }
 
         private void btnAchivements_Click(object sender, EventArgs e)
         {
-            var form = new AchievementsForm(appContainer, jwt);
-            form.ShowDialog();
+            achievementsForm.SetJwt(Jwt);
+            achievementsForm.ShowDialog();
         }
 
         private void btnFinances_Click(object sender, EventArgs e)
         {
-            var form = new FinancesForm(appContainer, jwt);
-            form.ShowDialog();
+            financesForm.SetJwt(Jwt);
+            financesForm.ShowDialog();
+        }
+
+        internal void SetJwt(JwtResponse jwt)
+        {
+            Jwt = jwt;
         }
     }
 }

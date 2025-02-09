@@ -17,32 +17,38 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
     public partial class UsersForm : Form
     {
         private readonly IUsersService usersService;
-        private readonly IContainer appContainer;
-        private JwtResponse jwt;
+        private readonly UsersDetailForm detailForm;
 
-        public UsersForm(IContainer appContainer, JwtResponse jwt)
+        private JwtResponse Jwt;
+
+        public UsersForm(IUsersService usersService, UsersDetailForm detailForm)
         {
+            this.usersService = usersService;
+            this.detailForm = detailForm;
+            
             InitializeComponent();
-            this.appContainer = appContainer;
-            this.jwt = jwt;
-            this.usersService = appContainer.Resolve<IUsersService>();
         }
 
         private async void UsersForm_Load(object sender, EventArgs e)
         {
-            var response = await usersService.GetAllAsync(jwt.Token, 1, 999);
+            var response = await usersService.GetAllAsync(Jwt.Token, 1, 999);
 
             dataGridView1.DataSource = response.Items;
         }
 
-        private async void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private  void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var userId = dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString();
-                var userDetailForm = new UsersDetailForm(appContainer,jwt,true,userId);
-                userDetailForm.ShowDialog();
+                detailForm.SetJwt(Jwt,true,userId);
+                detailForm.ShowDialog();
             }
+        }
+
+        internal void SetJwt(JwtResponse jwt)
+        {
+            Jwt = jwt;
         }
     }
 }

@@ -17,28 +17,23 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
 {
     public partial class UsersDetailForm : Form
     {
-        private bool isEdit;
-        private string? userId;
         private readonly IUsersService usersService;
-        private readonly IContainer appContainer;
-        private JwtResponse jwt;
+        
+        private JwtResponse Jwt;
+        private bool IsEdit;
+        private string? Id;
 
-
-        public UsersDetailForm(IContainer appContainer, JwtResponse jwt, bool isEdit, string? userId = null)
+        public UsersDetailForm(IUsersService usersService)
         {
             InitializeComponent();
-            this.appContainer = appContainer;
-            this.jwt = jwt;
-            this.usersService = appContainer.Resolve<IUsersService>();
-            this.userId = userId;
-            this.isEdit = isEdit;
+            this.usersService = usersService;
         }
 
         private async void UsersDetailForm_Load(object sender, EventArgs e)
         {
-            if (isEdit && !string.IsNullOrEmpty(userId))
+            if (IsEdit && !string.IsNullOrEmpty(Id))
             {
-                var userDetail = await usersService.GetProfileByIdAsync(jwt.Token, userId);
+                var userDetail = await usersService.GetProfileByIdAsync(Jwt.Token, Id);
 
                 if (userDetail != null)
                 {
@@ -74,13 +69,13 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
 
         private async void btnDelete_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(userId)) return;
+            if (string.IsNullOrEmpty(Id)) return;
 
             var result = MessageBox.Show("Bạn có chắc chắn muốn xóa người dùng này?", "Xác nhận xóa", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
-                var response = await usersService.DeleteAsync(jwt.Token, userId);
+                var response = await usersService.DeleteAsync(Jwt.Token, Id);
 
                 if (string.IsNullOrEmpty(response))
                 {
@@ -93,7 +88,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
             }
         }
 
-        private async void btnRegister_Click(object sender, EventArgs e)
+        private void btnRegister_Click(object sender, EventArgs e)
         {
             //var userCreateSchema = new RegisterSchema
             //{
@@ -116,7 +111,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(userId)) return;
+            if (string.IsNullOrEmpty(Id)) return;
 
             var userUpdateSchema = new UserUpdateSchema
             {
@@ -131,7 +126,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
 
             };
 
-            var response = await usersService.UpdateAsync(jwt.Token, userId, userUpdateSchema);
+            var response = await usersService.UpdateAsync(Jwt.Token, Id, userUpdateSchema);
 
             if (response != null)
             {
@@ -141,6 +136,13 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
             {
                 MessageBox.Show("Cập nhật không thành công");
             }
+        }
+
+        internal void SetJwt(JwtResponse jwt, bool isEdit, string? id)
+        {
+            Jwt = jwt;
+            IsEdit = isEdit;
+            Id = id;
         }
     }
 }

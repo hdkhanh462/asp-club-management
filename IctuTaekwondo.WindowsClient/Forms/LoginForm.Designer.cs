@@ -267,7 +267,7 @@
             Name = "LoginForms";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginView";
-            Load += LoginForms_Load;
+            Load += LoginForm_Load;
             parrotGradientPanel1.ResumeLayout(false);
             parrotGradientPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
