@@ -1,28 +1,18 @@
 ﻿@using IctuTaekwondo.Shared.Enums
 @using IctuTaekwondo.Shared.Responses
-@using IctuTaekwondo.Shared.Responses.Event
-@using IctuTaekwondo.Shared.Responses.User
-@using IctuTaekwondo.Shared.Schemas.Event
+@using IctuTaekwondo.Shared.Responses.Finance
+@using IctuTaekwondo.Shared.Schemas.Finance
 @using Microsoft.AspNetCore.WebUtilities
-@model PaginationResponse<EventResponse>
+
+@model PaginationResponse<FinanceResponse>
 @{
-	ViewData["Title"] = "Quản lý sự kiện";
+	ViewData["Title"] = "Quản lý thu chi";
 	Layout = "_DashboardLayout";
 
 	var queryParameters = (IQueryCollection)ViewData["QueryParameters"]!;
 	var queryDict = queryParameters.ToDictionary(q => q.Key, q => q.Value.ToString());
-	UserFullDetailResponse? currentUser = null;
-
-	if (ViewData.TryGetValue("CurrentUser", out var user) && user is UserFullDetailResponse userDetail)
-	{
-		currentUser = userDetail;
-	}
 
 	ArgumentNullException.ThrowIfNull(Model);
-	ArgumentNullException.ThrowIfNull(currentUser);
-
-	var isAdmin = currentUser.Roles.Contains(Role.Admin.ToString());
-	var isManager = currentUser.Roles.Contains(Role.Manager.ToString());
 }
 
 <section class="bg-white py-4 antialiased dark:bg-gray-900">
@@ -43,8 +33,8 @@
 						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
 						</svg>
-						<a asp-controller="Events" asp-action="Index" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
-							Quản lý sự kiện
+						<a asp-controller="Finances" asp-action="Index" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
+							Quản lý thu chi
 						</a>
 					</div>
 				</li>
@@ -53,14 +43,14 @@
 						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
 						</svg>
-						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Danh sách sự kiện</span>
+						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Danh sách thu chi</span>
 					</div>
 				</li>
 			</ol>
 		</nav>
 
 		<h2 class="border-b border-gray-200 pb-4 text-xl font-semibold text-gray-900 dark:text-white dark:border-gray-700 sm:text-2xl">
-			Quản lý sự kiện
+			Quản lý thu chi
 		</h2>
 
 		<div class="pt-6">
@@ -87,17 +77,15 @@
 							</a>
 						}
 					</div>
+
 					<div class="flex-shrink-0 flex flex-col space-y-3 md:flex-row md:items-center md:space-y-0 md:space-x-3 lg:justify-end">
-						@if (isAdmin || isManager)
-						{
-							<button data-modal-target="Modal-Create-Event"
-									data-modal-toggle="Modal-Create-Event"
-									class="flex items-center justify-center rounded-lg bg-primary-700 p-2 text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-								<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
-								</svg>
-							</button>
-						}
+						<button data-modal-target="Modal-Create-Finance"
+								data-modal-toggle="Modal-Create-Finance"
+								class="flex items-center justify-center rounded-lg bg-primary-700 p-2 text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+							<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
+							</svg>
+						</button>
 						<button id="order-dropdown-button" data-dropdown-toggle="order-dropdown" class="flex w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:outline-none focus:z-10 focus:ring-4 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 md:w-auto dark:focus:ring-gray-700 dark:hover:text-white dark:hover:bg-gray-700" type="button">
 							<svg class="-ml-1 mr-1.5 size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 								<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 20V10m0 10-3-3m3 3 3-3m5-13v10m0-10 3 3m-3-3-3 3" />
@@ -126,18 +114,13 @@
 										<label for="checkbox-all" class="sr-only">checkbox</label>
 									</div>
 								</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Tên sự kiện</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Địa điểm tổ chức</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Phí tham gia</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Giới hạn tham gia</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày bắt đầu</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày kết thúc</th>
-								@if (isAdmin || isManager)
-								{
-									<th scope="col" class="px-4 py-3">
-										<span class="sr-only">Actions</span>
-									</th>
-								}
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Danh mục</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Loại</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Số tiền</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày giao dịch</th>
+								<th scope="col" class="px-4 py-3">
+									<span class="sr-only">Actions</span>
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -152,42 +135,44 @@
 									</td>
 
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										<a asp-action="Detail" asp-route-id="@item.Id" class="font-medium hover:underline">@item.Name</a>
-									</td>
-									<td class="max-w-[100px] truncate px-4 py-2 text-gray-900 dark:text-white">
-										@item.Location
-									</td>
-									<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
-										@(item.Fee?.ToString("N0"))@(item.Fee.HasValue ? "đ" : null)
-									</td>
-									<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
-										@item.MaxParticipants?.ToString("N0") @(item.MaxParticipants.HasValue ? "người" : null)
+										<a asp-action="Detail" asp-route-id="@item.Id" class="font-bold hover:underline">@item.Category</a>
 									</td>
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										@item.StartDate.ToString("dd/MM/yyyy HH:mm")
+										@item.Type.GetDisplayName()
 									</td>
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										@item.EndDate?.ToString("dd/MM/yyyy HH:mm")
+										@if (item.Type == TransactionType.Expense)
+										{
+											<span class="rounded-sm bg-red-100 px-2.5 py-0.5 font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
+												-@(item.Amount.ToString("N0"))đ
+											</span>
+										}
+										else
+										{
+											<span class="rounded-sm bg-green-100 px-2.5 py-0.5 font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+												+@(item.Amount.ToString("N0"))đ
+											</span>
+										}
 									</td>
-									@if (isAdmin || isManager)
-									{
-										<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-											<div class="flex items-center justify-end">
-												<button _="on htmx:beforeRequest set me.disabled to true end
+									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										@item.TransactionDate.ToString("dd/MM/yyyy HH:mm")
+									</td>
+									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										<div class="flex items-center justify-end">
+											<button _="on htmx:beforeRequest set me.disabled to true end
 													   on htmx:afterRequest set me.disabled to false"
-														hx-delete
-														hx-action="Delete"
-														hx-route-id="@item.Id"
-														hx-confirm="Sự kiện này sẽ bị xoá vĩnh viễn."
-														type="button"
-														class="inline-flex items-center rounded-full p-2 text-center text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300">
-													<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-														<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
-													</svg>
-												</button>
-											</div>
-										</td>
-									}
+													hx-delete
+													hx-action="Delete"
+													hx-route-id="@item.Id"
+													hx-confirm="Thành tích này sẽ bị xoá vĩnh viễn."
+													type="button"
+													class="inline-flex items-center rounded-full p-2 text-center text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300">
+												<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+													<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+												</svg>
+											</button>
+										</div>
+									</td>
 								</tr>
 							}
 						</tbody>
@@ -222,14 +207,11 @@
 
 @section Modals
 {
-	@if (isAdmin || isManager)
-	{
-		@await Html.PartialAsync("Partials/_ModalPartial", new ModalViewModel
+	@await Html.PartialAsync("Partials/_ModalPartial", new ModalViewModel
 {
-	Id = "Create-Event",
-	Header = "Tạo sự kiện mới",
-	BodyPartialName = "_CreateEventFormPartial",
-	BodyModel = new EventCreateSchema()
+	Id = "Create-Finance",
+	Header = "Tạo giao dịch mới",
+	BodyPartialName = "_CreateFinanceFormPartial",
+	BodyModel = new FinanceCreateSchema()
 })
-	}
 }

@@ -52,14 +52,22 @@ namespace IctuTaekwondo.WebClient.Services
             return new PaginationResponse<EventResgiteredUsersResponse>(page, size, 0, []);
         }
 
-        public Task<bool> ManagerRegisterAsync(int eventId, string userId, HttpRequest request)
+        public async Task<bool> ManagerRegisterAsync(int eventId, string userId, HttpRequest request)
         {
-            throw new NotImplementedException();
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
+
+            var apiResponse = await _apiService.PostAsync<object>($"api/events/{eventId}/registerations/{userId}", string.Empty.ToStringContent());
+            return apiResponse.StatusCode == HttpStatusCode.OK;
         }
 
-        public Task<bool> ManagerUnregisterAsync(int eventId, string userId, HttpRequest request)
+        public async Task<bool> ManagerUnregisterAsync(int eventId, string userId, HttpRequest request)
         {
-            throw new NotImplementedException();
+            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
+            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
+
+            var apiResponse = await _apiService.DeleteAsync<object>($"api/events/{eventId}/registerations/{userId}");
+            return apiResponse.StatusCode == HttpStatusCode.OK;
         }
 
         public async Task<bool> RegisterAsync(int eventId, HttpRequest request, ModelStateDictionary modelState)

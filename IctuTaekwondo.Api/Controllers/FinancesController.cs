@@ -92,10 +92,17 @@ namespace IctuTaekwondo.Api.Controllers
             try
             {
                 var result = await _financeService.UpdateAsync(id, schema);
-                if (!result) return BadRequest(new ApiResponse<object>
+                if (result == null) return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Message = "Cập nhật tài chính thất bại"
+                    Message = "Cập nhật giao dịch thất bại"
+                });
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Cập nhật giao dịch thành công",
+                    Data = result
                 });
             }
             catch (Exception ex)
@@ -106,12 +113,6 @@ namespace IctuTaekwondo.Api.Controllers
                     Message = ex.Message
                 });
             }
-
-            return Ok(new ApiResponse<object>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Cập nhật tài chính thành công"
-            });
         }
 
         // POST: api/finances
@@ -123,16 +124,17 @@ namespace IctuTaekwondo.Api.Controllers
             try
             {
                 var result = await _financeService.CreateAsync(schema);
-                if (!result) return BadRequest(new ApiResponse<object>
+                if (result == null) return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    Message = "Tạo tài chính thất bại"
+                    Message = "Tạo giao dịch thất bại"
                 });
 
                 return Ok(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Message = "Tạo tài chính thành công"
+                    Message = "Tạo giao dịch thành công",
+                    Data = result
                 });
             }
             catch (Exception ex)

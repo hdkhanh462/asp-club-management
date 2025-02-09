@@ -92,7 +92,7 @@ namespace IctuTaekwondo.Api.Controllers
 
         // POST : api/events/5/registrations?userId=user123
         // Thêm người dùng vào sự kiện
-        [HttpPost("{id}/registrations")]
+        [HttpPost("{id}/registerations")]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> AddUserToEvent(
             int id,
@@ -114,7 +114,7 @@ namespace IctuTaekwondo.Api.Controllers
 
         // DELETE : api/events/5/registrations/user123
         // Xóa người dùng khỏi sự kiện
-        [HttpDelete("{id}/registrations/{userId}")]
+        [HttpDelete("{id}/registerations/{userId}")]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> RemoveUserFromEvent(
             int id,

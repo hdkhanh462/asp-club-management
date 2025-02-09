@@ -1,12 +1,13 @@
 ﻿@using IctuTaekwondo.Shared.Enums
 @using IctuTaekwondo.Shared.Responses
-@using IctuTaekwondo.Shared.Responses.Event
+@using IctuTaekwondo.Shared.Responses.Achievement
 @using IctuTaekwondo.Shared.Responses.User
-@using IctuTaekwondo.Shared.Schemas.Event
+@using IctuTaekwondo.Shared.Schemas.Achievement
 @using Microsoft.AspNetCore.WebUtilities
-@model PaginationResponse<EventResponse>
+
+@model PaginationResponse<AchievementResponse>
 @{
-	ViewData["Title"] = "Quản lý sự kiện";
+	ViewData["Title"] = "Quản lý thành tích";
 	Layout = "_DashboardLayout";
 
 	var queryParameters = (IQueryCollection)ViewData["QueryParameters"]!;
@@ -43,8 +44,8 @@
 						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
 						</svg>
-						<a asp-controller="Events" asp-action="Index" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
-							Quản lý sự kiện
+						<a asp-controller="Achievements" asp-action="Index" class="ms-1 text-sm font-medium text-gray-700 hover:underline hover:text-primary-600 dark:text-gray-400 md:ms-2 dark:hover:text-white">
+							Quản lý thành tích
 						</a>
 					</div>
 				</li>
@@ -53,14 +54,14 @@
 						<svg class="mx-1 h-4 w-4 text-gray-400 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7" />
 						</svg>
-						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Danh sách sự kiện</span>
+						<span class="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">Danh sách thành tích</span>
 					</div>
 				</li>
 			</ol>
 		</nav>
 
 		<h2 class="border-b border-gray-200 pb-4 text-xl font-semibold text-gray-900 dark:text-white dark:border-gray-700 sm:text-2xl">
-			Quản lý sự kiện
+			Quản lý thành tích
 		</h2>
 
 		<div class="pt-6">
@@ -90,8 +91,8 @@
 					<div class="flex-shrink-0 flex flex-col space-y-3 md:flex-row md:items-center md:space-y-0 md:space-x-3 lg:justify-end">
 						@if (isAdmin || isManager)
 						{
-							<button data-modal-target="Modal-Create-Event"
-									data-modal-toggle="Modal-Create-Event"
+							<button data-modal-target="Modal-Create-Achievement"
+									data-modal-toggle="Modal-Create-Achievement"
 									class="flex items-center justify-center rounded-lg bg-primary-700 p-2 text-sm font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
 								<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
 									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5" />
@@ -126,12 +127,10 @@
 										<label for="checkbox-all" class="sr-only">checkbox</label>
 									</div>
 								</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Tên sự kiện</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Địa điểm tổ chức</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Phí tham gia</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Giới hạn tham gia</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày bắt đầu</th>
-								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày kết thúc</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Tên thành tích</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Người đạt</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Sự kiện</th>
+								<th scope="col" class="whitespace-nowrap px-4 py-3">Ngày đạt</th>
 								@if (isAdmin || isManager)
 								{
 									<th scope="col" class="px-4 py-3">
@@ -154,20 +153,14 @@
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
 										<a asp-action="Detail" asp-route-id="@item.Id" class="font-medium hover:underline">@item.Name</a>
 									</td>
-									<td class="max-w-[100px] truncate px-4 py-2 text-gray-900 dark:text-white">
-										@item.Location
-									</td>
-									<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
-										@(item.Fee?.ToString("N0"))@(item.Fee.HasValue ? "đ" : null)
-									</td>
-									<td class="whitespace-nowrap px-4 py-2 text-end text-gray-900 dark:text-white">
-										@item.MaxParticipants?.ToString("N0") @(item.MaxParticipants.HasValue ? "người" : null)
+									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
+										@item.User.FullName
 									</td>
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										@item.StartDate.ToString("dd/MM/yyyy HH:mm")
+										@item.Event?.Name
 									</td>
 									<td class="whitespace-nowrap px-4 py-2 text-gray-900 dark:text-white">
-										@item.EndDate?.ToString("dd/MM/yyyy HH:mm")
+										@item.DateAchieved
 									</td>
 									@if (isAdmin || isManager)
 									{
@@ -178,7 +171,7 @@
 														hx-delete
 														hx-action="Delete"
 														hx-route-id="@item.Id"
-														hx-confirm="Sự kiện này sẽ bị xoá vĩnh viễn."
+														hx-confirm="Thành tích này sẽ bị xoá vĩnh viễn."
 														type="button"
 														class="inline-flex items-center rounded-full p-2 text-center text-sm font-medium text-red-600 hover:bg-red-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-red-300">
 													<svg class="size-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -226,10 +219,10 @@
 	{
 		@await Html.PartialAsync("Partials/_ModalPartial", new ModalViewModel
 {
-	Id = "Create-Event",
-	Header = "Tạo sự kiện mới",
-	BodyPartialName = "_CreateEventFormPartial",
-	BodyModel = new EventCreateSchema()
+	Id = "Create-Achievement",
+	Header = "Tạo thành tích mới",
+	BodyPartialName = "_CreateAchievementFormPartial",
+	BodyModel = new AchievementCreateSchema()
 })
 	}
 }

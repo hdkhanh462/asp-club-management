@@ -1,10 +1,14 @@
 ﻿using System.Text;
 using Htmx;
 using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Services.Achievements;
+using IctuTaekwondo.Shared.Services.Account;
 using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using IctuTaekwondo.Shared.Services.Finances;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,8 @@ builder.Services.AddHttpClient<ApiHelper>(client =>
     client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
 });
 
+
+
 builder.Services.AddHttpClient<ApiService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
@@ -64,10 +70,14 @@ builder.Services.AddCors(options =>
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IctuTaekwondo.WebClient.Services.IAccountService, IctuTaekwondo.WebClient.Services.AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
+builder.Services.AddSingleton<IApiService>(new ApiService(new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiUrl"]!)}));
+builder.Services.AddScoped<IctuTaekwondo.Shared.Services.Account.IAccountService, IctuTaekwondo.Shared.Services.Account.AccountService>();
+builder.Services.AddScoped<IAchievementsService, AchievementsService>();
+builder.Services.AddScoped<IFinancesService, FinancesService>();
 
 var app = builder.Build();
 

@@ -13,12 +13,15 @@ namespace IctuTaekwondo.Shared.Schemas.Achievement
         [Required(ErrorMessage = "Ngày đạt không được để trống")]
         [DataType(DataType.Date, ErrorMessage = "Đinh dạng ngày tháng không chính xác")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateOnly DateAchieved { get; set; }
+        public DateOnly DateAchieved { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
 
         [Display(Name = "Mô tả")]
         public string? Description { get; set; }
 
+        [Display(Name = "Id người dùng")]
         public string UserId { get; set; } = null!;
+
+        [Display(Name = "Id sự kiện")]
         public int? EventId { get; set; }
     }
 }

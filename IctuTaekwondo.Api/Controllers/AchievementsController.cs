@@ -42,7 +42,7 @@ namespace IctuTaekwondo.Api.Controllers
         [Authorize]
         public async Task<IActionResult> GetAchievementsWithFilter(
             [FromQuery] int page = 1,
-            [FromQuery] int size = 10, 
+            [FromQuery] int size = 10,
             [FromQuery] string? name = null,
             [FromQuery] string? userId = null,
             [FromQuery] int? eventId = null,
@@ -51,7 +51,7 @@ namespace IctuTaekwondo.Api.Controllers
         {
             if (end <= start) return BadRequest(new ApiResponse<object>
             {
-                StatusCode  = HttpStatusCode.BadRequest,
+                StatusCode = HttpStatusCode.BadRequest,
                 Message = "Ngày bắt đầu phải lớn hơn Ngày kết thúc"
             });
 
@@ -71,7 +71,7 @@ namespace IctuTaekwondo.Api.Controllers
         [Authorize]
         public async Task<IActionResult> GetAchievement(int id)
         {
-            var achievement = await _achievementService.GetByIdAsync(id);
+            var achievement = await _achievementService.FindByIdAsync(id);
             if (achievement == null) return NotFound(new ApiResponse<object>
             {
                 StatusCode = HttpStatusCode.NotFound,
@@ -99,10 +99,17 @@ namespace IctuTaekwondo.Api.Controllers
             try
             {
                 var result = await _achievementService.UpdateAsync(id, schema);
-                if (!result) return BadRequest(new ApiResponse<object>
+                if (result == null) return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Message = "Cập nhật thành tích thất bại"
+                });
+
+                return Ok(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Message = "Cập nhật thành tích thành công",
+                    Data = result
                 });
             }
             catch (ArgumentException ex)
@@ -122,11 +129,7 @@ namespace IctuTaekwondo.Api.Controllers
                 });
             }
 
-            return Ok(new ApiResponse<object>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Cập nhật thành tích thành công"
-            });
+
         }
 
         // POST: api/achievements
@@ -136,17 +139,19 @@ namespace IctuTaekwondo.Api.Controllers
         public async Task<IActionResult> PostAchievement([FromBody] AchievementCreateSchema schema)
         {
             try
-            {var result = await _achievementService.CreateAsync(schema);
-            if (!result) return BadRequest(new ApiResponse<object>
             {
-                StatusCode = HttpStatusCode.BadRequest,
-                Message = "Tạo thành tích thất bại"
-            });
+                var result = await _achievementService.CreateAsync(schema);
+                if (result == null) return BadRequest(new ApiResponse<object>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Tạo thành tích thất bại"
+                });
 
                 return Ok(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Message = "Tạo thành tích thành công"
+                    Message = "Tạo thành tích thành công",
+                    Data = result
                 });
             }
             catch (Exception ex)

@@ -4,13 +4,18 @@
 
 @{
 	ArgumentNullException.ThrowIfNull(Model);
+
+	var isAdmin = Model.Roles.Contains(Role.Admin.ToString());
+	var isManager = Model.Roles.Contains(Role.Manager.ToString());
+	var isMember = Model.Roles.Contains(Role.Member.ToString());
+	var isMemberOnly = Model.Roles.Contains(Role.Member.ToString()) && Model.Roles.Count == 1;
 }
 
 <aside id="logo-sidebar" class="z-[35] -translate-x-full fixed left-0 top-0 h-screen w-56 border-r border-gray-200 bg-white pt-20 transition-transform dark:bg-gray-800 dark:border-gray-700 sm:translate-x-0" aria-label="Sidebar">
 	<div class="h-full overflow-y-auto bg-white px-3 pb-4 dark:bg-gray-800">
 		<ul class="space-y-2 font-medium">
 
-			@if (Model.Roles.Contains(Role.Admin.ToString()) || Model.Roles.Contains(Role.Manager.ToString()))
+			@if (isAdmin || isManager)
 			{
 				<li>
 					<a asp-controller="Dashboard" asp-action="Index" class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
@@ -38,7 +43,7 @@
 				</li>
 			}
 
-			@if (Model.Roles.Contains(Role.Admin.ToString()))
+			@if (isAdmin)
 			{
 				<li>
 					<a asp-controller="Users" asp-action="Index" class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
@@ -58,7 +63,7 @@
 				</li>
 			}
 
-			@if (Model.Roles.Contains(Role.Member.ToString()) && Model.Roles.Count == 1)
+			@if (isMemberOnly)
 			{
 				<li>
 					<a asp-controller="Events" asp-action="Index" class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
@@ -66,6 +71,14 @@
 							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z" />
 						</svg>
 						<span class="flex-1 ms-3 whitespace-nowrap">Danh sách sự kiện</span>
+					</a>
+				</li>
+				<li>
+					<a asp-controller="Achievements" asp-action="Index" class="group flex items-center rounded-lg p-2 text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+						<svg class="flex-shrink-0 group-hover:text-gray-900 h-5 w-5 text-gray-500 transition duration-75 dark:text-gray-400 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z" />
+						</svg>
+						<span class="flex-1 ms-3 whitespace-nowrap">Danh sách thành tích</span>
 					</a>
 				</li>
 			}

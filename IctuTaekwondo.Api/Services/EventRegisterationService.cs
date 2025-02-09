@@ -165,7 +165,7 @@ namespace IctuTaekwondo.Api.Services
 
             return new PaginationResponse<EventResgiteredUsersResponse>(
                 page, size,
-                registrations.Count,
+                @event.EventRegistrations.Count,
                 registrations);
         }
     }

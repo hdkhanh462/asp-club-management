@@ -27,6 +27,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             _accountService = accountService;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index([FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             ViewData["QueryParameters"] = Request.Query;
@@ -35,13 +36,13 @@ namespace IctuTaekwondo.WebClient.Controllers
             if (currentUser == null) return Unauthorized();
 
             var events = await _eventService.GetAllAsync(page, size, ModelState, Request);
-            
+
             ViewData["CurrentUser"] = currentUser;
 
             return View(events);
         }
 
-        [Authorize(Roles = "Admin,Manager,Member")]
+        [Authorize]
         public async Task<IActionResult> Detail(int id, [FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -233,6 +234,86 @@ namespace IctuTaekwondo.WebClient.Controllers
         [HttpPost]
         [Authorize(Roles = "Member")]
         public async Task<IActionResult> Register(int id)
+        {
+            if (!Request.IsHtmx()) return BadRequest();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty((userId)))
+            {
+                var currentEvent = await _eventService.FindByIdAsync(id, Request);
+                if (currentEvent == null) return NotFound();
+
+                var currentUser = await _accountService.GetProfileAsync(Request);
+                if (currentUser == null) return Unauthorized();
+
+                ViewData["CurrentUser"] = currentUser;
+
+                var isSuccess = await _registerationService.RegisterAsync(id, Request, ModelState);
+                if (isSuccess)
+                {
+                    ViewData["IsRegistered"] = true;
+
+                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                    {
+                        icon = "success",
+                        title = "Đăng ký tham gia sự kiện thành công",
+                    }));
+
+                    return PartialView("_RegisterationButtonsPartial", currentEvent);
+                }
+
+                var errorMsg = string.Empty;
+                if (ModelState.TryGetValue(string.Empty, out var msg))
+                {
+                    errorMsg = msg.Errors.FirstOrDefault()?.ErrorMessage;
+                }
+
+                Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                {
+                    icon = "error",
+                    title = $"Đăng ký tham gia sự kiện không thành công.<br>{errorMsg}",
+                }));
+
+                return PartialView("_RegisterationButtonsPartial", currentEvent);
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> ManagerUnregister(int id, string userId)
+        {
+            if (!Request.IsHtmx()) return BadRequest();
+
+            var currentEvent = await _eventService.FindByIdAsync(id, Request);
+            if (currentEvent == null) return NotFound();
+
+            var isSuccess = await _registerationService.ManagerUnregisterAsync(id, userId, Request);
+            if (isSuccess)
+            {
+                ViewData["IsRegistered"] = false;
+
+                Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                {
+                    icon = "success",
+                    title = "Huỷ đăng ký tham gia sự kiện cho người dùng thành công",
+                }));
+                return NoContent();
+            }
+
+            Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+            {
+                icon = "error",
+                title = "Huỷ đăng ký tham gia sự kiện cho người dùng không thành công",
+            }));
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> ManagerRegister(int id)
         {
             if (!Request.IsHtmx()) return BadRequest();
 

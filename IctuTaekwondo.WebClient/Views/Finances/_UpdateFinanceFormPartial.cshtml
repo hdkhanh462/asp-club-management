@@ -1,0 +1,122 @@
+﻿@using IctuTaekwondo.Shared.Enums
+@using IctuTaekwondo.Shared.Responses.User
+@using IctuTaekwondo.Shared.Schemas.Finance
+@model FinanceUpdateSchema
+
+@if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+{
+	<div id="Message-Update-Finance" hx-swap-oob="true" class="col-span-1 lg:col-span-5">
+		<div class="mb-4 flex rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-gray-800 dark:text-red-400" role="alert">
+			<svg class="flex-shrink-0 me-3 mt-[2px] inline h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+				<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+			</svg>
+			<div>
+				<span class="font-medium">Lỗi phát sinh:</span>
+				<ul class="mt-1.5 list-inside list-disc">
+					@foreach (var error in ViewData.ModelState[string.Empty]?.Errors!)
+					{
+						<li>@error.ErrorMessage</li>
+					}
+				</ul>
+			</div>
+		</div>
+	</div>
+}
+
+<form _="on htmx:beforeRequest set #Update-Finance-Submit.disabled to true end
+		 on htmx:afterRequest set #Update-Finance-Submit.disabled to false"
+	  hx-put
+	  hx-action="Update"
+	  hx-route-id="@Model.Id"
+	  hx-trigger="Update-Finance from:body"
+	  hx-swap="outerHTML"
+	  hx-indicator="#Update-Finance-Indicator"
+	  id="Update-Finance-Form"
+	  class="col-span-1 lg:col-span-6">
+	<div class="space-y-4">
+		<div class="hidden" hidden>
+			<input id="Update-Finance-Id" asp-for="@Model.Id" value="@Model.Id" class="hidden" />
+		</div>
+
+		<div class="space-y-2">
+			<div class="flex text-sm">
+				<label asp-for="Category" class="block font-medium text-gray-900 dark:text-white"></label>
+				<span class="text-red-600">*</span>
+			</div>
+			<input asp-for="Category"
+				   value="@Model.Category"
+				   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+			<p class="text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="Category"></span>
+			</p>
+		</div>
+
+		<div class="space-y-2">
+			<div class="flex text-sm">
+				<label asp-for="Type" class="block font-medium text-gray-900 dark:text-white"></label>
+				<span class="text-red-600">*</span>
+			</div>
+
+			<select asp-for="Type"
+					class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
+				<option disabled>Chọn loại giao dịch</option>
+				@foreach (TransactionType type in Enum.GetValues(typeof(TransactionType)))
+				{
+					if (Model.Type.Equals(type))
+					{
+						<option value="@type" selected>@type.GetDisplayName()</option>
+					}
+					else
+					{
+						<option value="@type">@type.GetDisplayName()</option>
+					}
+				}
+			</select>
+
+			<p class="text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="Type"></span>
+			</p>
+		</div>
+
+		<div class="space-y-2">
+			<div class="flex text-sm">
+				<label asp-for="Amount" class="block font-medium text-gray-900 dark:text-white"></label>
+				<span class="text-red-600">*</span>
+			</div>
+			<input asp-for="Amount"
+				   value="@Model.Amount"
+				   min="1000"
+				   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+			<p class="text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="Amount"></span>
+			</p>
+		</div>
+
+		<div class="space-y-2">
+			<div class="flex text-sm">
+				<label asp-for="TransactionDate" class="block font-medium text-gray-900 dark:text-white"></label>
+				<span class="text-red-600">*</span>
+			</div>
+			<input asp-for="TransactionDate"
+				   value="@Model.TransactionDate.ToString("yyyy-MM-ddThh:mm")"
+				   class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+			<p class="text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="TransactionDate"></span>
+			</p>
+		</div>
+
+		<div class="space-y-2">
+			<div class="flex text-sm">
+				<label asp-for="Description" class="block font-medium text-gray-900 dark:text-white"></label>
+			</div>
+			<textarea asp-for="@Model.Description"
+					  value="@Model.Description"
+					  placeholder="Mô tả thành tích"
+					  rows=" 2"
+					  class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"></textarea>
+			<p class="text-sm text-red-600 dark:text-red-500">
+				<span asp-validation-for="@Model.Description"></span>
+			</p>
+		</div>
+	</div>
+</form>

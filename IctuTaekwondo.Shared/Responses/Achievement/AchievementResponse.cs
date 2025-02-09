@@ -10,7 +10,6 @@ namespace IctuTaekwondo.Shared.Responses.Achievement
 
         public string Name { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateOnly DateAchieved { get; set; }
 
         public string? Description { get; set; }

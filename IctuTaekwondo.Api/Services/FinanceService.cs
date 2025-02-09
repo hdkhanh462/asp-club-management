@@ -14,8 +14,8 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IFinanceService
     {
-        Task<bool> CreateAsync(FinanceCreateSchema schema);
-        Task<bool> UpdateAsync(int id, FinanceUpdateSchema schema);
+        Task<FinanceResponse?> CreateAsync(FinanceCreateSchema schema);
+        Task<FinanceResponse?> UpdateAsync(int id, FinanceUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
         Task<PaginationResponse<FinanceResponse>> GetAllAsync(int page, int size);
         Task<FinanceResponse?> GetByIdAsync(int id);
@@ -87,7 +87,7 @@ namespace IctuTaekwondo.Api.Services
             return await query.ToListAsync();
         }
 
-        public async Task<bool> CreateAsync(FinanceCreateSchema schema)
+        public async Task<FinanceResponse?> CreateAsync(FinanceCreateSchema schema)
         {
             var newFinance = new Finance
             {
@@ -102,7 +102,10 @@ namespace IctuTaekwondo.Api.Services
             _context.Finances.Add(newFinance);
             var result = await _context.SaveChangesAsync();
 
-            return result > 0;
+            if (result > 0)
+                return newFinance.ToFinanceResponse();
+
+            return null;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -180,7 +183,7 @@ namespace IctuTaekwondo.Api.Services
             return totalAmount;
         }
 
-        public async Task<bool> UpdateAsync(int id, FinanceUpdateSchema schema)
+        public async Task<FinanceResponse?> UpdateAsync(int id, FinanceUpdateSchema schema)
         {
             var finance = await _context.Finances
                 .FirstOrDefaultAsync(e => e.Id == id);
@@ -199,7 +202,10 @@ namespace IctuTaekwondo.Api.Services
             _context.Entry(finance).State = EntityState.Modified;
             var result = await _context.SaveChangesAsync();
 
-            return result > 0;
+            if (result > 0)
+                return await GetByIdAsync(id);
+
+            return null;
         }
 
         public async Task<List<FinanceReportResponse>> GetReportAsync(

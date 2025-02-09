@@ -17,13 +17,13 @@ namespace IctuTaekwondo.Shared.Schemas.Finance
         [Display(Name = "Số tiền")]
         [Required(ErrorMessage = "Số tiền không được để trống")]
         [Range(1000, long.MaxValue, ErrorMessage = "Số tiền phải có giá trị lớn hơn hoặc bằng 1000")]
-        public long Amount { get; set; }
+        public long Amount { get; set; } = 1000;
 
         [Display(Name = "Ngày giao dịch")]
         [Required(ErrorMessage = "Ngày giao dịch không được để trống")]
         [DataType(DataType.DateTime, ErrorMessage = "Đinh dạng ngày giờ không chính xác")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
-        public DateTime TransactionDate { get; set; }
+        public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
 
         [Display(Name = "Mô tả")]
         public string? Description { get; set; }

@@ -14,11 +14,11 @@ namespace IctuTaekwondo.Api.Services
 {
     public interface IAchievementService
     {
-        Task<bool> CreateAsync(AchievementCreateSchema schema);
-        Task<bool> UpdateAsync(int id, AchievementUpdateSchema schema);
+        Task<AchievementResponse?> CreateAsync(AchievementCreateSchema schema);
+        Task<AchievementResponse?> UpdateAsync(int id, AchievementUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
         Task<PaginationResponse<AchievementResponse>> GetAllAsync(int page, int size);
-        Task<AchievementResponse?> GetByIdAsync(int id);
+        Task<AchievementResponse?> FindByIdAsync(int id);
         Task<PaginationResponse<AchievementResponse>> GetAllWithFilterAsync(
             int page,
             int size,
@@ -42,7 +42,7 @@ namespace IctuTaekwondo.Api.Services
             _userManager = userManager;
         }
 
-        public async Task<bool> CreateAsync(AchievementCreateSchema schema)
+        public async Task<AchievementResponse?> CreateAsync(AchievementCreateSchema schema)
         {
             var isValid = await Validate(schema.UserId, schema.EventId);
             if (!string.IsNullOrEmpty(isValid)) throw new ArgumentException(isValid);
@@ -60,7 +60,10 @@ namespace IctuTaekwondo.Api.Services
             _context.Achievements.Add(newAchievement);
             var result = await _context.SaveChangesAsync();
 
-            return result > 0;
+            if (result > 0)
+                return newAchievement.ToAchievementResponse();
+
+            return null;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -86,7 +89,7 @@ namespace IctuTaekwondo.Api.Services
                 .ToListAsync();
 
             return new PaginationResponse<AchievementResponse>(
-                page, size, 
+                page, size,
                 achievements.Count,
                 achievements.Skip((page - 1) * size).Take(size)
                 .Select(e => e.ToAchievementResponse()).ToList());
@@ -125,7 +128,7 @@ namespace IctuTaekwondo.Api.Services
                 .Select(e => e.ToAchievementResponse()).ToList());
         }
 
-        public async Task<AchievementResponse?> GetByIdAsync(int id)
+        public async Task<AchievementResponse?> FindByIdAsync(int id)
         {
             var achievement = await _context.Achievements
                 .Include(e => e.User)
@@ -141,7 +144,7 @@ namespace IctuTaekwondo.Api.Services
             return achievement.ToAchievementResponse();
         }
 
-        public async Task<bool> UpdateAsync(int id, AchievementUpdateSchema schema)
+        public async Task<AchievementResponse?> UpdateAsync(int id, AchievementUpdateSchema schema)
         {
             var achievement = await _context.Achievements
                 .Include(e => e.User)
@@ -165,7 +168,10 @@ namespace IctuTaekwondo.Api.Services
             _context.Entry(achievement).State = EntityState.Modified;
             var result = await _context.SaveChangesAsync();
 
-            return result > 0;
+            if (result > 0)
+                return await FindByIdAsync(id);
+
+            return null;
         }
 
         private async Task<string?> Validate(string userId, int? eventId)
