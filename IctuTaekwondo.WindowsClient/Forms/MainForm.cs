@@ -10,6 +10,10 @@ using Autofac;
 using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Services.Account;
+using IctuTaekwondo.WindowsClient.Forms.Achievements;
+using IctuTaekwondo.WindowsClient.Forms.Events;
+using IctuTaekwondo.WindowsClient.Forms.Finances;
+using IctuTaekwondo.WindowsClient.Forms.Users;
 
 namespace IctuTaekwondo.WindowsClient.Forms
 {
@@ -28,7 +32,7 @@ namespace IctuTaekwondo.WindowsClient.Forms
             this.accountService = appContainer.Resolve<IAccountService>();
         }
 
-        private async void GetProfile()
+        private async void MainForm_Load(object sender, EventArgs e)
         {
             var profile = await accountService.GetProfileAsync(jwt.Token);
             if (profile == null)
@@ -40,15 +44,28 @@ namespace IctuTaekwondo.WindowsClient.Forms
             userProfile = profile;
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            GetProfile();
-        }
-
         private void buttonUsers_Click(object sender, EventArgs e)
         {
-            var usersForm = new UsersForm(appContainer,jwt);
-            usersForm.ShowDialog();
+            var form = new UsersForm(appContainer, jwt);
+            form.ShowDialog();
+        }
+
+        private void btnEventsManager_Click(object sender, EventArgs e)
+        {
+            var form = new EventsForm(appContainer, jwt);
+            form.ShowDialog();
+        }
+
+        private void btnAchivements_Click(object sender, EventArgs e)
+        {
+            var form = new AchievementsForm(appContainer, jwt);
+            form.ShowDialog();
+        }
+
+        private void btnFinances_Click(object sender, EventArgs e)
+        {
+            var form = new FinancesForm(appContainer, jwt);
+            form.ShowDialog();
         }
     }
 }

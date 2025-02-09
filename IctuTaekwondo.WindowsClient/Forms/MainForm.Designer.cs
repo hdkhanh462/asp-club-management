@@ -31,12 +31,12 @@
             panel1 = new Panel();
             label1 = new Label();
             panel2 = new Panel();
+            btnFinances = new Button();
+            btnAchivements = new Button();
+            btnEvents = new Button();
             buttonUsers = new Button();
             buttonDashboard = new Button();
             buttonHome = new Button();
-            btnEventsManager = new Button();
-            btnEvents = new Button();
-            btnFinances = new Button();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
             SuspendLayout();
@@ -63,8 +63,8 @@
             // panel2
             // 
             panel2.Controls.Add(btnFinances);
+            panel2.Controls.Add(btnAchivements);
             panel2.Controls.Add(btnEvents);
-            panel2.Controls.Add(btnEventsManager);
             panel2.Controls.Add(buttonUsers);
             panel2.Controls.Add(buttonDashboard);
             panel2.Controls.Add(buttonHome);
@@ -73,6 +73,42 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(200, 400);
             panel2.TabIndex = 1;
+            // 
+            // btnFinances
+            // 
+            btnFinances.Dock = DockStyle.Top;
+            btnFinances.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnFinances.Location = new Point(0, 200);
+            btnFinances.Name = "btnFinances";
+            btnFinances.Size = new Size(200, 40);
+            btnFinances.TabIndex = 7;
+            btnFinances.Text = "Quản lý tài chính";
+            btnFinances.UseVisualStyleBackColor = true;
+            btnFinances.Click += btnFinances_Click;
+            // 
+            // btnAchivements
+            // 
+            btnAchivements.Dock = DockStyle.Top;
+            btnAchivements.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAchivements.Location = new Point(0, 160);
+            btnAchivements.Name = "btnAchivements";
+            btnAchivements.Size = new Size(200, 40);
+            btnAchivements.TabIndex = 6;
+            btnAchivements.Text = "Quản lý thành tích";
+            btnAchivements.UseVisualStyleBackColor = true;
+            btnAchivements.Click += btnAchivements_Click;
+            // 
+            // btnEvents
+            // 
+            btnEvents.Dock = DockStyle.Top;
+            btnEvents.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnEvents.Location = new Point(0, 120);
+            btnEvents.Name = "btnEvents";
+            btnEvents.Size = new Size(200, 40);
+            btnEvents.TabIndex = 5;
+            btnEvents.Text = "Quản lý sự kiện";
+            btnEvents.UseVisualStyleBackColor = true;
+            btnEvents.Click += btnEventsManager_Click;
             // 
             // buttonUsers
             // 
@@ -108,39 +144,6 @@
             buttonHome.Text = "Trang chủ";
             buttonHome.UseVisualStyleBackColor = true;
             // 
-            // btnEventsManager
-            // 
-            btnEventsManager.Dock = DockStyle.Top;
-            btnEventsManager.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnEventsManager.Location = new Point(0, 120);
-            btnEventsManager.Name = "btnEventsManager";
-            btnEventsManager.Size = new Size(200, 40);
-            btnEventsManager.TabIndex = 5;
-            btnEventsManager.Text = "Quản lý sự kiện";
-            btnEventsManager.UseVisualStyleBackColor = true;
-            // 
-            // btnEvents
-            // 
-            btnEvents.Dock = DockStyle.Top;
-            btnEvents.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnEvents.Location = new Point(0, 160);
-            btnEvents.Name = "btnEvents";
-            btnEvents.Size = new Size(200, 40);
-            btnEvents.TabIndex = 6;
-            btnEvents.Text = "Danh sách sự kiện";
-            btnEvents.UseVisualStyleBackColor = true;
-            // 
-            // btnFinances
-            // 
-            btnFinances.Dock = DockStyle.Top;
-            btnFinances.Font = new Font("Segoe UI Semibold", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnFinances.Location = new Point(0, 200);
-            btnFinances.Name = "btnFinances";
-            btnFinances.Size = new Size(200, 40);
-            btnFinances.TabIndex = 7;
-            btnFinances.Text = "Quản lý tài chính";
-            btnFinances.UseVisualStyleBackColor = true;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -166,7 +169,7 @@
         private Button buttonDashboard;
         private Button buttonHome;
         private Button btnFinances;
+        private Button btnAchivements;
         private Button btnEvents;
-        private Button btnEventsManager;
     }
 }

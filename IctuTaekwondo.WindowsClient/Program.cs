@@ -1,7 +1,10 @@
 using System.Configuration;
 using Autofac;
 using IctuTaekwondo.Shared.Services.Account;
+using IctuTaekwondo.Shared.Services.Achievements;
 using IctuTaekwondo.Shared.Services.Auth;
+using IctuTaekwondo.Shared.Services.Events;
+using IctuTaekwondo.Shared.Services.Finances;
 using IctuTaekwondo.Shared.Services.Users;
 using IctuTaekwondo.Shared.Utils;
 
@@ -43,6 +46,9 @@ namespace IctuTaekwondo.WindowsClient.Forms
             builder.RegisterInstance(new AuthService(apiService)).As<IAuthService>();
             builder.RegisterInstance(new AccountService(apiService)).As<IAccountService>();
             builder.RegisterInstance(new UsersService(apiService)).As<IUsersService>();
+            builder.RegisterInstance(new EventsService(apiService)).As<IEventsService>();
+            builder.RegisterInstance(new AchievementsService(apiService)).As<IAchievementsService>();
+            builder.RegisterInstance(new FinancesService(apiService)).As<IFinancesService>();
             builder.RegisterType<LoginForm>();
 
             return builder.Build();
