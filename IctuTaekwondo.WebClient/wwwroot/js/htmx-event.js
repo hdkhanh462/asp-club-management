@@ -8,7 +8,7 @@
         //},
         showConfirmButton: false,
         showCloseButton: true,
-        timer: 5000,
+        timer: 3000,
         timerProgressBar: true,
         width: 'auto', 
         didOpen: function (toast) {

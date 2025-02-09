@@ -3,7 +3,7 @@
 
 @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
 {
-	<div id="message-update-user" hx-swap-oob="true" class="col-span-1 lg:col-span-5">
+	<div id="Message-Update-User" hx-swap-oob="true" class="col-span-1 lg:col-span-5">
 		<div class="mb-4 flex rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-gray-800 dark:text-red-400" role="alert">
 			<svg class="flex-shrink-0 me-3 mt-[2px] inline h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
 				<path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
@@ -21,15 +21,15 @@
 	</div>
 }
 
-<form _="on htmx:beforeRequest set #update-user-btn.disabled to true end
-		 on htmx:afterRequest set #update-user-btn.disabled to false"
+<form _="on htmx:beforeRequest set #Update-User-Submit.disabled to true end
+		 on htmx:afterRequest set #Update-User-Submit.disabled to false"
 	  hx-put
 	  hx-action="Update"
 	  hx-route-id="@Model.Id"
-	  hx-trigger="update-user from:body"
+	  hx-trigger="Update-User from:body"
 	  hx-swap="outerHTML"
-	  hx-indicator="#update-user-indicator"
-	  id="update-profile-form"
+	  hx-indicator="#Update-User-Indicator"
+	  id="Update-User-Form"
 	  enctype="multipart/form-data"
 	  class="col-span-1 lg:col-span-6">
 	<div class="grid-cols-1 grid gap-4 sm:grid-cols-2">
