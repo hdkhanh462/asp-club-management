@@ -30,7 +30,7 @@ namespace IctuTaekwondo.Shared.Utils
                     {
                         file.CopyTo(memoryStream);
                         var byteArrayContent = new ByteArrayContent(memoryStream.ToArray());
-                        formData.Add(byteArrayContent, file.Name, file.FileName);
+                        formData.Add(byteArrayContent, property.Name, file.FileName);
                     }
                 }
                 else if (propertyValue is IEnumerable propertyValues && propertyValue is not string)
