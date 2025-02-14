@@ -1,10 +1,10 @@
-﻿using System.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Windows.Forms;
 using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Responses.Auth;
+using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Services.Users;
-using IctuTaekwondo.WindowsClient.Schemas;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace IctuTaekwondo.WindowsClient.Forms.Users
 {
@@ -13,16 +13,13 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
         private readonly IUsersService service;
 
         private JwtResponse Jwt;
-        private bool IsInitialized = false;
 
         public RegisterForm(IUsersService service)
         {
             this.service = service;
 
             InitializeComponent();
-            LoadGenderComboBox();
-
-            IsInitialized = true;
+            LoadComboBoxs();
         }
 
         internal void SetJwt(JwtResponse jwt)
@@ -33,20 +30,18 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
         private void RegisterForm_Load(object sender, EventArgs e)
         {
 
-            var list = new AdminRegisterSchema
-            {
-                FullName = "abc"
-            };
+            var list = new AdminRegisterSchema();
 
             adminRegisterSchemaBindingSource.DataSource = list;
         }
 
-        private void LoadGenderComboBox()
+        private void LoadComboBoxs()
         {
-            var values = Enum.GetValues(typeof(Role))
-                                   .Cast<Role>()
-                                   .Select(g => new { Value = g, DisplayName = g.GetDisplayName() })
-                                   .ToList();
+            var values = Enum
+                .GetValues(typeof(Role))
+                .Cast<Role>()
+                .Select(g => new { Value = g, DisplayName = g.GetDisplayName() })
+                .ToList();
 
             cbRole.DataSource = values;
             cbRole.DisplayMember = "DisplayName";
@@ -55,22 +50,38 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
 
         private void cbRole_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (IsInitialized && cbRole.SelectedValue is not null)
+            if (cbRole.SelectedValue is not null)
             {
-                Enum.TryParse<Role>(cbRole.SelectedValue.ToString(), out var result);
-                MessageBox.Show($"Selected Gender: {result.GetDisplayName()}");
+                var isRole = Enum.TryParse<Role>(cbRole.SelectedValue.ToString(), out var result);
+
+                if (isRole && adminRegisterSchemaBindingSource.Current is AdminRegisterSchema schema)
+                    schema.Roles = [result];
             }
         }
 
-        private void btnRegister_Click(object sender, EventArgs e)
+        private async void btnRegister_Click(object sender, EventArgs e)
         {
             adminRegisterSchemaBindingSource.EndEdit();
-            ValidateChildren();
-        }
 
-        private void tbFullName_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            MessageBox.Show("Validated");
+            if (adminRegisterSchemaBindingSource.Current is AdminRegisterSchema schema)
+            {
+                var results = new List<ValidationResult>();
+                var context = new ValidationContext(schema);
+
+                if (!Validator.TryValidateObject(schema, context, results, true))
+                {
+                    MessageBox.Show(string.Join("\n", results.Select(x => x.ErrorMessage)), "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var response = await service.RegisterAsync(Jwt.Token, schema);
+                if (response.Any())
+                {
+                    MessageBox.Show(string.Join("\n", response.SelectMany(x => x.Value)), "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                MessageBox.Show("Đăng ký thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
     }
 }

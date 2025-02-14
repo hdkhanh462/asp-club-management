@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.Achievement;
 using IctuTaekwondo.Shared.Responses.Finance;
@@ -52,6 +53,21 @@ namespace IctuTaekwondo.Shared.Services.Finances
 
             var response = await apiService.GetAsync<PaginationResponse<FinanceResponse>>($"api/finances{query.ToQueryString()}");
             return response.Data ?? PaginationResponse<FinanceResponse>.GetDefaultInstance();
+        }
+
+        public async Task<List<FinanceReportResponse>> GetReportAsync(string token, DateTime? startDate, DateTime? endDate)
+        {
+            var query = new QueryBuilder();
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                query.Add("start",startDate.Value.ToString("O"));
+                query.Add("end", endDate.Value.ToString("O"));
+            }
+
+            apiService.SetAuthorizationHeader(token);
+
+            var response = await apiService.GetAsync<List<FinanceReportResponse>>($"api/finances/report{query.ToQueryString()}");
+            return response.Data!;
         }
 
         public async Task<FinanceResponse?> UpdateAsync(string token, int id, FinanceUpdateSchema schema)

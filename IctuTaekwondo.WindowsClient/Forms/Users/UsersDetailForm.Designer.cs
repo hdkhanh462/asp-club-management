@@ -28,14 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            btnRegister = new Button();
+            components = new System.ComponentModel.Container();
             btnDelete = new Button();
             btnSave = new Button();
             tbJoinDate = new TextBox();
-            tbCurrentRank = new TextBox();
+            userUpdateSchemaBindingSource = new BindingSource(components);
             tbAddress = new TextBox();
             tbDateOfBirth = new TextBox();
-            tbGender = new TextBox();
             tbPhoneNumber = new TextBox();
             tbFullName = new TextBox();
             tbId = new TextBox();
@@ -49,99 +48,86 @@
             label8 = new Label();
             panel1 = new Panel();
             label9 = new Label();
-            pictureBox1 = new PictureBox();
+            pbAvatar = new PictureBox();
+            cbCurrentRank = new ComboBox();
+            cbGender = new ComboBox();
+            errorProvider1 = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)userUpdateSchemaBindingSource).BeginInit();
             panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAvatar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
-            // 
-            // btnRegister
-            // 
-            btnRegister.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRegister.Location = new Point(174, 415);
-            btnRegister.Name = "btnRegister";
-            btnRegister.Size = new Size(75, 23);
-            btnRegister.TabIndex = 3;
-            btnRegister.Text = "Đăng ký";
-            btnRegister.UseVisualStyleBackColor = true;
-            btnRegister.Click += btnRegister_Click;
             // 
             // btnDelete
             // 
-            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDelete.Location = new Point(93, 415);
+            btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnDelete.Location = new Point(93, 299);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(75, 23);
-            btnDelete.TabIndex = 5;
+            btnDelete.TabIndex = 9;
             btnDelete.Text = "Xoá";
             btnDelete.UseVisualStyleBackColor = true;
             btnDelete.Click += btnDelete_Click;
             // 
             // btnSave
             // 
-            btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSave.Location = new Point(12, 415);
+            btnSave.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnSave.Location = new Point(12, 299);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(75, 23);
-            btnSave.TabIndex = 6;
+            btnSave.TabIndex = 8;
             btnSave.Text = "Lưu";
             btnSave.UseVisualStyleBackColor = true;
             btnSave.Click += btnSave_Click;
             // 
             // tbJoinDate
             // 
+            tbJoinDate.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "JoinDate", true));
             tbJoinDate.Location = new Point(212, 145);
             tbJoinDate.Margin = new Padding(10);
             tbJoinDate.Name = "tbJoinDate";
             tbJoinDate.Size = new Size(180, 23);
-            tbJoinDate.TabIndex = 7;
+            tbJoinDate.TabIndex = 3;
             // 
-            // tbCurrentRank
+            // userUpdateSchemaBindingSource
             // 
-            tbCurrentRank.Location = new Point(212, 87);
-            tbCurrentRank.Margin = new Padding(10);
-            tbCurrentRank.Name = "tbCurrentRank";
-            tbCurrentRank.Size = new Size(180, 23);
-            tbCurrentRank.TabIndex = 8;
+            userUpdateSchemaBindingSource.DataSource = typeof(Shared.Schemas.Account.UserUpdateSchema);
             // 
             // tbAddress
             // 
+            tbAddress.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "Address", true));
             tbAddress.Location = new Point(212, 261);
             tbAddress.Margin = new Padding(10);
             tbAddress.Name = "tbAddress";
             tbAddress.Size = new Size(180, 23);
-            tbAddress.TabIndex = 9;
+            tbAddress.TabIndex = 7;
             // 
             // tbDateOfBirth
             // 
+            tbDateOfBirth.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "DateOfBirth", true));
             tbDateOfBirth.Location = new Point(212, 203);
             tbDateOfBirth.Margin = new Padding(10);
             tbDateOfBirth.Name = "tbDateOfBirth";
             tbDateOfBirth.Size = new Size(180, 23);
-            tbDateOfBirth.TabIndex = 10;
-            // 
-            // tbGender
-            // 
-            tbGender.Location = new Point(12, 261);
-            tbGender.Margin = new Padding(10);
-            tbGender.Name = "tbGender";
-            tbGender.Size = new Size(180, 23);
-            tbGender.TabIndex = 11;
+            tbDateOfBirth.TabIndex = 5;
             // 
             // tbPhoneNumber
             // 
+            tbPhoneNumber.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "PhoneNumber", true));
             tbPhoneNumber.Location = new Point(12, 203);
             tbPhoneNumber.Margin = new Padding(10);
             tbPhoneNumber.Name = "tbPhoneNumber";
             tbPhoneNumber.Size = new Size(180, 23);
-            tbPhoneNumber.TabIndex = 12;
+            tbPhoneNumber.TabIndex = 4;
             // 
             // tbFullName
             // 
+            tbFullName.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "FullName", true));
             tbFullName.Location = new Point(12, 145);
             tbFullName.Margin = new Padding(10);
             tbFullName.Name = "tbFullName";
             tbFullName.Size = new Size(180, 23);
-            tbFullName.TabIndex = 13;
+            tbFullName.TabIndex = 2;
             // 
             // tbId
             // 
@@ -150,7 +136,7 @@
             tbId.Margin = new Padding(10);
             tbId.Name = "tbId";
             tbId.Size = new Size(180, 23);
-            tbId.TabIndex = 14;
+            tbId.TabIndex = 0;
             // 
             // label1
             // 
@@ -158,7 +144,7 @@
             label1.Location = new Point(12, 62);
             label1.Name = "label1";
             label1.Size = new Size(17, 15);
-            label1.TabIndex = 15;
+            label1.TabIndex = 12;
             label1.Text = "Id";
             // 
             // label2
@@ -167,7 +153,7 @@
             label2.Location = new Point(12, 120);
             label2.Name = "label2";
             label2.Size = new Size(58, 15);
-            label2.TabIndex = 15;
+            label2.TabIndex = 14;
             label2.Text = "Họ và tên";
             // 
             // label3
@@ -176,7 +162,7 @@
             label3.Location = new Point(12, 178);
             label3.Name = "label3";
             label3.Size = new Size(76, 15);
-            label3.TabIndex = 15;
+            label3.TabIndex = 16;
             label3.Text = "Số điện thoại";
             // 
             // label4
@@ -185,7 +171,7 @@
             label4.Location = new Point(12, 236);
             label4.Name = "label4";
             label4.Size = new Size(52, 15);
-            label4.TabIndex = 15;
+            label4.TabIndex = 18;
             label4.Text = "Giới tính";
             // 
             // label5
@@ -194,7 +180,7 @@
             label5.Location = new Point(212, 62);
             label5.Name = "label5";
             label5.Size = new Size(47, 15);
-            label5.TabIndex = 15;
+            label5.TabIndex = 13;
             label5.Text = "Cấp đai";
             // 
             // label6
@@ -212,7 +198,7 @@
             label7.Location = new Point(212, 178);
             label7.Name = "label7";
             label7.Size = new Size(60, 15);
-            label7.TabIndex = 15;
+            label7.TabIndex = 17;
             label7.Text = "Ngày sinh";
             // 
             // label8
@@ -221,7 +207,7 @@
             label8.Location = new Point(212, 236);
             label8.Name = "label8";
             label8.Size = new Size(43, 15);
-            label8.TabIndex = 15;
+            label8.TabIndex = 19;
             label8.Text = "Địa chỉ";
             // 
             // panel1
@@ -230,8 +216,8 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(800, 50);
-            panel1.TabIndex = 16;
+            panel1.Size = new Size(585, 50);
+            panel1.TabIndex = 11;
             // 
             // label9
             // 
@@ -243,20 +229,51 @@
             label9.TabIndex = 0;
             label9.Text = "THÔNG TIN NGƯỜI DÙNG";
             // 
-            // pictureBox1
+            // pbAvatar
             // 
-            pictureBox1.Location = new Point(405, 85);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(167, 141);
-            pictureBox1.TabIndex = 17;
-            pictureBox1.TabStop = false;
+            pbAvatar.BorderStyle = BorderStyle.FixedSingle;
+            pbAvatar.DataBindings.Add(new Binding("ImageLocation", userUpdateSchemaBindingSource, "AvatarUrl", true));
+            pbAvatar.Location = new Point(405, 85);
+            pbAvatar.Name = "pbAvatar";
+            pbAvatar.Size = new Size(167, 141);
+            pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+            pbAvatar.TabIndex = 17;
+            pbAvatar.TabStop = false;
+            pbAvatar.Click += pbAvatar_Click;
+            // 
+            // cbCurrentRank
+            // 
+            cbCurrentRank.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbCurrentRank.FormattingEnabled = true;
+            cbCurrentRank.Location = new Point(212, 87);
+            cbCurrentRank.Name = "cbCurrentRank";
+            cbCurrentRank.Size = new Size(180, 23);
+            cbCurrentRank.TabIndex = 20;
+            cbCurrentRank.SelectedIndexChanged += cbCurrentRank_SelectedIndexChanged;
+            // 
+            // cbGender
+            // 
+            cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbGender.FormattingEnabled = true;
+            cbGender.Location = new Point(12, 261);
+            cbGender.Name = "cbGender";
+            cbGender.Size = new Size(180, 23);
+            cbGender.TabIndex = 21;
+            cbGender.SelectedIndexChanged += cbGender_SelectedIndexChanged;
+            // 
+            // errorProvider1
+            // 
+            errorProvider1.BlinkStyle = ErrorBlinkStyle.NeverBlink;
+            errorProvider1.ContainerControl = this;
             // 
             // UsersDetailForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(pictureBox1);
+            ClientSize = new Size(585, 334);
+            Controls.Add(cbGender);
+            Controls.Add(cbCurrentRank);
+            Controls.Add(pbAvatar);
             Controls.Add(panel1);
             Controls.Add(label4);
             Controls.Add(label3);
@@ -267,36 +284,33 @@
             Controls.Add(label5);
             Controls.Add(label1);
             Controls.Add(tbJoinDate);
-            Controls.Add(tbCurrentRank);
             Controls.Add(tbAddress);
             Controls.Add(tbDateOfBirth);
-            Controls.Add(tbGender);
             Controls.Add(tbPhoneNumber);
             Controls.Add(tbFullName);
             Controls.Add(tbId);
-            Controls.Add(btnRegister);
             Controls.Add(btnDelete);
             Controls.Add(btnSave);
             Name = "UsersDetailForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "UsersDetailForm";
+            FormClosed += UsersDetailForm_FormClosed;
             Load += UsersDetailForm_Load;
+            ((System.ComponentModel.ISupportInitialize)userUpdateSchemaBindingSource).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAvatar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private Button btnRegister;
         private Button btnDelete;
         private Button btnSave;
         private TextBox tbJoinDate;
-        private TextBox tbCurrentRank;
         private TextBox tbAddress;
         private TextBox tbDateOfBirth;
-        private TextBox tbGender;
         private TextBox tbPhoneNumber;
         private TextBox tbFullName;
         private TextBox tbId;
@@ -310,6 +324,10 @@
         private Label label8;
         private Panel panel1;
         private Label label9;
-        private PictureBox pictureBox1;
+        private PictureBox pbAvatar;
+        private ComboBox cbCurrentRank;
+        private ComboBox cbGender;
+        private BindingSource userUpdateSchemaBindingSource;
+        private ErrorProvider errorProvider1;
     }
 }

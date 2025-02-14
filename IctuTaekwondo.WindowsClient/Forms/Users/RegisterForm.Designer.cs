@@ -46,7 +46,6 @@
             cbRole = new ComboBox();
             btnRegister = new Button();
             errorProvider1 = new ErrorProvider(components);
-            maskedTextBox1 = new MaskedTextBox();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)adminRegisterSchemaBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
@@ -58,7 +57,7 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(800, 50);
+            panel1.Size = new Size(408, 50);
             panel1.TabIndex = 17;
             // 
             // label9
@@ -88,11 +87,10 @@
             tbFullName.Name = "tbFullName";
             tbFullName.Size = new Size(180, 23);
             tbFullName.TabIndex = 0;
-            tbFullName.Validating += tbFullName_Validating;
             // 
             // adminRegisterSchemaBindingSource
             // 
-            adminRegisterSchemaBindingSource.DataSource = typeof(Schemas.AdminRegisterSchema);
+            adminRegisterSchemaBindingSource.DataSource = typeof(Shared.Schemas.Auth.AdminRegisterSchema);
             // 
             // tbPhoneNumber
             // 
@@ -189,8 +187,7 @@
             // 
             // btnRegister
             // 
-            btnRegister.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnRegister.Location = new Point(12, 415);
+            btnRegister.Location = new Point(12, 241);
             btnRegister.Name = "btnRegister";
             btnRegister.Size = new Size(75, 23);
             btnRegister.TabIndex = 6;
@@ -204,20 +201,11 @@
             errorProvider1.ContainerControl = this;
             errorProvider1.DataSource = adminRegisterSchemaBindingSource;
             // 
-            // maskedTextBox1
-            // 
-            maskedTextBox1.DataBindings.Add(new Binding("Text", adminRegisterSchemaBindingSource, "FullName", true));
-            maskedTextBox1.Location = new Point(444, 87);
-            maskedTextBox1.Name = "maskedTextBox1";
-            maskedTextBox1.Size = new Size(100, 23);
-            maskedTextBox1.TabIndex = 20;
-            // 
             // RegisterForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
-            Controls.Add(maskedTextBox1);
+            ClientSize = new Size(408, 276);
             Controls.Add(btnRegister);
             Controls.Add(cbRole);
             Controls.Add(label4);
@@ -233,6 +221,7 @@
             Controls.Add(tbFullName);
             Controls.Add(panel1);
             Name = "RegisterForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "RegisterForm";
             Load += RegisterForm_Load;
             panel1.ResumeLayout(false);
@@ -262,6 +251,5 @@
         private Button btnRegister;
         private ErrorProvider errorProvider1;
         private BindingSource adminRegisterSchemaBindingSource;
-        private MaskedTextBox maskedTextBox1;
     }
 }

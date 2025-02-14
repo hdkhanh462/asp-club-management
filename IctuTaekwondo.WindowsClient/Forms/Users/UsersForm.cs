@@ -43,7 +43,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var userId = dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString();
-                detailForm.SetJwt(Jwt, true, userId);
+                detailForm.SetJwt(Jwt, userId);
                 detailForm.ShowDialog();
             }
         }

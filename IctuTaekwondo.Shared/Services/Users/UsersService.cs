@@ -2,7 +2,9 @@
 using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Schemas.Account;
+using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Utils;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 
 namespace IctuTaekwondo.Shared.Services.Users
@@ -14,6 +16,20 @@ namespace IctuTaekwondo.Shared.Services.Users
         public UsersService(IApiService apiService)
         {
             this.apiService = apiService;
+        }
+
+        public async Task<Dictionary<string, string[]>> RegisterAsync(string token,AdminRegisterSchema schema)
+        {
+            apiService.SetAuthorizationHeader(token);
+
+            var response = await apiService.PostAsync<object>("api/auth/register", schema.ToMultipartFormDataContent());
+            
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                return response.Errors;
+            }
+
+            return [];
         }
 
         public async Task<string?> DeleteAsync(string token, string id)
@@ -56,7 +72,7 @@ namespace IctuTaekwondo.Shared.Services.Users
         {
             apiService.SetAuthorizationHeader(token);
 
-            var response = await apiService.PutAsync<UserFullDetailResponse>($"api/users/{id}", schema.ToStringContent());
+            var response = await apiService.PutMultipartAsync<UserFullDetailResponse>($"api/users/{id}/profile", schema.ToMultipartFormDataContent());
             return response.Data;
         }
 

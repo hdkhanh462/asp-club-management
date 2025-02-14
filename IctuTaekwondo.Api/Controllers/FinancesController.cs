@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using IctuTaekwondo.Shared.Responses.Finance;
 using IctuTaekwondo.Shared.Schemas.Finance;
 using IctuTaekwondo.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace IctuTaekwondo.Api.Controllers
 {
@@ -197,14 +199,17 @@ namespace IctuTaekwondo.Api.Controllers
         [HttpGet("report")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetReport(
-            [FromQuery] DateTime start,
-            [FromQuery] DateTime end,
+            [FromQuery] DateTime? start,
+            [FromQuery] DateTime? end,
             [FromQuery] TransactionType? type,
             [FromQuery] string[]? categories)
         {
+            //var startDate = start ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+            //var endDate = end ?? DateTime.UtcNow;
+
             try
             {
-                if (end <= start) return BadRequest(new ApiResponse<object>
+                if (start != null && end != null & end <= start) return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Message = "Ngày kết thúc phải lớn hơn Ngày bắt đầu"
@@ -225,6 +230,16 @@ namespace IctuTaekwondo.Api.Controllers
                     Message = ex.Message
                 });
             }
+        }
+
+        [HttpGet("report-year")]
+        public async Task<IActionResult> GetReport()
+        {
+            var currentYear = DateTime.Now.Year;
+
+            var reportData = await _financeService.GetBarChart(currentYear);
+
+            return Ok(reportData);
         }
     }
 }

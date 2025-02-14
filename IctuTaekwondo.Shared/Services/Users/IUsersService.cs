@@ -2,11 +2,13 @@
 using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Schemas.Account;
 using Microsoft.AspNetCore.Http.Extensions;
+using IctuTaekwondo.Shared.Schemas.Auth;
 
 namespace IctuTaekwondo.Shared.Services.Users
 {
     public interface IUsersService
     {
+        Task<Dictionary<string, string[]>> RegisterAsync(string token, AdminRegisterSchema schema);
         Task<PaginationResponse<UserResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null);
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string token, string id);
         Task<UserFullDetailResponse?> UpdateAsync(string token, string id, UserUpdateSchema schema);

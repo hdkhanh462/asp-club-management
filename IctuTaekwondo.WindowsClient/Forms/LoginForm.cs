@@ -53,6 +53,8 @@ namespace IctuTaekwondo.WindowsClient.Forms
                 return;
             }
 
+            CredentialManager.SaveCredentials(tbEmail.Text, tbPassword.Text);
+
             Hide();
             mainForm.SetJwt(response);
             mainForm.Show();

@@ -93,4 +93,16 @@ namespace IctuTaekwondo.Shared.Enums
 
         Error,
     }
+
+    public enum ReportRange
+    {
+        [Display(Name = "Tháng")]
+        Month,
+
+        [Display(Name = "Quý")]
+        Quarter,
+
+        [Display(Name = "Năm")]
+        Year
+    }
 }

@@ -46,11 +46,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Autofac" Version="8.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.1" />
     <PackageReference Include="ReaLTaiizor" Version="3.8.1.1" />
@@ -61,6 +58,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

@@ -21,8 +21,8 @@ namespace IctuTaekwondo.Api.Services
         Task<FinanceResponse?> GetByIdAsync(int id);
         public Task<long> GetTotalAmountAsync();
         public Task<List<FinanceReportResponse>> GetReportAsync(
-            DateTime startDate,
-            DateTime endDate,
+            DateTime? startDate,
+            DateTime? endDate,
             TransactionType? type = null,
             string[]? categories = null);
         Task<PaginationResponse<FinanceResponse>> GetAllWithFilterAsync(
@@ -32,6 +32,7 @@ namespace IctuTaekwondo.Api.Services
             string[]? categories = null,
             DateTime? startDate = null,
             DateTime? endDate = null);
+        Task<object> GetBarChart(int year);
     }
 
     public class FinanceService : IFinanceService
@@ -209,13 +210,50 @@ namespace IctuTaekwondo.Api.Services
         }
 
         public async Task<List<FinanceReportResponse>> GetReportAsync(
-            DateTime startDate,
-            DateTime endDate,
+            DateTime? startDate,
+            DateTime? endDate,
             TransactionType? type,
             string[]? categories)
         {
             var filteredFinances = await FilterAsync(type, categories, startDate, endDate);
             return CreateReport(filteredFinances);
+        }
+
+        public async Task<object> GetBarChart(int year)
+        {
+            var reportData = await _context.Finances
+                .Where(f => f.TransactionDate.Date.Year == year)
+                .GroupBy(f => new { f.TransactionDate.Date.Year, f.TransactionDate.Date.Month })
+                .Select(g => new
+                {
+                    Month = g.Key.Month,
+                    Income = g.Where(f => f.Type == TransactionType.Income).Sum(f => f.Amount),
+                    Expenses = g.Where(f => f.Type == TransactionType.Expense).Sum(f => f.Amount),
+                })
+                .OrderBy(g => g.Month)
+                .ToListAsync();
+
+            var response = new
+            {
+                series = new[]
+            {
+                new
+                {
+                    name = "Thu nhập",
+                    color = "#31C48D",
+                    data = reportData.Select(r => r.Income).ToArray()
+                },
+                new
+                {
+                    name = "Chi tiêu",
+                    color = "#F05252",
+                    data = reportData.Select(r => r.Expenses).ToArray()
+                }
+            },
+                categories = reportData.Select(r => $"Thg{r.Month:00}").ToArray()
+            };
+
+            return response;
         }
     }
 }

@@ -111,6 +111,7 @@
             Controls.Add(textBox1);
             Controls.Add(panel1);
             Name = "UsersForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "UsersForm";
             Load += UsersForm_Load;
             panel1.ResumeLayout(false);
