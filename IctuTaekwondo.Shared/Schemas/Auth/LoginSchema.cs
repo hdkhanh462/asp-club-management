@@ -14,6 +14,7 @@ namespace IctuTaekwondo.Shared.Schemas.Auth
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Display(Name = "Lưu phiên đăng nhập")]
         public bool RememberMe { get; set; }
     }
 }

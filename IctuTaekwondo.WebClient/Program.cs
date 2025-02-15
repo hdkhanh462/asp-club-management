@@ -61,7 +61,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "Htmx", policy =>
     {
-        policy.WithOrigins("http://localhost:5000")
+        policy.WithOrigins("http://localhost:5000", "http://fronttaekwondo-001-site1.anytempurl.com")
                 .WithHeaders(HtmxRequestHeaders.Keys.All)
                 .WithExposedHeaders(HtmxResponseHeaders.Keys.All);
     });
@@ -69,12 +69,12 @@ builder.Services.AddCors(options =>
 
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<IApiService>(new ApiService(new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiUrl"]!)}));
+builder.Services.AddScoped<IctuTaekwondo.Shared.Services.Auth.IAuthService, IctuTaekwondo.Shared.Services.Auth.AuthService>();
 builder.Services.AddScoped<IctuTaekwondo.WebClient.Services.IAccountService, IctuTaekwondo.WebClient.Services.AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
-builder.Services.AddSingleton<IApiService>(new ApiService(new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiUrl"]!)}));
 builder.Services.AddScoped<IctuTaekwondo.Shared.Services.Account.IAccountService, IctuTaekwondo.Shared.Services.Account.AccountService>();
 builder.Services.AddScoped<IAchievementsService, AchievementsService>();
 builder.Services.AddScoped<IFinancesService, FinancesService>();

@@ -112,8 +112,8 @@ namespace IctuTaekwondo.WebClient.Services
 
         public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState)
         {
-            if (response.Message != null && response.Errors == null) modelState.AddModelError(string.Empty, response.Message);
-            if (response.Errors != null)
+            if (response.Message != null && !response.Errors.Any()) modelState.AddModelError(string.Empty, response.Message);
+            if (!response.Errors.Any())
             {
                 foreach (var (key, value) in response.Errors)
                 {

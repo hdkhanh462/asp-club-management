@@ -17,7 +17,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             this.financesService = financesService;
         }
 
-        [Authorize]
+        [Authorize("Admin,Manager")]
         public async Task<IActionResult> Index([FromQuery] ReportRange? range = null)
         {
             var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
