@@ -23,10 +23,22 @@ namespace IctuTaekwondo.Shared.Services.Users
             apiService.SetAuthorizationHeader(token);
 
             var response = await apiService.PostAsync<object>("api/auth/register", schema.ToMultipartFormDataContent());
-            
+
             if (response.StatusCode != HttpStatusCode.Created)
             {
-                return response.Errors;
+                var errors = new Dictionary<string, string[]>();
+
+                if (!string.IsNullOrEmpty(response.Message) && response.Errors.Count == 0)
+                    errors.Add(string.Empty, [response.Message]);
+
+                if (response.Errors.Count > 0)
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        errors.Add(error.Key, error.Value);
+                    }
+                }
+                return errors;
             }
 
             return [];

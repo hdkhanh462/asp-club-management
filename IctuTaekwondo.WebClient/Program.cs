@@ -4,11 +4,12 @@ using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Services.Achievements;
 using IctuTaekwondo.Shared.Services.Account;
 using IctuTaekwondo.Shared.Utils;
-using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using IctuTaekwondo.Shared.Services.Finances;
+using IctuTaekwondo.Shared.Services.Auth;
+using IctuTaekwondo.Shared.Services.Users;
+using IctuTaekwondo.Shared.Services.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,18 +46,6 @@ builder.Services.AddAuthentication("Bearer")
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddHttpClient<ApiHelper>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
-});
-
-
-
-builder.Services.AddHttpClient<ApiService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiUrl"]!);
-});
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "Htmx", policy =>
@@ -69,14 +58,16 @@ builder.Services.AddCors(options =>
 
 // Add Scoped Services
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton<IApiService>(new ApiService(new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiUrl"]!)}));
-builder.Services.AddScoped<IctuTaekwondo.Shared.Services.Auth.IAuthService, IctuTaekwondo.Shared.Services.Auth.AuthService>();
+builder.Services.AddSingleton<IApiService>(new ApiService(new HttpClient
+{
+    BaseAddress = new Uri(builder.Configuration["ApiUrl"]!),
+    Timeout = TimeSpan.FromMinutes(1),
+}));
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IctuTaekwondo.WebClient.Services.IAccountService, IctuTaekwondo.WebClient.Services.AccountService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IEventService, EventService>();
-builder.Services.AddScoped<IEventRegisterationService, EventRegisterationService>();
-builder.Services.AddScoped<IctuTaekwondo.Shared.Services.Account.IAccountService, IctuTaekwondo.Shared.Services.Account.AccountService>();
+builder.Services.AddScoped<IAccountService,AccountService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IEventsService, EventsService>();
+builder.Services.AddScoped<IRegisterationService, RegisterationService>();
 builder.Services.AddScoped<IAchievementsService, AchievementsService>();
 builder.Services.AddScoped<IFinancesService, FinancesService>();
 

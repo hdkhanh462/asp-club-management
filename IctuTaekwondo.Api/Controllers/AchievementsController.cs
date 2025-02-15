@@ -149,7 +149,7 @@ namespace IctuTaekwondo.Api.Controllers
 
                 return Ok(new ApiResponse<object>
                 {
-                    StatusCode = HttpStatusCode.OK,
+                    StatusCode = HttpStatusCode.Created,
                     Message = "Tạo thành tích thành công",
                     Data = result
                 });

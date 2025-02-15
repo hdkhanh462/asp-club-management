@@ -27,9 +27,9 @@ namespace IctuTaekwondo.WebClient.Services
     {
         private readonly ILogger<EventService> _logger;
 
-        private readonly ApiService _apiService;
+        private readonly IApiService _apiService;
 
-        public EventService(ILogger<EventService> logger, ApiService apiService)
+        public EventService(ILogger<EventService> logger, IApiService apiService)
         {
             _logger = logger;
             _apiService = apiService;

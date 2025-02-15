@@ -1,26 +1,23 @@
-﻿using System.Drawing;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Htmx;
+using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Enums;
-using IctuTaekwondo.Shared.Responses;
-using IctuTaekwondo.Shared.Responses.Event;
 using IctuTaekwondo.Shared.Schemas.Event;
-using IctuTaekwondo.WebClient.Models;
-using IctuTaekwondo.WebClient.Services;
+using IctuTaekwondo.Shared.Services.Account;
+using IctuTaekwondo.Shared.Services.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
     public class EventsController : Controller
     {
-        private readonly IEventService _eventService;
-        private readonly IEventRegisterationService _registerationService;
+        private readonly IEventsService _eventService;
+        private readonly IRegisterationService _registerationService;
         private readonly IAccountService _accountService;
         private readonly List<string> validUrls = ["/Events"];
 
-        public EventsController(IEventService eventService, IEventRegisterationService registerationService, IAccountService accountService)
+        public EventsController(IEventsService eventService, IRegisterationService registerationService, IAccountService accountService)
         {
             _eventService = eventService;
             _registerationService = registerationService;
@@ -32,10 +29,11 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             ViewData["QueryParameters"] = Request.Query;
 
-            var currentUser = await _accountService.GetProfileAsync(Request);
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+            var currentUser = await _accountService.GetProfileAsync(token);
             if (currentUser == null) return Unauthorized();
 
-            var events = await _eventService.GetAllAsync(page, size, ModelState, Request);
+            var events = await _eventService.GetAllAsync(token,page, size);
 
             ViewData["CurrentUser"] = currentUser;
 
@@ -50,13 +48,15 @@ namespace IctuTaekwondo.WebClient.Controllers
             {
                 ViewData["QueryParameters"] = Request.Query;
 
-                var currentEvent = await _eventService.FindByIdAsync(id, Request);
+                var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+                var currentEvent = await _eventService.FindByIdAsync(token,id);
                 if (currentEvent == null) return NotFound();
 
-                var currentUser = await _accountService.GetProfileAsync(Request);
+                var currentUser = await _accountService.GetProfileAsync(token);
                 if (currentUser == null) return Unauthorized();
 
-                var currentEventRegisterations = await _registerationService.GetAllAsync(id, page, size, Request);
+                var currentEventRegisterations = await _registerationService.GetAllAsync(token,id, page, size);
 
                 ViewData["CurrentUser"] = currentUser;
                 ViewData["CurrentEvent"] = currentEvent;
@@ -87,12 +87,14 @@ namespace IctuTaekwondo.WebClient.Controllers
 
             if (ModelState.IsValid)
             {
-                var currentUser = await _accountService.GetProfileAsync(Request);
+                var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+                var currentUser = await _accountService.GetProfileAsync(token);
                 if (currentUser == null) return Unauthorized();
 
                 ViewData["CurrentUser"] = currentUser;
 
-                var newEvent = await _eventService.UpdateAsync(id, schema, ModelState, Request);
+                var newEvent = await _eventService.UpdateAsync(token,id, schema);
                 if (newEvent != null)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
@@ -130,9 +132,11 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
             if (ModelState.IsValid)
             {
-                var isSuccess = await _eventService.DeleteAsync(id, Request);
+                var isSuccess = await _eventService.DeleteAsync(token, id);
                 if (isSuccess)
                 {
                     object? toast = toast = new
@@ -173,9 +177,11 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
             if (ModelState.IsValid)
             {
-                var newUser = await _eventService.CreateAsync(schema, ModelState, Request);
+                var newUser = await _eventService.CreateAsync(token,schema);
                 if (newUser != null)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
@@ -195,40 +201,35 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty((userId)))
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+            var currentEvent = await _eventService.FindByIdAsync(token,id);
+            if (currentEvent == null) return NotFound();
+
+            var currentUser = await _accountService.GetProfileAsync(token);
+            if (currentUser == null) return Unauthorized();
+
+            ViewData["CurrentUser"] = currentUser;
+
+            var isSuccess = await _registerationService.UnregisterAsync(token,id);
+            if (isSuccess)
             {
-                var currentEvent = await _eventService.FindByIdAsync(id, Request);
-                if (currentEvent == null) return NotFound();
-
-                var currentUser = await _accountService.GetProfileAsync(Request);
-                if (currentUser == null) return Unauthorized();
-
-                ViewData["CurrentUser"] = currentUser;
-
-                var isSuccess = await _registerationService.UnregisterAsync(id, Request);
-                if (isSuccess)
-                {
-                    ViewData["IsRegistered"] = false;
-
-                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
-                    {
-                        icon = "success",
-                        title = "Huỷ đăng ký tham gia sự kiện thành công",
-                    }));
-                    return PartialView("_RegisterationButtonsPartial", currentEvent);
-                }
+                ViewData["IsRegistered"] = false;
 
                 Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
                 {
-                    icon = "error",
-                    title = "Huỷ đăng ký tham gia sự kiện không thành công",
+                    icon = "success",
+                    title = "Huỷ đăng ký tham gia sự kiện thành công",
                 }));
-
                 return PartialView("_RegisterationButtonsPartial", currentEvent);
             }
 
-            return Unauthorized();
+            Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+            {
+                icon = "error",
+                title = "Huỷ đăng ký tham gia sự kiện không thành công",
+            }));
+
+            return PartialView("_RegisterationButtonsPartial", currentEvent);
         }
 
         [HttpPost]
@@ -237,47 +238,43 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty((userId)))
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+            var currentEvent = await _eventService.FindByIdAsync(token,id);
+            if (currentEvent == null) return NotFound();
+
+            var currentUser = await _accountService.GetProfileAsync(token);
+            if (currentUser == null) return Unauthorized();
+
+            ViewData["CurrentUser"] = currentUser;
+
+            var error = await _registerationService.RegisterAsync(token,id);
+            if (string.IsNullOrEmpty(error))
             {
-                var currentEvent = await _eventService.FindByIdAsync(id, Request);
-                if (currentEvent == null) return NotFound();
-
-                var currentUser = await _accountService.GetProfileAsync(Request);
-                if (currentUser == null) return Unauthorized();
-
-                ViewData["CurrentUser"] = currentUser;
-
-                var isSuccess = await _registerationService.RegisterAsync(id, Request, ModelState);
-                if (isSuccess)
-                {
-                    ViewData["IsRegistered"] = true;
-
-                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
-                    {
-                        icon = "success",
-                        title = "Đăng ký tham gia sự kiện thành công",
-                    }));
-
-                    return PartialView("_RegisterationButtonsPartial", currentEvent);
-                }
-
-                var errorMsg = string.Empty;
-                if (ModelState.TryGetValue(string.Empty, out var msg))
-                {
-                    errorMsg = msg.Errors.FirstOrDefault()?.ErrorMessage;
-                }
+                ViewData["IsRegistered"] = true;
 
                 Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
                 {
-                    icon = "error",
-                    title = $"Đăng ký tham gia sự kiện không thành công.<br>{errorMsg}",
+                    icon = "success",
+                    title = "Đăng ký tham gia sự kiện thành công",
                 }));
 
                 return PartialView("_RegisterationButtonsPartial", currentEvent);
             }
 
-            return Unauthorized();
+            var errorMsg = string.Empty;
+            if (ModelState.TryGetValue(string.Empty, out var msg))
+            {
+                errorMsg = msg.Errors.FirstOrDefault()?.ErrorMessage;
+            }
+
+            Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+            {
+                icon = "error",
+                title = $"Đăng ký tham gia sự kiện không thành công.<br>{errorMsg}",
+            }));
+
+            return PartialView("_RegisterationButtonsPartial", currentEvent);
         }
 
         [HttpDelete]
@@ -285,11 +282,12 @@ namespace IctuTaekwondo.WebClient.Controllers
         public async Task<IActionResult> ManagerUnregister(int id, string userId)
         {
             if (!Request.IsHtmx()) return BadRequest();
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
 
-            var currentEvent = await _eventService.FindByIdAsync(id, Request);
+            var currentEvent = await _eventService.FindByIdAsync(token,id);
             if (currentEvent == null) return NotFound();
 
-            var isSuccess = await _registerationService.ManagerUnregisterAsync(id, userId, Request);
+            var isSuccess = await _registerationService.ManagerUnregisterAsync(token,id, userId);
             if (isSuccess)
             {
                 ViewData["IsRegistered"] = false;
@@ -317,47 +315,43 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty((userId)))
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+            var currentEvent = await _eventService.FindByIdAsync(token, id);
+            if (currentEvent == null) return NotFound();
+
+            var currentUser = await _accountService.GetProfileAsync(token);
+            if (currentUser == null) return Unauthorized();
+
+            ViewData["CurrentUser"] = currentUser;
+
+            var error = await _registerationService.RegisterAsync(token,id);
+            if (string.IsNullOrEmpty(error))
             {
-                var currentEvent = await _eventService.FindByIdAsync(id, Request);
-                if (currentEvent == null) return NotFound();
-
-                var currentUser = await _accountService.GetProfileAsync(Request);
-                if (currentUser == null) return Unauthorized();
-
-                ViewData["CurrentUser"] = currentUser;
-
-                var isSuccess = await _registerationService.RegisterAsync(id, Request, ModelState);
-                if (isSuccess)
-                {
-                    ViewData["IsRegistered"] = true;
-
-                    Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
-                    {
-                        icon = "success",
-                        title = "Đăng ký tham gia sự kiện thành công",
-                    }));
-
-                    return PartialView("_RegisterationButtonsPartial", currentEvent);
-                }
-
-                var errorMsg = string.Empty;
-                if (ModelState.TryGetValue(string.Empty, out var msg))
-                {
-                    errorMsg = msg.Errors.FirstOrDefault()?.ErrorMessage;
-                }
+                ViewData["IsRegistered"] = true;
 
                 Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
                 {
-                    icon = "error",
-                    title = $"Đăng ký tham gia sự kiện không thành công.<br>{errorMsg}",
+                    icon = "success",
+                    title = "Đăng ký tham gia sự kiện thành công",
                 }));
 
                 return PartialView("_RegisterationButtonsPartial", currentEvent);
             }
 
-            return Unauthorized();
+            var errorMsg = string.Empty;
+            if (ModelState.TryGetValue(string.Empty, out var msg))
+            {
+                errorMsg = msg.Errors.FirstOrDefault()?.ErrorMessage;
+            }
+
+            Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+            {
+                icon = "error",
+                title = $"Đăng ký tham gia sự kiện không thành công.<br>{errorMsg}",
+            }));
+
+            return PartialView("_RegisterationButtonsPartial", currentEvent);
         }
     }
 }

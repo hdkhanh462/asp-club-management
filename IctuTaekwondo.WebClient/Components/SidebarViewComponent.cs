@@ -1,4 +1,5 @@
-﻿using IctuTaekwondo.WebClient.Services;
+﻿using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Services.Account;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IctuTaekwondo.WebClient.Components
@@ -14,7 +15,8 @@ namespace IctuTaekwondo.WebClient.Components
 
         public IViewComponentResult Invoke()
         {
-            var user = _accountService.GetProfileAsync(Request).Result;
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+            var user = _accountService.GetProfileAsync(token).Result;
             return View(user);
         }
     }

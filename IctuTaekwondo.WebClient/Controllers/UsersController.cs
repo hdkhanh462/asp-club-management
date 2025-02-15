@@ -1,17 +1,21 @@
 ﻿using System.Security.Claims;
 using Htmx;
+using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Schemas.Account;
+using IctuTaekwondo.Shared.Schemas.Auth;
+using IctuTaekwondo.Shared.Services.Auth;
+using IctuTaekwondo.Shared.Services.Users;
 using IctuTaekwondo.WebClient.Models;
-using IctuTaekwondo.WebClient.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IUsersService _userService;
         private readonly IAuthService _authService;
 
         private readonly string[] allowedRedirectUrl =
@@ -19,7 +23,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             "/users",
         ];
 
-        public UsersController(IUserService userService, IAuthService authService)
+        public UsersController(IUsersService userService, IAuthService authService)
         {
             _userService = userService;
             _authService = authService;
@@ -32,10 +36,18 @@ namespace IctuTaekwondo.WebClient.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int size = 10)
         {
-            var paginator = await _userService.GetAllAsync(
-                page, size,
-                search, order,
-                ModelState, Request.Cookies);
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+            var query = new QueryBuilder();
+            foreach (var item in search)
+            {
+                query.Add("search", item);
+            }
+            foreach (var item in order)
+            {
+                query.Add("order", item);
+            }
+            var paginator = await _userService.GetAllAsync(token, page, size, query);
 
             ViewData["QueryParameters"] = Request.Query;
             return View(paginator);
@@ -44,7 +56,9 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Detail(string id)
         {
-            var userDetail = await _userService.GetProfileByIdAsync(id, Request);
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+            var userDetail = await _userService.GetProfileByIdAsync(token, id);
             if (userDetail == null) return NotFound();
 
             var curentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -74,17 +88,16 @@ namespace IctuTaekwondo.WebClient.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> RegisterUser([FromForm] RegisterViewModel model)
+        public async Task<IActionResult> RegisterUser([FromForm] AdminRegisterSchema schema)
         {
             if (!Request.IsHtmx()) return BadRequest();
 
             if (ModelState.IsValid)
             {
-                var isSuccess = await _authService.RegisterAsync(model,
-                    ModelState,
-                    Request.Cookies,
-                    Response.Cookies);
-                if (isSuccess)
+                var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+                var errors = await _userService.RegisterAsync(token, schema);
+                if (errors.Count == 0)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
                     {
@@ -93,8 +106,14 @@ namespace IctuTaekwondo.WebClient.Controllers
                     }));
                     return PartialView("_RegisterUserFormPartial", new RegisterViewModel());
                 }
+                var errorMessages = string.Join("\n", errors.SelectMany(e => e.Value));
+                Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                {
+                    icon = "error",
+                    title = $"Đăng ký không thành công\n{errorMessages}",
+                }));
             }
-            return PartialView("_RegisterUserFormPartial", model);
+            return PartialView("_RegisterUserFormPartial", schema);
         }
 
         [HttpPut]
@@ -105,7 +124,9 @@ namespace IctuTaekwondo.WebClient.Controllers
 
             if (ModelState.IsValid)
             {
-                var userDetail = await _userService.UpdateAsync(id, model, ModelState, Request.Cookies);
+                var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+
+                var userDetail = await _userService.UpdateAsync(token,id, model);
                 if (userDetail != null)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
@@ -145,8 +166,9 @@ namespace IctuTaekwondo.WebClient.Controllers
         public async Task<IActionResult> Delete(string id, [FromQuery] string? next)
         {
             if (!Request.IsHtmx()) return BadRequest();
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
 
-            var result = await _userService.DeleteAsnyc(id, ModelState, Request.Cookies);
+            var result = await _userService.DeleteAsync(token,id);
             //await Task.Delay(TimeSpan.FromSeconds(3));
 
             if (ModelState[string.Empty] == null)
@@ -191,16 +213,11 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (currentUserId == null) return Unauthorized();
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
 
             if (ModelState.IsValid)
             {
-                var isSuccess = await _userService.SetPasswordAsync(
-                    currentUserId, id,
-                    model,
-                    ModelState,
-                    Request.Cookies);
+                var isSuccess = await _userService.SetPasswordAsync(token, id, model);
                 if (isSuccess)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
@@ -221,16 +238,11 @@ namespace IctuTaekwondo.WebClient.Controllers
         {
             if (!Request.IsHtmx()) return BadRequest();
 
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (currentUserId == null) return Unauthorized();
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
 
             if (ModelState.IsValid)
             {
-                var isSuccess = await _userService.UpdateRolesAsync(
-                    currentUserId, id,
-                    model,
-                    ModelState,
-                    Request.Cookies);
+                var isSuccess = await _userService.UpdateRolesAsync(token, id, model);
                 if (isSuccess)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new

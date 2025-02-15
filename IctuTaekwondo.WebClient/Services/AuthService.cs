@@ -13,7 +13,7 @@ namespace IctuTaekwondo.WebClient.Services
         public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState);
     }
 
-    public interface IAuthService : ICallApiService
+    public interface IAuthService
     {
         public Task<bool> LoginAsync(LoginViewModel model,
             ModelStateDictionary modelState,

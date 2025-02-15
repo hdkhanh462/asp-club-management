@@ -80,9 +80,10 @@ namespace IctuTaekwondo.WebClient.Controllers
 
                 return RedirectToAction("Profile", "Account");
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, ex.InnerException?.Message ?? string.Empty);
                 return View(schema);
             }
         }

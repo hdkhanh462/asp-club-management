@@ -159,11 +159,12 @@ namespace IctuTaekwondo.WebClient.Controllers
             if (!Request.IsHtmx()) return BadRequest();
 
             var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+            if (token == null) return Unauthorized();
 
             if (ModelState.IsValid)
             {
-                var newUser = await _service.CreateAsync(token,schema);
-                if (newUser != null)
+                var errors = await _service.CreateAsync(token, schema);
+                if (errors.Count == 0)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
                     {
@@ -172,6 +173,13 @@ namespace IctuTaekwondo.WebClient.Controllers
                     }));
                     return PartialView("_CreateAchievementFormPartial", new AchievementCreateSchema());
                 }
+
+                var errorMessages = string.Join("\n", errors.SelectMany(e => e.Value));
+                Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
+                {
+                    icon = "error",
+                    title = $"Tạo thành tích không thành công\n{errorMessages}",
+                }));
             }
             return PartialView("_CreateAchievementFormPartial", schema);
         }

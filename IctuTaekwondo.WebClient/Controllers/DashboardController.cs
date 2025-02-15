@@ -1,4 +1,5 @@
-﻿using IctuTaekwondo.Shared;
+﻿using System.Configuration;
+using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Services.Finances;
 using IctuTaekwondo.Shared.Utils;
@@ -11,10 +12,12 @@ namespace IctuTaekwondo.WebClient.Controllers
     public class DashboardController : Controller
     {
         private readonly IFinancesService financesService;
+        private readonly IConfiguration configuration;
 
-        public DashboardController(IFinancesService financesService)
+        public DashboardController(IFinancesService financesService, IConfiguration configuration)
         {
             this.financesService = financesService;
+            this.configuration = configuration;
         }
 
         [Authorize(Roles = "Admin,Manager")]
@@ -23,6 +26,10 @@ namespace IctuTaekwondo.WebClient.Controllers
             var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
 
             var model = new DashboardViewModel();
+            var apiUrl = configuration["ApiUrl"];
+
+            if (!string.IsNullOrEmpty(apiUrl))
+                model.ApiUrl = apiUrl;
 
             if (range.HasValue)
             {

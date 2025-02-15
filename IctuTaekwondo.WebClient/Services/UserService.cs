@@ -49,9 +49,9 @@ namespace IctuTaekwondo.WebClient.Services
     {
         private readonly ILogger<UserService> _logger;
         private readonly ApiHelper _apiHelper;
-        private readonly ApiService _apiService;
+        private readonly IApiService _apiService;
 
-        public UserService(ILogger<UserService> logger, ApiHelper apiHelper, ApiService apiService)
+        public UserService(ILogger<UserService> logger, ApiHelper apiHelper, IApiService apiService)
         {
             _logger = logger;
             _apiHelper = apiHelper;

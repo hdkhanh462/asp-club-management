@@ -1,5 +1,4 @@
 ﻿using IctuTaekwondo.Shared.Responses.User;
-using IctuTaekwondo.Shared;
 using IctuTaekwondo.Shared.Utils;
 using IctuTaekwondo.Shared.Schemas.Account;
 using System.Net;
@@ -8,100 +7,56 @@ using IctuTaekwondo.Shared.Responses;
 
 namespace IctuTaekwondo.WebClient.Services
 {
-    public interface IAccountService : ICallApiService
+    public interface IAccountService
     {
-        Task<UserFullDetailResponse?> GetProfileAsync(HttpRequest request);
-        UserResponse? GetUser(IRequestCookieCollection requestCookies);
-        Task<UserFullDetailResponse?> UpdateProfileAsync(UserUpdateSchema schema,
-            ModelStateDictionary modelState, 
-            IRequestCookieCollection requestCookies);
-        Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
-            ModelStateDictionary modelState, 
-            IRequestCookieCollection requestCookies);
+        Task<UserFullDetailResponse?> GetProfileAsync(string token);
+        Task<UserResponse?> GetUser(string token);
+        Task<UserFullDetailResponse?> UpdateProfileAsync(string token, UserUpdateSchema schema);
+        Task<bool> ChangePasswordAsync(string token, ChangePasswordSchema schema);
     }
 
     public class AccountService : IAccountService
     {
         private readonly ILogger<AccountService> _logger;
-        private readonly ApiHelper _apiHelper;
-        private readonly ApiService _apiService;
+        private readonly IApiService _apiService;
 
-        public AccountService(ILogger<AccountService> logger, ApiHelper apiHelper, ApiService apiService)
+        public AccountService(ILogger<AccountService> logger, IApiService apiService)
         {
             _logger = logger;
-            _apiHelper = apiHelper;
             _apiService = apiService;
         }
 
-        public async Task<UserFullDetailResponse?> GetProfileAsync(HttpRequest request)
+        public async Task<UserFullDetailResponse?> GetProfileAsync(string token)
         {
-            var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
-            _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
+            _apiService.SetAuthorizationHeader(token);
 
             var response = await _apiService.GetAsync<UserFullDetailResponse>($"api/account/profile");
             return response.Data;
         }
 
-        public UserResponse? GetUser(IRequestCookieCollection requestCookies)
+        public async Task<UserResponse?> GetUser(string token)
         {
-            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey)) return null;
+            _apiService.SetAuthorizationHeader(token);
 
-            _apiHelper.AddHeaders(new Dictionary<string, string>
-            {
-                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
-            });
-
-            return _apiHelper.GetAsync<UserResponse>("api/account/me").Result.Data;
+            var response = await _apiService.GetAsync<UserResponse>("api/account/me");
+            return response.Data;
         }
 
-        public async Task<UserFullDetailResponse?> UpdateProfileAsync(UserUpdateSchema schema, 
-            ModelStateDictionary modelState, 
-            IRequestCookieCollection requestCookies)
+        public async Task<UserFullDetailResponse?> UpdateProfileAsync(string token, UserUpdateSchema schema)
         {
-            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
-            {
-                modelState.AddModelError(string.Empty, "Không tìm thấy thông tin người dùng");
-                return null;
-            };
+            _apiService.SetAuthorizationHeader(token);
 
-            _apiHelper.AddHeaders(new Dictionary<string, string>
-            {
-                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
-            });
-
-            var response = await _apiHelper.PutAsync<UserFullDetailResponse>("api/account/profile", schema.ToDictionary(), "multipart/form-data");
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                HandleErrors<UserFullDetailResponse>(response, modelState);
-                return null;
-            };
+            var response = await _apiService.PutAsync<UserFullDetailResponse>("api/account/profile", schema.ToMultipartFormDataContent());
 
             return response.Data;
         }
 
-        public async Task<bool> ChangePasswordAsync(ChangePasswordSchema schema,
-            ModelStateDictionary modelState,
-            IRequestCookieCollection requestCookies)
+        public async Task<bool> ChangePasswordAsync(string token, ChangePasswordSchema schema)
         {
-            if (!requestCookies.ContainsKey(GlobalConst.CookieAuthTokenKey))
-            {
-                modelState.AddModelError(string.Empty, "Không tìm thấy thông tin người dùng");
-                return false;
-            };
+            _apiService.SetAuthorizationHeader(token);
 
-            _apiHelper.AddHeaders(new Dictionary<string, string>
-            {
-                ["Authorization"] = $"Bearer {requestCookies[GlobalConst.CookieAuthTokenKey]}"
-            });
-
-            var response = await _apiHelper.PutAsync<object>("api/account/change-password", schema);
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                HandleErrors<object>(response, modelState);
-                return false;
-            };
-
-            return true;
+            var response = await _apiService.PutAsync<object>("api/account/change-password", schema.ToStringContent());
+            return response.StatusCode == HttpStatusCode.OK;
         }
 
         public void HandleErrors<T>(ApiResponse<T> response, ModelStateDictionary modelState)

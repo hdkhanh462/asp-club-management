@@ -1,4 +1,10 @@
-﻿<div class="flex items-center">
+﻿@using IctuTaekwondo.Shared.Responses.User
+@model UserResponse
+@{
+	ArgumentNullException.ThrowIfNull(Model);
+}
+
+<div class="flex items-center">
 	<div class="ms-3 flex items-center">
 		<div>
 			<button type="button" class="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">

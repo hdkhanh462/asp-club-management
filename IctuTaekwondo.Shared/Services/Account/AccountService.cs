@@ -35,6 +35,14 @@ namespace IctuTaekwondo.Shared.Services.Account
             return response.Data;
         }
 
+        public async Task<UserResponse?> GetUser(string token)
+        {
+            apiService.SetAuthorizationHeader(token);
+
+            var response = await apiService.GetAsync<UserFullDetailResponse>("api/account/me");
+            return response.Data;
+        }
+
         public async Task<UserFullDetailResponse?> UpdateProfileAsync(string token, UserUpdateSchema schema)
         {
             apiService.SetAuthorizationHeader(token);

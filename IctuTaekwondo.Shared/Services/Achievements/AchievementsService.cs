@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using IctuTaekwondo.Shared.Responses;
 using IctuTaekwondo.Shared.Responses.Achievement;
 using IctuTaekwondo.Shared.Schemas.Achievement;
@@ -23,7 +24,19 @@ namespace IctuTaekwondo.Shared.Services.Achievements
             var response = await apiService.PostAsync<AchievementResponse>($"api/achievements", schema.ToStringContent());
             if (response.StatusCode != HttpStatusCode.Created)
             {
-                return response.Errors;
+                var errors = new Dictionary<string, string[]>();
+
+                if (!string.IsNullOrEmpty(response.Message) && response.Errors.Count == 0)
+                    errors.Add(string.Empty, [response.Message]);
+
+                if (response.Errors.Count > 0)
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        errors.Add(error.Key, error.Value);
+                    }
+                }
+                return errors;
             }
 
             return [];

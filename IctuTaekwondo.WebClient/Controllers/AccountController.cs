@@ -1,11 +1,12 @@
 ﻿using IctuTaekwondo.Shared.Schemas.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using IctuTaekwondo.WebClient.Services;
 using IctuTaekwondo.WebClient.Models;
 using Htmx;
 using IctuTaekwondo.Shared.Enums;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using IctuTaekwondo.Shared;
+using IctuTaekwondo.Shared.Services.Account;
 
 namespace IctuTaekwondo.WebClient.Controllers
 {
@@ -21,7 +22,8 @@ namespace IctuTaekwondo.WebClient.Controllers
         [Authorize]
         public async Task<IActionResult> Profile()
         {
-            var userDetail = await _accountService.GetProfileAsync(Request);
+            var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+            var userDetail = await _accountService.GetProfileAsync(token);
             if (userDetail == null) return Unauthorized();
 
             var roles = userDetail.Roles
@@ -54,7 +56,8 @@ namespace IctuTaekwondo.WebClient.Controllers
 
             if (ModelState.IsValid)
             {
-                var userDetail = await _accountService.UpdateProfileAsync(model, ModelState, Request.Cookies);
+                var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+                var userDetail = await _accountService.UpdateProfileAsync(token, model);
                 if (userDetail != null)
                 {
                     Response.Htmx(h => h.WithTrigger("add-sweetalert2-toast", new
@@ -95,7 +98,8 @@ namespace IctuTaekwondo.WebClient.Controllers
 
             if (ModelState.IsValid)
             {
-                var response = await _accountService.ChangePasswordAsync(schema, ModelState, Request.Cookies);
+                var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
+                var response = await _accountService.ChangePasswordAsync(token,schema);
                 if (response)
                 {
                     Response.Htmx(h => h.WithTrigger(

@@ -8,6 +8,7 @@ namespace IctuTaekwondo.WebClient.Models
         public List<FinanceReportResponse> Current = [];
         public List<FinanceReportResponse> Pass = [];
         public ReportRange Range;
+        public string ApiUrl = "http://localhost:9000";
 
         public long TotalAmount(List<FinanceReportResponse> reports)
         {

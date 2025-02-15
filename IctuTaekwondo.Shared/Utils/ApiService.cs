@@ -87,10 +87,10 @@ namespace IctuTaekwondo.Shared.Utils
             {
                 var apiResponse = JsonSerializer.Deserialize<ApiResponse<T>>(responseContent, SerializerOptions);
 
-                if (apiResponse != null)
-                {
-                    apiResponse.StatusCode = response.StatusCode;
-                }
+                //if (apiResponse != null)
+                //{
+                //    apiResponse.StatusCode = response.StatusCode;
+                //}
                 return apiResponse ?? new ApiResponse<T> { StatusCode = response.StatusCode };
             }
             return new ApiResponse<T> { StatusCode = response.StatusCode };
