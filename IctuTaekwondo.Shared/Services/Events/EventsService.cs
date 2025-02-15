@@ -22,12 +22,17 @@ namespace IctuTaekwondo.Shared.Services.Events
             this.apiService = apiService;
         }
 
-        public async Task<EventResponse?> CreateAsync(string token, EventCreateSchema schema)
+        public async Task<Dictionary<string, string[]>> CreateAsync(string token, EventCreateSchema schema)
         {
             apiService.SetAuthorizationHeader(token);
 
             var response = await apiService.PostAsync<EventResponse>($"api/events",schema.ToStringContent());
-            return response.Data;
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                return response.Errors;
+            }
+
+            return [];
         }
 
         public async Task<bool> DeleteAsync(string token, int id)
@@ -46,7 +51,7 @@ namespace IctuTaekwondo.Shared.Services.Events
             return response.Data;
         }
 
-        public async Task<PaginationResponse<EventResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null)
+        public async Task<Paginator<EventResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null)
         {
             apiService.SetAuthorizationHeader(token);
 
@@ -54,8 +59,8 @@ namespace IctuTaekwondo.Shared.Services.Events
             query.Add("page", page.ToString());
             query.Add("size", size.ToString());
 
-            var response = await apiService.GetAsync<PaginationResponse<EventResponse>>($"api/events{query.ToQueryString()}");
-            return response.Data ?? PaginationResponse<EventResponse>.GetDefaultInstance();
+            var response = await apiService.GetAsync<Paginator<EventResponse>>($"api/events/filter{query.ToQueryString()}");
+            return response.Data ?? Paginator<EventResponse>.GetDefaultInstance();
         }
 
         public async Task<EventResponse?> UpdateAsync(string token, int id, EventUpdateSchema schema)

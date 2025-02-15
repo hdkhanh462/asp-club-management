@@ -17,9 +17,9 @@ namespace IctuTaekwondo.Api.Services
         Task<AchievementResponse?> CreateAsync(AchievementCreateSchema schema);
         Task<AchievementResponse?> UpdateAsync(int id, AchievementUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
-        Task<PaginationResponse<AchievementResponse>> GetAllAsync(int page, int size);
+        Task<Paginator<AchievementResponse>> GetAllAsync(int page, int size);
         Task<AchievementResponse?> FindByIdAsync(int id);
-        Task<PaginationResponse<AchievementResponse>> GetAllWithFilterAsync(
+        Task<Paginator<AchievementResponse>> GetAllWithFilterAsync(
             int page,
             int size,
             string? name = null,
@@ -81,21 +81,21 @@ namespace IctuTaekwondo.Api.Services
             return result > 0;
         }
 
-        public async Task<PaginationResponse<AchievementResponse>> GetAllAsync(int page, int size)
+        public async Task<Paginator<AchievementResponse>> GetAllAsync(int page, int size)
         {
             var achievements = await _context.Achievements
                 .Include(e => e.User)
                 .Include(e => e.Event)
                 .ToListAsync();
 
-            return new PaginationResponse<AchievementResponse>(
+            return new Paginator<AchievementResponse>(
                 page, size,
                 achievements.Count,
                 achievements.Skip((page - 1) * size).Take(size)
                 .Select(e => e.ToAchievementResponse()).ToList());
         }
 
-        public async Task<PaginationResponse<AchievementResponse>> GetAllWithFilterAsync(
+        public async Task<Paginator<AchievementResponse>> GetAllWithFilterAsync(
             int page,
             int size,
             string? name = null,
@@ -121,7 +121,7 @@ namespace IctuTaekwondo.Api.Services
                 .Include(e => e.Event)
                 .ToListAsync();
 
-            return new PaginationResponse<AchievementResponse>(
+            return new Paginator<AchievementResponse>(
                 page, size,
                 achievements.Count,
                 achievements.Skip((page - 1) * size).Take(size)

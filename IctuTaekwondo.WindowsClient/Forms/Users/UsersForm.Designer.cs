@@ -32,7 +32,7 @@
             label1 = new Label();
             dataGridView1 = new DataGridView();
             btnSearch = new Button();
-            textBox1 = new TextBox();
+            tbSearch = new TextBox();
             btnRegister = new Button();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
@@ -78,15 +78,16 @@
             btnSearch.TabIndex = 4;
             btnSearch.Text = "Tìm kiếm";
             btnSearch.UseVisualStyleBackColor = true;
+            btnSearch.Click += btnSearch_Click;
             // 
-            // textBox1
+            // tbSearch
             // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.Location = new Point(12, 63);
-            textBox1.Margin = new Padding(10);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(600, 23);
-            textBox1.TabIndex = 3;
+            tbSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbSearch.Location = new Point(12, 63);
+            tbSearch.Margin = new Padding(10);
+            tbSearch.Name = "tbSearch";
+            tbSearch.Size = new Size(600, 23);
+            tbSearch.TabIndex = 3;
             // 
             // btnRegister
             // 
@@ -108,7 +109,7 @@
             Controls.Add(dataGridView1);
             Controls.Add(btnRegister);
             Controls.Add(btnSearch);
-            Controls.Add(textBox1);
+            Controls.Add(tbSearch);
             Controls.Add(panel1);
             Name = "UsersForm";
             StartPosition = FormStartPosition.CenterScreen;
@@ -128,7 +129,7 @@
         private Button button3;
         private DataGridView dataGridView1;
         private Button btnSearch;
-        private TextBox textBox1;
+        private TextBox tbSearch;
         private Button btnRegister;
     }
 }

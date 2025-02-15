@@ -32,7 +32,6 @@
             btnDelete = new Button();
             btnSave = new Button();
             tbJoinDate = new TextBox();
-            userUpdateSchemaBindingSource = new BindingSource(components);
             tbAddress = new TextBox();
             tbDateOfBirth = new TextBox();
             tbPhoneNumber = new TextBox();
@@ -50,18 +49,19 @@
             label9 = new Label();
             pbAvatar = new PictureBox();
             cbCurrentRank = new ComboBox();
+            userUpdateSchemaBindingSource = new BindingSource(components);
             cbGender = new ComboBox();
             errorProvider1 = new ErrorProvider(components);
-            ((System.ComponentModel.ISupportInitialize)userUpdateSchemaBindingSource).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pbAvatar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)userUpdateSchemaBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // btnDelete
             // 
             btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnDelete.Location = new Point(93, 299);
+            btnDelete.Location = new Point(93, 302);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(75, 23);
             btnDelete.TabIndex = 9;
@@ -72,7 +72,7 @@
             // btnSave
             // 
             btnSave.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            btnSave.Location = new Point(12, 299);
+            btnSave.Location = new Point(12, 302);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(75, 23);
             btnSave.TabIndex = 8;
@@ -82,20 +82,14 @@
             // 
             // tbJoinDate
             // 
-            tbJoinDate.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "JoinDate", true));
             tbJoinDate.Location = new Point(212, 145);
             tbJoinDate.Margin = new Padding(10);
             tbJoinDate.Name = "tbJoinDate";
             tbJoinDate.Size = new Size(180, 23);
             tbJoinDate.TabIndex = 3;
             // 
-            // userUpdateSchemaBindingSource
-            // 
-            userUpdateSchemaBindingSource.DataSource = typeof(Shared.Schemas.Account.UserUpdateSchema);
-            // 
             // tbAddress
             // 
-            tbAddress.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "Address", true));
             tbAddress.Location = new Point(212, 261);
             tbAddress.Margin = new Padding(10);
             tbAddress.Name = "tbAddress";
@@ -104,7 +98,6 @@
             // 
             // tbDateOfBirth
             // 
-            tbDateOfBirth.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "DateOfBirth", true));
             tbDateOfBirth.Location = new Point(212, 203);
             tbDateOfBirth.Margin = new Padding(10);
             tbDateOfBirth.Name = "tbDateOfBirth";
@@ -113,7 +106,6 @@
             // 
             // tbPhoneNumber
             // 
-            tbPhoneNumber.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "PhoneNumber", true));
             tbPhoneNumber.Location = new Point(12, 203);
             tbPhoneNumber.Margin = new Padding(10);
             tbPhoneNumber.Name = "tbPhoneNumber";
@@ -122,7 +114,6 @@
             // 
             // tbFullName
             // 
-            tbFullName.DataBindings.Add(new Binding("Text", userUpdateSchemaBindingSource, "FullName", true));
             tbFullName.Location = new Point(12, 145);
             tbFullName.Margin = new Padding(10);
             tbFullName.Name = "tbFullName";
@@ -178,6 +169,7 @@
             // 
             label5.AutoSize = true;
             label5.Location = new Point(212, 62);
+            label5.Margin = new Padding(3);
             label5.Name = "label5";
             label5.Size = new Size(47, 15);
             label5.TabIndex = 13;
@@ -232,7 +224,6 @@
             // pbAvatar
             // 
             pbAvatar.BorderStyle = BorderStyle.FixedSingle;
-            pbAvatar.DataBindings.Add(new Binding("ImageLocation", userUpdateSchemaBindingSource, "AvatarUrl", true));
             pbAvatar.Location = new Point(405, 85);
             pbAvatar.Name = "pbAvatar";
             pbAvatar.Size = new Size(167, 141);
@@ -243,34 +234,39 @@
             // 
             // cbCurrentRank
             // 
+            cbCurrentRank.DataBindings.Add(new Binding("SelectedValue", userUpdateSchemaBindingSource, "CurrentRank", true));
             cbCurrentRank.DropDownStyle = ComboBoxStyle.DropDownList;
             cbCurrentRank.FormattingEnabled = true;
             cbCurrentRank.Location = new Point(212, 87);
             cbCurrentRank.Name = "cbCurrentRank";
             cbCurrentRank.Size = new Size(180, 23);
             cbCurrentRank.TabIndex = 20;
-            cbCurrentRank.SelectedIndexChanged += cbCurrentRank_SelectedIndexChanged;
+            // 
+            // userUpdateSchemaBindingSource
+            // 
+            userUpdateSchemaBindingSource.DataSource = typeof(Shared.Schemas.Account.UserUpdateSchema);
             // 
             // cbGender
             // 
+            cbGender.DataBindings.Add(new Binding("SelectedValue", userUpdateSchemaBindingSource, "Gender", true));
             cbGender.DropDownStyle = ComboBoxStyle.DropDownList;
             cbGender.FormattingEnabled = true;
             cbGender.Location = new Point(12, 261);
             cbGender.Name = "cbGender";
             cbGender.Size = new Size(180, 23);
             cbGender.TabIndex = 21;
-            cbGender.SelectedIndexChanged += cbGender_SelectedIndexChanged;
             // 
             // errorProvider1
             // 
             errorProvider1.BlinkStyle = ErrorBlinkStyle.NeverBlink;
             errorProvider1.ContainerControl = this;
+            errorProvider1.DataSource = userUpdateSchemaBindingSource;
             // 
             // UsersDetailForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(585, 334);
+            ClientSize = new Size(585, 337);
             Controls.Add(cbGender);
             Controls.Add(cbCurrentRank);
             Controls.Add(pbAvatar);
@@ -296,10 +292,10 @@
             Text = "UsersDetailForm";
             FormClosed += UsersDetailForm_FormClosed;
             Load += UsersDetailForm_Load;
-            ((System.ComponentModel.ISupportInitialize)userUpdateSchemaBindingSource).EndInit();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pbAvatar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)userUpdateSchemaBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -327,7 +323,7 @@
         private PictureBox pbAvatar;
         private ComboBox cbCurrentRank;
         private ComboBox cbGender;
-        private BindingSource userUpdateSchemaBindingSource;
         private ErrorProvider errorProvider1;
+        private BindingSource userUpdateSchemaBindingSource;
     }
 }

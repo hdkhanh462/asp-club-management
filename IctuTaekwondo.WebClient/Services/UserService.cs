@@ -14,7 +14,7 @@ namespace IctuTaekwondo.WebClient.Services
 {
     public interface IUserService : ICallApiService
     {
-        public Task<PaginationResponse<UserResponse>?> GetAllAsync(
+        public Task<Paginator<UserResponse>?> GetAllAsync(
             int page,
             int size,
             List<string> search,
@@ -79,7 +79,7 @@ namespace IctuTaekwondo.WebClient.Services
             return response.Data;
         }
 
-        public async Task<PaginationResponse<UserResponse>?> GetAllAsync(
+        public async Task<Paginator<UserResponse>?> GetAllAsync(
             int page,
             int size,
             List<string> search,
@@ -96,7 +96,7 @@ namespace IctuTaekwondo.WebClient.Services
             });
 
             var response = await _apiHelper
-                .GetAsync<PaginationResponse<UserResponse>>($"api/users/filter?" +
+                .GetAsync<Paginator<UserResponse>>($"api/users/filter?" +
                 $"page={page}&" +
                 $"size={size}&" +
                 $"search={string.Join("&search=", search)}&" +
@@ -104,7 +104,7 @@ namespace IctuTaekwondo.WebClient.Services
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                HandleErrors<PaginationResponse<UserResponse>>(response, modelState);
+                HandleErrors<Paginator<UserResponse>>(response, modelState);
                 return null;
             }
             return response.Data;

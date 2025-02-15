@@ -19,9 +19,11 @@ namespace IctuTaekwondo.Shared.Responses.User
         [DisplayName("Họ và tên")]
         public string FullName { get; set; }
 
+        [DisplayName("Địa chỉ Avatar")]
         public string? AvatarUrl { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
+        [DisplayName("Ngày tạo")]
         public DateTime? CreatedAt { get; set; }
     }
 }

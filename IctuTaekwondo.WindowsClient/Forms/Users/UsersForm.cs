@@ -11,6 +11,7 @@ using IctuTaekwondo.Shared.Responses.Auth;
 using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Services.Users;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace IctuTaekwondo.WindowsClient.Forms.Users
 {
@@ -31,9 +32,18 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
             InitializeComponent();
         }
 
-        private async void UsersForm_Load(object sender, EventArgs e)
+        private void UsersForm_Load(object sender, EventArgs e)
         {
-            var response = await usersService.GetAllAsync(Jwt.Token, 1, 999);
+            LoadUsers();
+        }
+
+        private async void LoadUsers()
+        {
+            var query = new QueryBuilder();
+            if (!string.IsNullOrWhiteSpace(tbSearch.Text))
+                query.Add("search", tbSearch.Text);
+
+            var response = await usersService.GetAllAsync(Jwt.Token, 1, 999, query);
 
             dataGridView1.DataSource = response.Items;
         }
@@ -57,6 +67,11 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
         {
             registerForm.SetJwt(Jwt);
             registerForm.ShowDialog();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            LoadUsers();
         }
     }
 }

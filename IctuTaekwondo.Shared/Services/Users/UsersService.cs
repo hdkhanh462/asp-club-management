@@ -37,10 +37,12 @@ namespace IctuTaekwondo.Shared.Services.Users
             apiService.SetAuthorizationHeader(token);
 
             var response = await apiService.DeleteAsync<object>($"api/users/{id}");
-            return response.Message;
+            if (response.StatusCode != HttpStatusCode.OK) 
+                return response.Message;
+            return null;
         }
 
-        public async Task<PaginationResponse<UserResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null)
+        public async Task<Paginator<UserResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null)
         {
             apiService.SetAuthorizationHeader(token);
 
@@ -48,8 +50,8 @@ namespace IctuTaekwondo.Shared.Services.Users
             query.Add("page", page.ToString());
             query.Add("size", size.ToString());
 
-            var response = await apiService.GetAsync<PaginationResponse<UserResponse>>($"api/users{query.ToQueryString()}");
-            return response.Data ?? PaginationResponse<UserResponse>.GetDefaultInstance();
+            var response = await apiService.GetAsync<Paginator<UserResponse>>($"api/users/filter{query.ToQueryString()}");
+            return response.Data ?? Paginator<UserResponse>.GetDefaultInstance();
         }
 
         public async Task<UserFullDetailResponse?> GetProfileByIdAsync(string token, string id)

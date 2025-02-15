@@ -48,7 +48,7 @@ namespace IctuTaekwondo.Api.Services
         Task<EventRegisterationResult> RegisterAsync(int id, string? userId, bool isCheckValid = false);
         Task<EventRegisterationResult> UnregisterAsync(int id, string? userId);
         Task<Event?> GetFullDetailAsync(int id);
-        public PaginationResponse<EventResgiteredUsersResponse> GetAllRegisteration(Event @event, int page, int size);
+        public Paginator<ResgiteredUsersResponse> GetAllRegisteration(Event @event, int page, int size);
     }
 
     // Lớp dịch vụ để xử lý các thao tác đăng ký sự kiện  
@@ -150,7 +150,7 @@ namespace IctuTaekwondo.Api.Services
         }
 
         // Phương thức lấy tất cả người dùng đã đăng ký của sự kiện
-        public PaginationResponse<EventResgiteredUsersResponse> GetAllRegisteration(Event @event, int page, int size)
+        public Paginator<ResgiteredUsersResponse> GetAllRegisteration(Event @event, int page, int size)
         {
             var registrations = @event.EventRegistrations
                 .Skip((page - 1) * size)
@@ -163,7 +163,7 @@ namespace IctuTaekwondo.Api.Services
                 })
                 .ToList();
 
-            return new PaginationResponse<EventResgiteredUsersResponse>(
+            return new Paginator<ResgiteredUsersResponse>(
                 page, size,
                 @event.EventRegistrations.Count,
                 registrations);

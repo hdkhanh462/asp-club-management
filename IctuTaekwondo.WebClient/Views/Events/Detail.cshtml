@@ -10,7 +10,7 @@
 
 	UserFullDetailResponse? currentUser = null;
 	EventResponse? currentEvent = null;
-	PaginationResponse<EventResgiteredUsersResponse>? registerationsPaginator = null;
+	Paginator<ResgiteredUsersResponse>? registerationsPaginator = null;
 
 	if (ViewData.TryGetValue("CurrentUser", out var user) && user is UserFullDetailResponse userDetail)
 	{
@@ -22,7 +22,7 @@
 		currentEvent = response;
 	}
 
-	if (ViewData.TryGetValue("RegisterationPaginator", out var registerations) && registerations is PaginationResponse<EventResgiteredUsersResponse> paginator)
+	if (ViewData.TryGetValue("RegisterationPaginator", out var registerations) && registerations is Paginator<ResgiteredUsersResponse> paginator)
 	{
 		registerationsPaginator = paginator;
 	}

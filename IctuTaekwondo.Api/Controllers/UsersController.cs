@@ -32,7 +32,7 @@ namespace IctuTaekwondo.Api.Controllers
             [FromQuery] int size = 10)
         {
             var paginator = await _userService.GetAllAsync(page, size);
-            return Ok(new ApiResponse<PaginationResponse<UserResponse>>
+            return Ok(new ApiResponse<Paginator<UserResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = paginator
@@ -48,7 +48,7 @@ namespace IctuTaekwondo.Api.Controllers
             [FromQuery] int size = 10)
         {
             var paginator = await _userService.GetAllWithFilterAsync(page, size, search, order);
-            return Ok(new ApiResponse<PaginationResponse<UserResponse>>
+            return Ok(new ApiResponse<Paginator<UserResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = paginator

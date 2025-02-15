@@ -21,9 +21,9 @@ namespace IctuTaekwondo.Api.Mappers
             };
         }
 
-        public static EventResgiteredUsersResponse ToUserResgiteredEventResponse(this User user)
+        public static ResgiteredUsersResponse ToUserResgiteredEventResponse(this User user)
         {
-            return new EventResgiteredUsersResponse
+            return new ResgiteredUsersResponse
             {
                 Id = user.Id,
                 UserName = user.UserName,

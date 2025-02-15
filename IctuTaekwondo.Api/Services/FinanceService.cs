@@ -17,7 +17,7 @@ namespace IctuTaekwondo.Api.Services
         Task<FinanceResponse?> CreateAsync(FinanceCreateSchema schema);
         Task<FinanceResponse?> UpdateAsync(int id, FinanceUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
-        Task<PaginationResponse<FinanceResponse>> GetAllAsync(int page, int size);
+        Task<Paginator<FinanceResponse>> GetAllAsync(int page, int size);
         Task<FinanceResponse?> GetByIdAsync(int id);
         public Task<long> GetTotalAmountAsync();
         public Task<List<FinanceReportResponse>> GetReportAsync(
@@ -25,7 +25,7 @@ namespace IctuTaekwondo.Api.Services
             DateTime? endDate,
             TransactionType? type = null,
             string[]? categories = null);
-        Task<PaginationResponse<FinanceResponse>> GetAllWithFilterAsync(
+        Task<Paginator<FinanceResponse>> GetAllWithFilterAsync(
             int page,
             int size,
             TransactionType? type = null,
@@ -124,7 +124,7 @@ namespace IctuTaekwondo.Api.Services
             return result > 0;
         }
 
-        public async Task<PaginationResponse<FinanceResponse>> GetAllWithFilterAsync(
+        public async Task<Paginator<FinanceResponse>> GetAllWithFilterAsync(
             int page,
             int size,
             TransactionType? type = null,
@@ -133,18 +133,18 @@ namespace IctuTaekwondo.Api.Services
             DateTime? endDate = null)
         {
             var finances = await FilterAsync(type, categories, startDate, endDate);
-            return new PaginationResponse<FinanceResponse>(
+            return new Paginator<FinanceResponse>(
                 page, size,
                 finances.Count,
                 finances.Skip((page - 1) * size).Take(size)
                 .Select(e => e.ToFinanceResponse()).ToList());
         }
 
-        public async Task<PaginationResponse<FinanceResponse>> GetAllAsync(int page, int size)
+        public async Task<Paginator<FinanceResponse>> GetAllAsync(int page, int size)
         {
             var finances = await _context.Finances.ToListAsync();
 
-            return new PaginationResponse<FinanceResponse>(
+            return new Paginator<FinanceResponse>(
                 page, size,
                 finances.Count,
                 finances.Skip((page - 1) * size).Take(size).Select(e => e.ToFinanceResponse()).ToList());

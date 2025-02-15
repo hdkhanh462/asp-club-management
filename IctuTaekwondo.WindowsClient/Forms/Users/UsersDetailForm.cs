@@ -11,6 +11,7 @@ using Autofac;
 using Autofac.Core;
 using IctuTaekwondo.Shared.Enums;
 using IctuTaekwondo.Shared.Responses.Auth;
+using IctuTaekwondo.Shared.Responses.User;
 using IctuTaekwondo.Shared.Schemas.Account;
 using IctuTaekwondo.Shared.Schemas.Auth;
 using IctuTaekwondo.Shared.Services.Users;
@@ -26,6 +27,8 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
 
         private JwtResponse Jwt;
         private string? Id;
+        private UserFullDetailResponse currentUser;
+        private UserFullDetailResponse loggedInUser;
 
         public UsersDetailForm(IUsersService usersService)
         {
@@ -41,26 +44,29 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
         {
             if (!string.IsNullOrEmpty(Id))
             {
-                var userDetail = await usersService.GetProfileByIdAsync(Jwt.Token, Id);
+                var response = await usersService.GetProfileByIdAsync(Jwt.Token, Id);
 
-                if (userDetail != null)
+                if (response != null)
                 {
-                    tbId.Text = userDetail.Id;
+                    currentUser = response;
+                    tbId.Text = response.Id;
 
                     userUpdateSchemaBindingSource.DataSource = new UserUpdateSchema
                     {
-                        FullName = userDetail.FullName,
-                        PhoneNumber = userDetail.PhoneNumber,
-                        JoinDate = userDetail.Profile.JoinDate,
-                        Address = userDetail.Profile.Address,
-                        DateOfBirth = userDetail.Profile.DateOfBirth,
-                        AvatarUrl = userDetail.AvatarUrl
+                        FullName = response.FullName,
+                        PhoneNumber = response.PhoneNumber,
+                        JoinDate = response.Profile.JoinDate,
+                        Address = response.Profile.Address,
+                        DateOfBirth = response.Profile.DateOfBirth,
+                        AvatarUrl = response.AvatarUrl,
+                        CurrentRank = response.Profile.CurrentRank,
+                        Gender = response.Profile.Gender,
                     };
 
-                    if (userDetail.Profile.CurrentRank is not null)
-                        cbCurrentRank.SelectedValue = userDetail.Profile.CurrentRank;
-                    if (userDetail.Profile.Gender is not null)
-                        cbGender.SelectedValue = userDetail.Profile.Gender;
+                    if (response.Profile.CurrentRank is not null)
+                        cbCurrentRank.SelectedValue = response.Profile.CurrentRank;
+                    if (response.Profile.Gender is not null)
+                        cbGender.SelectedValue = response.Profile.Gender;
                 }
             }
         }
@@ -77,6 +83,7 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
                 if (string.IsNullOrEmpty(response))
                 {
                     MessageBox.Show("Xóa thành công", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
                     return;
                 }
 
@@ -113,7 +120,9 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
                         JoinDate = response.Profile.JoinDate,
                         Address = response.Profile.Address,
                         DateOfBirth = response.Profile.DateOfBirth,
-                        AvatarUrl = response.AvatarUrl
+                        AvatarUrl = response.AvatarUrl,
+                        CurrentRank = response.Profile.CurrentRank,
+                        Gender = response.Profile.Gender,
                     };
 
                     if (response.Profile.CurrentRank is not null)
@@ -135,17 +144,6 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
             Id = id;
         }
 
-        private void cbCurrentRank_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbCurrentRank.SelectedValue is not null)
-            {
-                var isRank = Enum.TryParse<RankName>(cbCurrentRank.SelectedValue.ToString(), out var result);
-
-                if (isRank && userUpdateSchemaBindingSource.Current is UserUpdateSchema schema)
-                    schema.CurrentRank = result;
-            }
-        }
-
         private void pbAvatar_Click(object sender, EventArgs e)
         {
             if (userUpdateSchemaBindingSource.Current is UserUpdateSchema schema)
@@ -158,39 +156,16 @@ namespace IctuTaekwondo.WindowsClient.Forms.Users
                     if (openFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         pbAvatar.Image = Image.FromFile(openFileDialog.FileName);
-                        IFormFile formFile = ConvertToIFormFile(openFileDialog.FileName);
+                        IFormFile formFile = Helpers.ConvertToIFormFile(openFileDialog.FileName);
                         schema.Avatar = formFile;
                     }
                 }
             }
         }
 
-        private IFormFile ConvertToIFormFile(string filePath)
-        {
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            var formFile = new FormFile(fileStream, 0, fileStream.Length, "Image", Path.GetFileName(filePath))
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = "image/" + Path.GetExtension(filePath).TrimStart('.')
-            };
-
-            return formFile;
-        }
-
         private void UsersDetailForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             userUpdateSchemaBindingSource.Clear();
-        }
-
-        private void cbGender_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbGender.SelectedValue is not null)
-            {
-                var isGender = Enum.TryParse<Gender>(cbGender.SelectedValue.ToString(), out var result);
-
-                if (isGender && userUpdateSchemaBindingSource.Current is UserUpdateSchema schema)
-                    schema.Gender = result;
-            }
         }
     }
 }

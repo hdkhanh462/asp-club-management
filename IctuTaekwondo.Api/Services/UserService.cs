@@ -17,11 +17,11 @@ namespace IctuTaekwondo.Api.Services
         Task<IdentityResult> DeleteAsync(string id);
         Task<UserResponse?> FindByIdAsync(string id);
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string id);
-        Task<PaginationResponse<UserResponse>> GetAllAsync(int page, int size);
+        Task<Paginator<UserResponse>> GetAllAsync(int page, int size);
         Task<IdentityResult> ChangePasswordAsync(string id, ChangePasswordSchema schema);
         Task<IdentityResult> SetPasswordAsync(string currentUserId, string userToSetId, AdminSetPasswordSchema schema);
         public Task<IdentityResult> UpdateRolesAsync(string targetTd, IEnumerable<string> newRoles);
-        Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
+        Task<Paginator<UserResponse>> GetAllWithFilterAsync(
             int page,
             int size,
             List<string> search,
@@ -95,18 +95,18 @@ namespace IctuTaekwondo.Api.Services
             return await _userManager.DeleteAsync(user);
         }
 
-        public async Task<PaginationResponse<UserResponse>> GetAllAsync(int page, int size)
+        public async Task<Paginator<UserResponse>> GetAllAsync(int page, int size)
         {
             var users = await _userManager.Users.ToListAsync();
 
-            return new PaginationResponse<UserResponse>(
+            return new Paginator<UserResponse>(
                 page, size,
                 users.Count,
                 users.Skip((page - 1) * size).Take(size)
                 .Select(e => e.ToUserResponse()).ToList());
         }
 
-        public async Task<PaginationResponse<UserResponse>> GetAllWithFilterAsync(
+        public async Task<Paginator<UserResponse>> GetAllWithFilterAsync(
             int page,
             int size,
             List<string> search,
@@ -132,7 +132,7 @@ namespace IctuTaekwondo.Api.Services
 
             var users = await query.ToListAsync();
 
-            return new PaginationResponse<UserResponse>(
+            return new Paginator<UserResponse>(
                 page, size,
                 users.Count,
                 users.Skip((page - 1) * size).Take(size)

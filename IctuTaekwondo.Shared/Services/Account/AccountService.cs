@@ -35,12 +35,12 @@ namespace IctuTaekwondo.Shared.Services.Account
             return response.Data;
         }
 
-        public async Task<bool> UpdateProfileAsync(string token, UserUpdateSchema schema)
+        public async Task<UserFullDetailResponse?> UpdateProfileAsync(string token, UserUpdateSchema schema)
         {
             apiService.SetAuthorizationHeader(token);
 
-            var response = await apiService.PutAsync<object>("api/account/profile", schema.ToStringContent());
-            return response.StatusCode == HttpStatusCode.OK;
+            var response = await apiService.PutMultipartAsync<UserFullDetailResponse>("api/account/profile", schema.ToMultipartFormDataContent());
+            return response.Data;
         }
     }
 }

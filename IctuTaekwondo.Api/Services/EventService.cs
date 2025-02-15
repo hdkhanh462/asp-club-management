@@ -16,9 +16,9 @@ namespace IctuTaekwondo.Api.Services
         Task<EventResponse?> CreateAsync(EventCreateSchema schema);
         Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema);
         Task<bool> DeleteAsync(int id);
-        Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size);
+        Task<Paginator<EventResponse>> GetAllAsync(int page, int size);
         Task<EventResponse?> FindByIdAsync(int id, string? userId);
-        Task<PaginationResponse<EventResponse>> FilterAsync(
+        Task<Paginator<EventResponse>> FilterAsync(
             int page,
             int size,
             string? name = null,
@@ -77,7 +77,7 @@ namespace IctuTaekwondo.Api.Services
             return result > 0;
         }
 
-        public async Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size)
+        public async Task<Paginator<EventResponse>> GetAllAsync(int page, int size)
         {
             var events = await _context.Events
                 .Include(e => e.EventRegistrations)
@@ -95,10 +95,10 @@ namespace IctuTaekwondo.Api.Services
                 })
                 .ToList();
 
-            return new PaginationResponse<EventResponse>(page, size, events.Count, response);
+            return new Paginator<EventResponse>(page, size, events.Count, response);
         }
 
-        public async Task<PaginationResponse<EventResponse>> FilterAsync(
+        public async Task<Paginator<EventResponse>> FilterAsync(
             int page,
             int size,
             string? name = null,
@@ -136,7 +136,7 @@ namespace IctuTaekwondo.Api.Services
                 })
                 .ToList();
 
-            return new PaginationResponse<EventResponse>(page, size, events.Count, response);
+            return new Paginator<EventResponse>(page, size, events.Count, response);
         }
 
         public async Task<EventResponse?> FindByIdAsync(int id, string? userId)

@@ -14,8 +14,8 @@ namespace IctuTaekwondo.Shared.Services.Events
 {
     public interface IEventsService
     {
-        public Task<PaginationResponse<EventResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null);
-        public Task<EventResponse?> CreateAsync(string token, EventCreateSchema schema);
+        public Task<Paginator<EventResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null);
+        public Task<Dictionary<string, string[]>> CreateAsync(string token, EventCreateSchema schema);
         public Task<EventResponse?> UpdateAsync(string token, int id, EventUpdateSchema schema);
         public Task<EventResponse?> FindByIdAsync(string token, int id);
         public Task<bool> DeleteAsync(string token, int id);

@@ -3,7 +3,7 @@ using IctuTaekwondo.Shared.Responses.User;
 
 namespace IctuTaekwondo.Shared.Responses
 {
-    public class PaginationResponse<T>
+    public class Paginator<T>
     {
         public int CurrentPage { get; set; }
         public int PageSize { get; set; }
@@ -14,7 +14,7 @@ namespace IctuTaekwondo.Shared.Responses
         public virtual ICollection<T> Items { get; set; } = [];
 
         [JsonConstructor]
-        public PaginationResponse(int currentPage, int pageSize, int totalItemCount, ICollection<T> items)
+        public Paginator(int currentPage, int pageSize, int totalItemCount, ICollection<T> items)
         {
             CurrentPage = currentPage;
             PageSize = pageSize;
@@ -54,9 +54,9 @@ namespace IctuTaekwondo.Shared.Responses
             return list;
         }
 
-        public static PaginationResponse<T> GetDefaultInstance()
+        public static Paginator<T> GetDefaultInstance()
         {
-            return new PaginationResponse<T>(1, 10, 0, []);
+            return new Paginator<T>(1, 10, 0, []);
         }
     }
 }

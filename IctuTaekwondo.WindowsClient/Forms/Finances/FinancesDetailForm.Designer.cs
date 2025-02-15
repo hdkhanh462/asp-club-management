@@ -28,24 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             panel1 = new Panel();
             label9 = new Label();
             label4 = new Label();
             label3 = new Label();
             label5 = new Label();
             label1 = new Label();
-            tbType = new TextBox();
             tbCategory = new TextBox();
+            financeUpdateSchemaBindingSource = new BindingSource(components);
             tbAmount = new TextBox();
             tbId = new TextBox();
-            btnAddNew = new Button();
             btnDelete = new Button();
             btnSave = new Button();
             tbDescription = new TextBox();
             tbTransactionDate = new TextBox();
             label2 = new Label();
             label6 = new Label();
+            cbTransactionType = new ComboBox();
+            errorProvider1 = new ErrorProvider(components);
             panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)financeUpdateSchemaBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -54,7 +58,7 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(800, 50);
+            panel1.Size = new Size(415, 50);
             panel1.TabIndex = 36;
             // 
             // label9
@@ -103,24 +107,22 @@
             label1.TabIndex = 32;
             label1.Text = "Id";
             // 
-            // tbType
-            // 
-            tbType.Location = new Point(212, 93);
-            tbType.Margin = new Padding(10);
-            tbType.Name = "tbType";
-            tbType.Size = new Size(180, 23);
-            tbType.TabIndex = 21;
-            // 
             // tbCategory
             // 
+            tbCategory.DataBindings.Add(new Binding("Text", financeUpdateSchemaBindingSource, "Category", true));
             tbCategory.Location = new Point(12, 151);
             tbCategory.Margin = new Padding(10);
             tbCategory.Name = "tbCategory";
             tbCategory.Size = new Size(180, 23);
             tbCategory.TabIndex = 24;
             // 
+            // financeUpdateSchemaBindingSource
+            // 
+            financeUpdateSchemaBindingSource.DataSource = typeof(Shared.Schemas.Finance.FinanceUpdateSchema);
+            // 
             // tbAmount
             // 
+            tbAmount.DataBindings.Add(new Binding("Text", financeUpdateSchemaBindingSource, "Amount", true));
             tbAmount.Location = new Point(212, 151);
             tbAmount.Margin = new Padding(10);
             tbAmount.Name = "tbAmount";
@@ -129,6 +131,7 @@
             // 
             // tbId
             // 
+            tbId.DataBindings.Add(new Binding("Text", financeUpdateSchemaBindingSource, "Id", true));
             tbId.Enabled = false;
             tbId.Location = new Point(12, 93);
             tbId.Margin = new Padding(10);
@@ -136,21 +139,10 @@
             tbId.Size = new Size(180, 23);
             tbId.TabIndex = 27;
             // 
-            // btnAddNew
-            // 
-            btnAddNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnAddNew.Location = new Point(174, 421);
-            btnAddNew.Name = "btnAddNew";
-            btnAddNew.Size = new Size(75, 23);
-            btnAddNew.TabIndex = 17;
-            btnAddNew.Text = "Thêm";
-            btnAddNew.UseVisualStyleBackColor = true;
-            btnAddNew.Click += btnAddNew_Click;
-            // 
             // btnDelete
             // 
-            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDelete.Location = new Point(93, 421);
+            btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnDelete.Location = new Point(93, 245);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(75, 23);
             btnDelete.TabIndex = 18;
@@ -160,8 +152,8 @@
             // 
             // btnSave
             // 
-            btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSave.Location = new Point(12, 421);
+            btnSave.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnSave.Location = new Point(12, 245);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(75, 23);
             btnSave.TabIndex = 19;
@@ -171,6 +163,7 @@
             // 
             // tbDescription
             // 
+            tbDescription.DataBindings.Add(new Binding("Text", financeUpdateSchemaBindingSource, "Description", true));
             tbDescription.Location = new Point(212, 209);
             tbDescription.Margin = new Padding(10);
             tbDescription.Name = "tbDescription";
@@ -179,6 +172,7 @@
             // 
             // tbTransactionDate
             // 
+            tbTransactionDate.DataBindings.Add(new Binding("Text", financeUpdateSchemaBindingSource, "TransactionDate", true));
             tbTransactionDate.Location = new Point(12, 209);
             tbTransactionDate.Margin = new Padding(10);
             tbTransactionDate.Name = "tbTransactionDate";
@@ -203,11 +197,27 @@
             label6.TabIndex = 34;
             label6.Text = "Ngày giao dịch";
             // 
+            // cbTransactionType
+            // 
+            cbTransactionType.DataBindings.Add(new Binding("SelectedValue", financeUpdateSchemaBindingSource, "Type", true));
+            cbTransactionType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbTransactionType.FormattingEnabled = true;
+            cbTransactionType.Location = new Point(212, 93);
+            cbTransactionType.Name = "cbTransactionType";
+            cbTransactionType.Size = new Size(180, 23);
+            cbTransactionType.TabIndex = 37;
+            // 
+            // errorProvider1
+            // 
+            errorProvider1.ContainerControl = this;
+            errorProvider1.DataSource = financeUpdateSchemaBindingSource;
+            // 
             // FinancesDetailForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(415, 274);
+            Controls.Add(cbTransactionType);
             Controls.Add(panel1);
             Controls.Add(label6);
             Controls.Add(label2);
@@ -216,19 +226,20 @@
             Controls.Add(label5);
             Controls.Add(label1);
             Controls.Add(tbTransactionDate);
-            Controls.Add(tbType);
             Controls.Add(tbDescription);
             Controls.Add(tbCategory);
             Controls.Add(tbAmount);
             Controls.Add(tbId);
-            Controls.Add(btnAddNew);
             Controls.Add(btnDelete);
             Controls.Add(btnSave);
             Name = "FinancesDetailForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "DetailForm";
             Load += EvensDetailForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)financeUpdateSchemaBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -241,16 +252,17 @@
         private Label label3;
         private Label label5;
         private Label label1;
-        private TextBox tbType;
         private TextBox tbCategory;
         private TextBox tbAmount;
         private TextBox tbId;
-        private Button btnAddNew;
         private Button btnDelete;
         private Button btnSave;
         private TextBox tbDescription;
         private TextBox tbTransactionDate;
         private Label label2;
         private Label label6;
+        private BindingSource financeUpdateSchemaBindingSource;
+        private ComboBox cbTransactionType;
+        private ErrorProvider errorProvider1;
     }
 }

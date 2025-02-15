@@ -17,7 +17,7 @@ namespace IctuTaekwondo.WebClient.Services
         public Task<bool> UnregisterAsync(int eventId, HttpRequest request);
         public Task<bool> ManagerRegisterAsync(int eventId, string userId, HttpRequest request);
         public Task<bool> ManagerUnregisterAsync(int eventId, string userId, HttpRequest request);
-        public Task<PaginationResponse<EventResgiteredUsersResponse>> GetAllAsync(int id, int page, int size, HttpRequest request);
+        public Task<Paginator<ResgiteredUsersResponse>> GetAllAsync(int id, int page, int size, HttpRequest request);
     }
 
     public class EventRegisterationService : IEventRegisterationService
@@ -32,7 +32,7 @@ namespace IctuTaekwondo.WebClient.Services
             _apiService = apiService;
         }
 
-        public async Task<PaginationResponse<EventResgiteredUsersResponse>> GetAllAsync(int id, int page, int size, HttpRequest request)
+        public async Task<Paginator<ResgiteredUsersResponse>> GetAllAsync(int id, int page, int size, HttpRequest request)
         {
             var builder = new QueryBuilder
             {
@@ -43,13 +43,13 @@ namespace IctuTaekwondo.WebClient.Services
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
             _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
-            var response = await _apiService.GetAsync<PaginationResponse<EventResgiteredUsersResponse>>($"api/events/{id}/registerations{builder.ToQueryString()}");
+            var response = await _apiService.GetAsync<Paginator<ResgiteredUsersResponse>>($"api/events/{id}/registerations{builder.ToQueryString()}");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 if (response.Data != null)
                     return response.Data;
             }
-            return new PaginationResponse<EventResgiteredUsersResponse>(page, size, 0, []);
+            return new Paginator<ResgiteredUsersResponse>(page, size, 0, []);
         }
 
         public async Task<bool> ManagerRegisterAsync(int eventId, string userId, HttpRequest request)

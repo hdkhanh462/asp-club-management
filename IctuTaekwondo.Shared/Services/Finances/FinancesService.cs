@@ -19,12 +19,17 @@ namespace IctuTaekwondo.Shared.Services.Finances
             this.apiService = apiService;
         }
 
-        public async Task<FinanceResponse?> CreateAsync(string token, FinanceCreateSchema schema)
+        public async Task<Dictionary<string, string[]>> CreateAsync(string token, FinanceCreateSchema schema)
         {
             apiService.SetAuthorizationHeader(token);
 
             var response = await apiService.PostAsync<FinanceResponse>($"api/finances", schema.ToStringContent());
-            return response.Data;
+            if (response.StatusCode != HttpStatusCode.Created)
+            {
+                return response.Errors;
+            }
+
+            return [];
         }
 
         public async Task<bool> DeleteAsync(string token, int id)
@@ -43,7 +48,7 @@ namespace IctuTaekwondo.Shared.Services.Finances
             return response.Data;
         }
 
-        public async Task<PaginationResponse<FinanceResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null)
+        public async Task<Paginator<FinanceResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null)
         {
             apiService.SetAuthorizationHeader(token);
 
@@ -51,8 +56,14 @@ namespace IctuTaekwondo.Shared.Services.Finances
             query.Add("page", page.ToString());
             query.Add("size", size.ToString());
 
-            var response = await apiService.GetAsync<PaginationResponse<FinanceResponse>>($"api/finances{query.ToQueryString()}");
-            return response.Data ?? PaginationResponse<FinanceResponse>.GetDefaultInstance();
+            var response = await apiService.GetAsync<Paginator<FinanceResponse>>($"api/finances{query.ToQueryString()}");
+            return response.Data ?? Paginator<FinanceResponse>.GetDefaultInstance();
+        }
+
+        public async Task<object?> GetBarChart()
+        {
+            var response = await apiService.GetAsync<object>("api/finances/report-year");
+            return response.Data;
         }
 
         public async Task<List<FinanceReportResponse>> GetReportAsync(string token, DateTime? startDate, DateTime? endDate)

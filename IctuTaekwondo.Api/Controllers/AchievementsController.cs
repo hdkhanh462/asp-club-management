@@ -29,7 +29,7 @@ namespace IctuTaekwondo.Api.Controllers
         {
             var achievements = await _achievementService.GetAllAsync(page, size);
 
-            return Ok(new ApiResponse<PaginationResponse<AchievementResponse>>
+            return Ok(new ApiResponse<Paginator<AchievementResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = achievements
@@ -58,7 +58,7 @@ namespace IctuTaekwondo.Api.Controllers
             var achievements = await _achievementService
                 .GetAllWithFilterAsync(page, size, name, userId, eventId, start, end);
 
-            return Ok(new ApiResponse<PaginationResponse<AchievementResponse>>
+            return Ok(new ApiResponse<Paginator<AchievementResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = achievements

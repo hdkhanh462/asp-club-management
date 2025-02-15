@@ -46,9 +46,11 @@
             cbRole = new ComboBox();
             btnRegister = new Button();
             errorProvider1 = new ErrorProvider(components);
+            pbAvatar = new PictureBox();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)adminRegisterSchemaBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAvatar).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -57,7 +59,7 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(408, 50);
+            panel1.Size = new Size(588, 50);
             panel1.TabIndex = 17;
             // 
             // label9
@@ -201,11 +203,23 @@
             errorProvider1.ContainerControl = this;
             errorProvider1.DataSource = adminRegisterSchemaBindingSource;
             // 
+            // pbAvatar
+            // 
+            pbAvatar.BorderStyle = BorderStyle.FixedSingle;
+            pbAvatar.Location = new Point(405, 87);
+            pbAvatar.Name = "pbAvatar";
+            pbAvatar.Size = new Size(167, 141);
+            pbAvatar.SizeMode = PictureBoxSizeMode.Zoom;
+            pbAvatar.TabIndex = 20;
+            pbAvatar.TabStop = false;
+            pbAvatar.Click += pbAvatar_Click;
+            // 
             // RegisterForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(408, 276);
+            ClientSize = new Size(588, 276);
+            Controls.Add(pbAvatar);
             Controls.Add(btnRegister);
             Controls.Add(cbRole);
             Controls.Add(label4);
@@ -223,11 +237,13 @@
             Name = "RegisterForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "RegisterForm";
+            FormClosed += RegisterForm_FormClosed;
             Load += RegisterForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)adminRegisterSchemaBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAvatar).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -251,5 +267,6 @@
         private Button btnRegister;
         private ErrorProvider errorProvider1;
         private BindingSource adminRegisterSchemaBindingSource;
+        private PictureBox pbAvatar;
     }
 }

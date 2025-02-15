@@ -31,7 +31,7 @@
             panel1 = new Panel();
             label1 = new Label();
             dataGridView1 = new DataGridView();
-            btnAđNew = new Button();
+            btnAddNew = new Button();
             btnSearch = new Button();
             tbSearch = new TextBox();
             panel1.SuspendLayout();
@@ -53,9 +53,9 @@
             label1.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.Location = new Point(12, 15);
             label1.Name = "label1";
-            label1.Size = new Size(146, 21);
+            label1.Size = new Size(180, 21);
             label1.TabIndex = 0;
-            label1.Text = "QUẢN LÝ SỰ KIỆN";
+            label1.Text = "QUẢN LÝ THÀNH TÍCH";
             // 
             // dataGridView1
             // 
@@ -68,17 +68,18 @@
             dataGridView1.TabIndex = 10;
             dataGridView1.CellClick += dataGridView1_CellContentClick;
             // 
-            // btnAđNew
+            // btnAddNew
             // 
-            btnAđNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnAđNew.Location = new Point(706, 69);
-            btnAđNew.Margin = new Padding(10);
-            btnAđNew.Name = "btnAđNew";
-            btnAđNew.Size = new Size(75, 23);
-            btnAđNew.TabIndex = 8;
-            btnAđNew.Text = "Thêm";
-            btnAđNew.UseVisualStyleBackColor = true;
-            btnAđNew.Click += btnAđNew_Click;
+            btnAddNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAddNew.Enabled = false;
+            btnAddNew.Location = new Point(706, 69);
+            btnAddNew.Margin = new Padding(10);
+            btnAddNew.Name = "btnAddNew";
+            btnAddNew.Size = new Size(75, 23);
+            btnAddNew.TabIndex = 8;
+            btnAddNew.Text = "Thêm";
+            btnAddNew.UseVisualStyleBackColor = true;
+            btnAddNew.Click += btnAddNew_Click;
             // 
             // btnSearch
             // 
@@ -108,10 +109,11 @@
             ClientSize = new Size(800, 450);
             Controls.Add(panel1);
             Controls.Add(dataGridView1);
-            Controls.Add(btnAđNew);
+            Controls.Add(btnAddNew);
             Controls.Add(btnSearch);
             Controls.Add(tbSearch);
             Name = "AchievementsForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "EventsForm";
             Load += EventsForm_Load;
             panel1.ResumeLayout(false);
@@ -126,7 +128,7 @@
         private Panel panel1;
         private Label label1;
         private DataGridView dataGridView1;
-        private Button btnAđNew;
+        private Button btnAddNew;
         private Button btnSearch;
         private TextBox tbSearch;
     }

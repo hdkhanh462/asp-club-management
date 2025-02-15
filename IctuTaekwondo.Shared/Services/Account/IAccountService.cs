@@ -11,7 +11,7 @@ namespace IctuTaekwondo.Shared.Services.Account
     public interface IAccountService
     {
         Task<UserFullDetailResponse?> GetProfileAsync(string token);
-        Task<bool> UpdateProfileAsync(string token, UserUpdateSchema schema);
+        Task<UserFullDetailResponse?> UpdateProfileAsync(string token, UserUpdateSchema schema);
         Task<bool> ChangePasswordAsync(string token, ChangePasswordSchema schema);
     }
 }

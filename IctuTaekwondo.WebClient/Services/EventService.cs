@@ -19,8 +19,8 @@ namespace IctuTaekwondo.WebClient.Services
         public Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState, HttpRequest request);
         public Task<bool> DeleteAsync(int id, HttpRequest request);
         public Task<EventResponse?> FindByIdAsync(int id, HttpRequest request);
-        public Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size, ModelStateDictionary modelState, HttpRequest request);
-        public Task<PaginationResponse<EventResponse>> FilterAsync(int page, int size, string? name = null, EventStatus? status = null);
+        public Task<Paginator<EventResponse>> GetAllAsync(int page, int size, ModelStateDictionary modelState, HttpRequest request);
+        public Task<Paginator<EventResponse>> FilterAsync(int page, int size, string? name = null, EventStatus? status = null);
     }
 
     public class EventService : IEventService
@@ -61,7 +61,7 @@ namespace IctuTaekwondo.WebClient.Services
             return response.StatusCode == HttpStatusCode.OK;
         }
 
-        public async Task<PaginationResponse<EventResponse>> FilterAsync(int page, int size, string? name = null, EventStatus? status = null)
+        public async Task<Paginator<EventResponse>> FilterAsync(int page, int size, string? name = null, EventStatus? status = null)
         {
             var builder = new QueryBuilder
             {
@@ -71,13 +71,13 @@ namespace IctuTaekwondo.WebClient.Services
                 { nameof(status), status.ToString() ?? string.Empty }
             };
 
-            var response = await _apiService.GetAsync<PaginationResponse<EventResponse>>($"api/events/filter?{builder.ToQueryString()}");
+            var response = await _apiService.GetAsync<Paginator<EventResponse>>($"api/events/filter?{builder.ToQueryString()}");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 if (response.Data != null)
                     return response.Data;
             }
-            return new PaginationResponse<EventResponse>(page, size, 0, []);
+            return new Paginator<EventResponse>(page, size, 0, []);
         }
 
         public async Task<EventResponse?> FindByIdAsync(int id, HttpRequest request)
@@ -89,7 +89,7 @@ namespace IctuTaekwondo.WebClient.Services
             return response.Data;
         }
 
-        public async Task<PaginationResponse<EventResponse>> GetAllAsync(int page, int size, ModelStateDictionary modelState, HttpRequest request)
+        public async Task<Paginator<EventResponse>> GetAllAsync(int page, int size, ModelStateDictionary modelState, HttpRequest request)
         {
             var builder = new QueryBuilder
             {
@@ -100,13 +100,13 @@ namespace IctuTaekwondo.WebClient.Services
             var authToken = request.Cookies[GlobalConst.CookieAuthTokenKey];
             _apiService.SetAuthorizationHeader(authToken ?? string.Empty);
 
-            var response = await _apiService.GetAsync<PaginationResponse<EventResponse>>($"api/events{builder.ToQueryString()}");
+            var response = await _apiService.GetAsync<Paginator<EventResponse>>($"api/events{builder.ToQueryString()}");
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 if (response.Data != null)
                     return response.Data;
             }
-            return new PaginationResponse<EventResponse>(page, size, 0, []);
+            return new Paginator<EventResponse>(page, size, 0, []);
         }
 
         public async Task<EventResponse?> UpdateAsync(int id, EventUpdateSchema schema, ModelStateDictionary modelState, HttpRequest request)

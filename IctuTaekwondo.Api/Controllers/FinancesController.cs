@@ -32,7 +32,7 @@ namespace IctuTaekwondo.Api.Controllers
         {
             var paginator = await _financeService.GetAllAsync(page, size);
 
-            return Ok(new ApiResponse<PaginationResponse<FinanceResponse>>
+            return Ok(new ApiResponse<Paginator<FinanceResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = paginator
@@ -53,7 +53,7 @@ namespace IctuTaekwondo.Api.Controllers
         {
             var paginator = await _financeService.GetAllWithFilterAsync(page, size, type, category, start, end);
 
-            return Ok(new ApiResponse<PaginationResponse<FinanceResponse>>
+            return Ok(new ApiResponse<Paginator<FinanceResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = paginator

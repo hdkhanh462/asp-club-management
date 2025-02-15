@@ -9,7 +9,7 @@ namespace IctuTaekwondo.Shared.Services.Users
     public interface IUsersService
     {
         Task<Dictionary<string, string[]>> RegisterAsync(string token, AdminRegisterSchema schema);
-        Task<PaginationResponse<UserResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null);
+        Task<Paginator<UserResponse>> GetAllAsync(string token, int page, int size, QueryBuilder? query = null);
         Task<UserFullDetailResponse?> GetProfileByIdAsync(string token, string id);
         Task<UserFullDetailResponse?> UpdateAsync(string token, string id, UserUpdateSchema schema);
         Task<string?> DeleteAsync(string token, string id);

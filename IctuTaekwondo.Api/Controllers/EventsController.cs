@@ -31,7 +31,7 @@ namespace IctuTaekwondo.Api.Controllers.Api
         {
             var events = await _eventService.GetAllAsync(page, size);
 
-            return Ok(new ApiResponse<PaginationResponse<EventResponse>>
+            return Ok(new ApiResponse<Paginator<EventResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = events
@@ -50,7 +50,7 @@ namespace IctuTaekwondo.Api.Controllers.Api
         {
             var events = await _eventService.FilterAsync(page, size, name, status);
 
-            return Ok(new ApiResponse<PaginationResponse<EventResponse>>
+            return Ok(new ApiResponse<Paginator<EventResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = events

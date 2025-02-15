@@ -31,7 +31,7 @@
             panel1 = new Panel();
             label1 = new Label();
             dataGridView1 = new DataGridView();
-            btnAđNew = new Button();
+            btnAddNew = new Button();
             btnSearch = new Button();
             tbSearch = new TextBox();
             panel1.SuspendLayout();
@@ -68,17 +68,17 @@
             dataGridView1.TabIndex = 10;
             dataGridView1.CellClick += dataGridView1_CellContentClick;
             // 
-            // btnAđNew
+            // btnAddNew
             // 
-            btnAđNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnAđNew.Location = new Point(706, 69);
-            btnAđNew.Margin = new Padding(10);
-            btnAđNew.Name = "btnAđNew";
-            btnAđNew.Size = new Size(75, 23);
-            btnAđNew.TabIndex = 8;
-            btnAđNew.Text = "Thêm";
-            btnAđNew.UseVisualStyleBackColor = true;
-            btnAđNew.Click += btnAđNew_Click;
+            btnAddNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAddNew.Location = new Point(706, 69);
+            btnAddNew.Margin = new Padding(10);
+            btnAddNew.Name = "btnAddNew";
+            btnAddNew.Size = new Size(75, 23);
+            btnAddNew.TabIndex = 8;
+            btnAddNew.Text = "Thêm";
+            btnAddNew.UseVisualStyleBackColor = true;
+            btnAddNew.Click += btnAddNew_Click;
             // 
             // btnSearch
             // 
@@ -101,17 +101,18 @@
             tbSearch.Size = new Size(579, 23);
             tbSearch.TabIndex = 7;
             // 
-            // AchievementsForm
+            // FinancesForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(panel1);
             Controls.Add(dataGridView1);
-            Controls.Add(btnAđNew);
+            Controls.Add(btnAddNew);
             Controls.Add(btnSearch);
             Controls.Add(tbSearch);
-            Name = "AchievementsForm";
+            Name = "FinancesForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "EventsForm";
             Load += EventsForm_Load;
             panel1.ResumeLayout(false);
@@ -126,7 +127,7 @@
         private Panel panel1;
         private Label label1;
         private DataGridView dataGridView1;
-        private Button btnAđNew;
+        private Button btnAddNew;
         private Button btnSearch;
         private TextBox tbSearch;
     }

@@ -83,7 +83,7 @@ namespace IctuTaekwondo.Api.Controllers
 
             var paginator = _service.GetAllRegisteration(@event, page, size);
 
-            return Ok(new ApiResponse<PaginationResponse<EventResgiteredUsersResponse>>
+            return Ok(new ApiResponse<Paginator<ResgiteredUsersResponse>>
             {
                 StatusCode = HttpStatusCode.OK,
                 Data = paginator

@@ -31,9 +31,9 @@
             panel1 = new Panel();
             label1 = new Label();
             dataGridView1 = new DataGridView();
-            btnAđNew = new Button();
+            btnAddNew = new Button();
             btnSearch = new Button();
-            textBox1 = new TextBox();
+            tbSearch = new TextBox();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
@@ -68,17 +68,18 @@
             dataGridView1.TabIndex = 10;
             dataGridView1.CellClick += dataGridView1_CellContentClick;
             // 
-            // btnAđNew
+            // btnAddNew
             // 
-            btnAđNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnAđNew.Location = new Point(706, 69);
-            btnAđNew.Margin = new Padding(10);
-            btnAđNew.Name = "btnAđNew";
-            btnAđNew.Size = new Size(75, 23);
-            btnAđNew.TabIndex = 8;
-            btnAđNew.Text = "Thêm";
-            btnAđNew.UseVisualStyleBackColor = true;
-            btnAđNew.Click += btnAđNew_Click;
+            btnAddNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAddNew.Enabled = false;
+            btnAddNew.Location = new Point(706, 69);
+            btnAddNew.Margin = new Padding(10);
+            btnAddNew.Name = "btnAddNew";
+            btnAddNew.Size = new Size(75, 23);
+            btnAddNew.TabIndex = 8;
+            btnAddNew.Text = "Thêm";
+            btnAddNew.UseVisualStyleBackColor = true;
+            btnAddNew.Click += btnAddNew_Click;
             // 
             // btnSearch
             // 
@@ -90,15 +91,16 @@
             btnSearch.TabIndex = 9;
             btnSearch.Text = "Tìm kiếm";
             btnSearch.UseVisualStyleBackColor = true;
+            btnSearch.Click += btnSearch_Click;
             // 
-            // textBox1
+            // tbSearch
             // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.Location = new Point(12, 69);
-            textBox1.Margin = new Padding(10);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(579, 23);
-            textBox1.TabIndex = 7;
+            tbSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbSearch.Location = new Point(12, 69);
+            tbSearch.Margin = new Padding(10);
+            tbSearch.Name = "tbSearch";
+            tbSearch.Size = new Size(579, 23);
+            tbSearch.TabIndex = 7;
             // 
             // EventsForm
             // 
@@ -107,10 +109,11 @@
             ClientSize = new Size(800, 450);
             Controls.Add(panel1);
             Controls.Add(dataGridView1);
-            Controls.Add(btnAđNew);
+            Controls.Add(btnAddNew);
             Controls.Add(btnSearch);
-            Controls.Add(textBox1);
+            Controls.Add(tbSearch);
             Name = "EventsForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "EventsForm";
             Load += EventsForm_Load;
             panel1.ResumeLayout(false);
@@ -125,8 +128,8 @@
         private Panel panel1;
         private Label label1;
         private DataGridView dataGridView1;
-        private Button btnAđNew;
+        private Button btnAddNew;
         private Button btnSearch;
-        private TextBox textBox1;
+        private TextBox tbSearch;
     }
 }

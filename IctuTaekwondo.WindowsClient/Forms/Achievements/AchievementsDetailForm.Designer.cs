@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             panel1 = new Panel();
             label9 = new Label();
             label4 = new Label();
@@ -35,17 +36,20 @@
             label5 = new Label();
             label1 = new Label();
             tbName = new TextBox();
+            achievementUpdateSchemaBindingSource = new BindingSource(components);
             tbDateAchieved = new TextBox();
             tbDescription = new TextBox();
             tbId = new TextBox();
-            btnAddNew = new Button();
             btnDelete = new Button();
             btnSave = new Button();
             tbEventId = new TextBox();
             tbUserId = new TextBox();
             label2 = new Label();
             label6 = new Label();
+            errorProvider1 = new ErrorProvider(components);
             panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)achievementUpdateSchemaBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -54,7 +58,7 @@
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(800, 50);
+            panel1.Size = new Size(416, 50);
             panel1.TabIndex = 36;
             // 
             // label9
@@ -105,14 +109,20 @@
             // 
             // tbName
             // 
+            tbName.DataBindings.Add(new Binding("Text", achievementUpdateSchemaBindingSource, "Name", true));
             tbName.Location = new Point(212, 93);
             tbName.Margin = new Padding(10);
             tbName.Name = "tbName";
             tbName.Size = new Size(180, 23);
             tbName.TabIndex = 21;
             // 
+            // achievementUpdateSchemaBindingSource
+            // 
+            achievementUpdateSchemaBindingSource.DataSource = typeof(Shared.Schemas.Achievement.AchievementUpdateSchema);
+            // 
             // tbDateAchieved
             // 
+            tbDateAchieved.DataBindings.Add(new Binding("Text", achievementUpdateSchemaBindingSource, "DateAchieved", true));
             tbDateAchieved.Location = new Point(12, 151);
             tbDateAchieved.Margin = new Padding(10);
             tbDateAchieved.Name = "tbDateAchieved";
@@ -121,6 +131,7 @@
             // 
             // tbDescription
             // 
+            tbDescription.DataBindings.Add(new Binding("Text", achievementUpdateSchemaBindingSource, "Description", true));
             tbDescription.Location = new Point(212, 151);
             tbDescription.Margin = new Padding(10);
             tbDescription.Name = "tbDescription";
@@ -129,6 +140,7 @@
             // 
             // tbId
             // 
+            tbId.DataBindings.Add(new Binding("Text", achievementUpdateSchemaBindingSource, "Id", true));
             tbId.Enabled = false;
             tbId.Location = new Point(12, 93);
             tbId.Margin = new Padding(10);
@@ -136,21 +148,11 @@
             tbId.Size = new Size(180, 23);
             tbId.TabIndex = 27;
             // 
-            // btnAddNew
-            // 
-            btnAddNew.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnAddNew.Location = new Point(174, 421);
-            btnAddNew.Name = "btnAddNew";
-            btnAddNew.Size = new Size(75, 23);
-            btnAddNew.TabIndex = 17;
-            btnAddNew.Text = "Thêm";
-            btnAddNew.UseVisualStyleBackColor = true;
-            btnAddNew.Click += btnAddNew_Click;
-            // 
             // btnDelete
             // 
-            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDelete.Location = new Point(93, 421);
+            btnDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnDelete.Enabled = false;
+            btnDelete.Location = new Point(93, 250);
             btnDelete.Name = "btnDelete";
             btnDelete.Size = new Size(75, 23);
             btnDelete.TabIndex = 18;
@@ -160,8 +162,9 @@
             // 
             // btnSave
             // 
-            btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSave.Location = new Point(12, 421);
+            btnSave.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnSave.Enabled = false;
+            btnSave.Location = new Point(12, 250);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(75, 23);
             btnSave.TabIndex = 19;
@@ -171,6 +174,7 @@
             // 
             // tbEventId
             // 
+            tbEventId.DataBindings.Add(new Binding("Text", achievementUpdateSchemaBindingSource, "EventId", true));
             tbEventId.Location = new Point(212, 209);
             tbEventId.Margin = new Padding(10);
             tbEventId.Name = "tbEventId";
@@ -179,6 +183,7 @@
             // 
             // tbUserId
             // 
+            tbUserId.DataBindings.Add(new Binding("Text", achievementUpdateSchemaBindingSource, "UserId", true));
             tbUserId.Location = new Point(12, 209);
             tbUserId.Margin = new Padding(10);
             tbUserId.Name = "tbUserId";
@@ -203,11 +208,17 @@
             label6.TabIndex = 34;
             label6.Text = "Người dùng";
             // 
+            // errorProvider1
+            // 
+            errorProvider1.BlinkStyle = ErrorBlinkStyle.NeverBlink;
+            errorProvider1.ContainerControl = this;
+            errorProvider1.DataSource = achievementUpdateSchemaBindingSource;
+            // 
             // AchievementsDetailForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(416, 279);
             Controls.Add(panel1);
             Controls.Add(label6);
             Controls.Add(label2);
@@ -221,14 +232,16 @@
             Controls.Add(tbDateAchieved);
             Controls.Add(tbDescription);
             Controls.Add(tbId);
-            Controls.Add(btnAddNew);
             Controls.Add(btnDelete);
             Controls.Add(btnSave);
             Name = "AchievementsDetailForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "DetailForm";
             Load += EvensDetailForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)achievementUpdateSchemaBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -245,12 +258,13 @@
         private TextBox tbDateAchieved;
         private TextBox tbDescription;
         private TextBox tbId;
-        private Button btnAddNew;
         private Button btnDelete;
         private Button btnSave;
         private TextBox tbEventId;
         private TextBox tbUserId;
         private Label label2;
         private Label label6;
+        private BindingSource achievementUpdateSchemaBindingSource;
+        private ErrorProvider errorProvider1;
     }
 }

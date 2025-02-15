@@ -36,18 +36,25 @@ namespace IctuTaekwondo.WindowsClient.Forms
                 services.AddSingleton<IAccountService, AccountService>();
                 services.AddSingleton<IUsersService, UsersService>();
                 services.AddSingleton<IEventsService, EventsService>();
+                services.AddSingleton<IRegisterationService, RegisterationService>();
                 services.AddSingleton<IAchievementsService, AchievementsService>();
                 services.AddSingleton<IFinancesService, FinancesService>();
                 services.AddSingleton<LoginForm>();
                 services.AddSingleton<MainForm>();
+                services.AddSingleton<DashboardForm>();
+                services.AddSingleton<AccountForm>();
+                services.AddSingleton<ChangePasswordForm>();
                 services.AddSingleton<UsersForm>();
-                services.AddSingleton<UsersDetailForm>();
                 services.AddSingleton<RegisterForm>();
+                services.AddSingleton<UsersDetailForm>();
                 services.AddSingleton<EventsForm>();
+                services.AddSingleton<EventAddNewForm>();
                 services.AddSingleton<EventsDetailForm>();
                 services.AddSingleton<AchievementsForm>();
+                services.AddSingleton<AchievementAddNewForm>();
                 services.AddSingleton<AchievementsDetailForm>();
                 services.AddSingleton<FinancesForm>();
+                services.AddSingleton<FinanceAddNewForm>();
                 services.AddSingleton<FinancesDetailForm>();
             });
 
