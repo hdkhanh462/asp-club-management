@@ -1,6 +1,8 @@
 ﻿function fetchChartData(year) {
+    var apiUrl = $("#api-url").val()
+
     return $.ajax({
-        url: `http://localhost:9000/api/finances/report-year?year=${year}`,
+        url: `${apiUrl}/api/finances/report-year?year=${year}`,
         method: 'GET',
         dataType: 'json'
     });

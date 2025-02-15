@@ -209,7 +209,7 @@ namespace IctuTaekwondo.Api.Controllers
 
             try
             {
-                if (start != null && end != null & end <= start) return BadRequest(new ApiResponse<object>
+                if ((start != null && end != null) && end <= start) return BadRequest(new ApiResponse<object>
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Message = "Ngày kết thúc phải lớn hơn Ngày bắt đầu"

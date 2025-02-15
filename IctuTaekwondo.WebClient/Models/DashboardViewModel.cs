@@ -11,15 +11,14 @@ namespace IctuTaekwondo.WebClient.Models
 
         public long TotalAmount(List<FinanceReportResponse> reports)
         {
-            return reports
-            .Sum(report => report.Type == TransactionType.Income
+            return reports.Sum(report => report.Type == TransactionType.Income
                 ? report.TotalAmount
                 : -report.TotalAmount);
         }
 
         public double DifferenceTotalAmount()
         {
-            if (!Current.Any() || !Pass.Any())
+            if ((Current != null && Pass != null) && (!Current.Any() || !Pass.Any()))
             {
                 return 0;
             }

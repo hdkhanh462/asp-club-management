@@ -71,6 +71,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddSingleton<IApiService>(new ApiService(new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiUrl"]!)}));
 builder.Services.AddScoped<IctuTaekwondo.Shared.Services.Auth.IAuthService, IctuTaekwondo.Shared.Services.Auth.AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IctuTaekwondo.WebClient.Services.IAccountService, IctuTaekwondo.WebClient.Services.AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEventService, EventService>();

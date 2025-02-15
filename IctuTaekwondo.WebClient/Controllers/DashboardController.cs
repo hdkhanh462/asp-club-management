@@ -17,7 +17,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             this.financesService = financesService;
         }
 
-        [Authorize("Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Index([FromQuery] ReportRange? range = null)
         {
             var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
@@ -38,7 +38,7 @@ namespace IctuTaekwondo.WebClient.Controllers
                 return View(model);
             }
 
-            var report = await financesService.GetReportAsync(token, null,null);
+            var report = await financesService.GetReportAsync(token, null, null);
             model.Current = report;
 
             return View(model);

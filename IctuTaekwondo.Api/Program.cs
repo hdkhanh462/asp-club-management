@@ -33,8 +33,8 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "ICTU Taekwondo API", Version = "v1" });
     options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
-        In = ParameterLocation.Header,
         Name = "Authorization",
+        In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
     });
 
@@ -50,10 +50,10 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
 // Add Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    //options.Password.RequireDigit = false;
-    //options.Password.RequireLowercase = false;
-    //options.Password.RequireUppercase = false;
-    //options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 6;
 })
     .AddEntityFrameworkStores<ApiDbContext>()
