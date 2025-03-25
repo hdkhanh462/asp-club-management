@@ -20,7 +20,7 @@ namespace IctuTaekwondo.WebClient.Controllers
             this.configuration = configuration;
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize]
         public async Task<IActionResult> Index([FromQuery] ReportRange? range = null)
         {
             var token = Request.Cookies[GlobalConst.CookieAuthTokenKey];
