@@ -197,7 +197,7 @@ namespace IctuTaekwondo.Api.Controllers
         //GET: api/finances/report?start=2025-01-01&end=2025-01-31&type=1&categories=danhmuc
         // Lấy báo cáo tài chính theo loại
         [HttpGet("report")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetReport(
             [FromQuery] DateTime? start,
             [FromQuery] DateTime? end,
@@ -233,6 +233,7 @@ namespace IctuTaekwondo.Api.Controllers
         }
 
         [HttpGet("report-year")]
+        [Authorize]
         public async Task<IActionResult> GetReport()
         {
             var currentYear = DateTime.Now.Year;
