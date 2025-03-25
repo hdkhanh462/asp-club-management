@@ -233,7 +233,6 @@ namespace IctuTaekwondo.Api.Controllers
         }
 
         [HttpGet("report-year")]
-        [Authorize]
         public async Task<IActionResult> GetReport()
         {
             var currentYear = DateTime.Now.Year;
